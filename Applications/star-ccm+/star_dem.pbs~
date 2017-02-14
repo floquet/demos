@@ -1,0 +1,41 @@
+#!/bin/csh
+
+#PBS -A ERDCS97270PET
+#PBS -l select=6:ncpus=32:mpiprocs=16
+#PBS -l walltime=00:30:00
+#PBS -q debug
+#PBS -l starccm=1
+#PBS -N star_dem
+#PBS -l application=star-ccm+
+#PBS -j oe
+
+unsetenv LM_LICENSE_FILE
+source /opt/modules/default/init/csh
+module load starccm+/8.04.007
+
+cd $PBS_O_WORKDIR
+
+# -collab is necessary to prevent user name checking
+# -time is optional, but it provides elapsed time in stdout.  
+# One can also get the elapsed time from the final .sim file.
+# -mpidriver crayxt is required
+# -batch *.java provides the batch control script
+# star_dim.sim is the discrete element method simulation definition
+
+module unload PrgEnv-pgi
+module load PrgEnv-gnu
+module load cray-mpich/5.6.5
+#setenv CRAYXT_HOME $CRAY_MPICH2_DIR
+setenv CRAYXT_HOME /opt/cray/mpt/5.6.5/gni/mpich2-gnu/47
+
+# To pass aprun options, set CRAYXT_APRUN_ARGS
+# -j 1  single core per compute unit (single stream mode)
+setenv CRAYXT_APRUN_ARGS "-j 1"
+
+starccm+ -power -collab -np $BC_MPI_TASKS_ALLOC -time -mpidriver crayxt -batch star_dem.java star_dem.sim
+
+# This command will produce a set of png images that can be transferred
+# to the utility server and can be displayed or converted into an 
+# animated gif using ImageMagic
+
+

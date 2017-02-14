@@ -1,0 +1,24 @@
+#!/bin/csh -x
+# Mandatory preamble statements:
+#PBS -l select=1:ncpus=36:mpiprocs=36
+#PBS -l walltime=01:00:00
+#PBS -A your_proj_id
+#PBS -q standard
+# Optional preamble statements:
+#PBS -N my_job
+#PBS -j oe
+#PBS -l application=other
+
+cd $PBS_O_WORKDIR
+ 
+mpiexec_mpt -n 36 ./mpi_test
+
+exit
+  
+###### above simple basic csh script for a 1 hour job in standard queue
+######  in the default environment (Intel compilers, SGI MPT)
+
+###### to submit
+     qsub  run_script.pbs
+
+###### Use the command "show_usage" to get your project(s) IDs

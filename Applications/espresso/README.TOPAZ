@@ -1,0 +1,29 @@
+
+See the file named "README" for a description of what this example
+does.  This and other sample codes for Espresso 5.0 may be found in
+
+    /apps/unsupported/espresso/5.2.0-intel-sgimpt
+OR
+    /apps/unsupported/espresso/5.2.0-intel-intelmpi
+
+To use the intelmpi version, the batch script needs to
+swap modules
+
+module unload mpi/sgimpt
+module load mpi/intelmpi
+
+
+To run this test, copy this directory to your $WORKDIR and from there
+
+    cd example10
+# Change the "-A" account in the script.
+# Modify environment_variables_sgimpt or environment_variables_intelmpi
+# to set TMP_DIR.  See the line "TMP_DIR=$WORKDIR/espresso_tmp".
+    qsub Example10_sgimpt.pbs
+OR
+    qsub Example10_intelmpi.pbs
+
+Output will be placed in a subdirectory named "results."  Sample output
+from a previous run may be found in the subdirectory named
+"reference."
+

@@ -1,0 +1,30 @@
+Checked/verified July 2014
+
+Description:
+STAR-CCM+ is a multi-physics CFD (Computational Fuild Dynamics) code
+from CD-adapco. 
+
+This directory contains two test cases for STAR-CCM+. 
+
+case 1:
+- runs the default version of starccm+ (version 7.02) on 16 processes
+- files: starccm.pbs, run.java, star.sim
+
+case 2:
+- discrete element modeling example
+- runs version 8.04 of starccm+ on 96 processes using single stream mode
+  and generates a set of images to visualize the solution
+- files: star_dem.pbs, star_dem.java, star_dem.sim
+
+Copy the appropriate set of files to your $WORKDIR, edit the *.pbs file to
+specify your project number and the appropriate queue, and submit the job
+using 
+> qsub starccm.pbs
+or 
+> qsub star_dem.pbs
+
+You can control the number of iterations taken by starccm+ by modifying the 
+appropriate *.java file.
+
+
+

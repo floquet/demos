@@ -1,0 +1,21 @@
+How to swap one module for another in a PBS job:
+------------------------------------------------
+
+Copy the entire example over to any directory you own, eg., your workspace:
+
+  cp -R $SAMPLES_HOME/User_Environment/Module_Use_Example $WORKDIR
+
+Enter that directory and review the README:
+
+  cd $WORKDIR/User_Environment/Module_Use_Example
+  view README
+
+Edit the sample PBS job execution file and submit it to topaz:
+
+  qsub swap_mods.pbs
+
+Initialization of module commands in the PBS script prior to issuing the first
+is accomplished most easily by using $MODULESHOME.  Example of how to perform
+this action, and then use module commands to view and exchange user modules
+are provided in swap_mods.pbs.
+

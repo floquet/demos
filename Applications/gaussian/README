@@ -1,0 +1,54 @@
+
+Description:
+Gaussian is used for calculating molecular electronic structure and properties. 
+The package includes a wide range of ab initio and semi-empirical methods
+for energy, gradient, frequency and property calculations.
+
+This directory contains a small test case g09-parallel.pbs that you can
+copy to your personal directory and submit as a batch job.  Be sure to
+change the account (-A) option.
+
+Gaussian is a restricted access application, contact the ERDC DSRC for access.
+
+Notice that in order to use more than one node, the nodes listed in
+$PBS_NODEFILE must be added as a line in your Gaussian command file.
+The script g09-parallel.pbs shows how to do that.
+
+Note that the example is taken from
+ $g09root/g09/tests/com/test0397.com
+and shows %mem=16MW
+For actual calculations this value can be much higher.  It is the
+amount of memory on one node, which is a maximum of %mem=118GB per
+node (of memory available for user processes) on Topaz.
+
+For test case test0397.com from the Gaussian source distribution,
+the run times on topaz are the following.
+
+        Gaussian g09.D01 on Topaz , 2015
+        Executation time of test0397.com (seconds)
+                          number of nodes (LindaWorkers)
+ number of processes      1      2      4      8
+ on same node
+ (NProcShared)
+    1                  2810   1875    794    483
+    2                  1361    746    432    278
+    4                   737    427    274    216
+    8                   381    273    320    420
+   16                   239    187    385    620
+   32                   236    178    415    654
+
+For comparison, here are the run times on garnet.
+
+        Gaussian g09.D01 on Garnet , 2014
+        Executation time of test0397.com (seconds)
+                          number of nodes (LindaWorkers)
+ number of processes      1      2      4      8
+ on same node
+ (NProcShared)
+    1                  4132   2396   1649   1351
+    2                  2096   1400   1195   1226
+    4                  1085   1392    926   1070
+    8                   604    690    930   1209
+   16                   433    581    857   1242
+   32                   404    589    806   1099
+

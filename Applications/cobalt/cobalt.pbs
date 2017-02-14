@@ -1,0 +1,190 @@
+#!/bin/csh
+#############################################################################
+#
+# CBLTLOC specifies the location of the Cobalt files
+# SCRATCH specifies a temporary workspace visible to ALL processors
+# RUN specifies the command to run parallel jobs
+# poe in IBM's; mpirun on T3E; pbspoe on IBM's running PBS
+#
+#############################################################################
+
+#PBS -A your_project
+#PBS -l walltime=00:30:00
+#PBS -l select=1:ncpus=36:mpiprocs=4
+#PBS -l cobalt=4
+#PBS -N ramp
+#PBS -q standard
+#PBS -l application=cobalt
+#PBS -e ramp.e
+#PBS -o ramp.o
+#    
+#setenv CBLTLOC /app/cobalt/default
+source ${MODULESHOME}/init/csh
+module load cobalt/6.0
+###
+setenv SCRATCH $PBS_O_WORKDIR/workspace
+mkdir $SCRATCH
+setenv CASEDIR $PBS_O_WORKDIR
+setenv CASE ramp
+setenv RUN mpiexec_mpt
+#
+# 
+#############################################################################
+#
+cat > $CASEDIR/$CASE.inp << EOF
+*****************************************************
+			TITLE
+*****************************************************
+Ramp - Version 3.0 Job File
+******************************************************
+             ALGORITHM PARAMETERS
+******************************************************
+ NO. PROCESSORS FOR COBALT   PROCESSOR GROUP SIZE FOR MESH PARTITIONING
+     4				   -1
+ START OPTION (1=INITIAL RUN, 2=RESTART, 3=RESTART, RESET TIME TO 0)
+     1
+ EQUATION SET (1=EULER, 2=LAMINAR NS, 3=TURBULENT NS)
+     1
+ GAS MODEL (1=IDEAL GAS, 2=THERMALLY PERFECT GAS, 3=EQUILIBRIUM AIR)
+     1
+ TURBULENCE MODEL(1=SA, 2=DES-SA, 3=BSL, 4=SST, 5=DES-SST, 6=KW, 7=SARC, 8=DES-SARC) 
+     1
+ SPATIAL ACCURACY (1 OR 2)   TEMPORAL ACCURACY (1 OR 2)
+	   2                          1
+ OVERSET GRID (0=NO)
+     0
+ TEMPORAL DAMPING COEFFICIENTS (ADVECTION & DIFFUSION)
+     0.02          -1.
+ NO. TIME STEPS     NO. NEWTON SUB-ITERATIONS
+     100		1
+ CFL                 REQUESTED TIME STEP
+    1.e6			   0.01
+ INITIAL CFL      RAMP START    RAMP LENGTH
+    -1.		    0           0
+******************************************************
+             PHYSICAL & GAS CONSTANTS
+******************************************************
+ COORDINATE SYSTEM (1=FLO57, 2=PANAIR, 3=AXI-SYMMETRIC)
+   1
+ UNITS (1=MKS, 2=CGS, 3=FOOT-SLUG-SEC, 4=INCH-SNAIL-SEC)
+   1
+ GAMMA    GAS CONSTANT     GRAVITY
+  -1.	    -1.		    0.
+ SUTHERLAND LAW COEFFICIENTS (C1 & C2)   PRANDTL NO.
+  -1.		-1.			   -1.
+******************************************************
+               REFERENCE CONDITIONS
+******************************************************
+ MACH NO.   ANGLE OF ATTACK   ANGLE OF SIDESLIP
+    1.9            0.		0.
+ STATIC PRESSURE    STATIC TEMPERATURE
+    -1.			-1.
+******************************************************
+                INITIAL CONDITIONS
+******************************************************
+ MACH NO.     ANGLE OF ATTACK     ANGLE OF SIDESLIP
+  -1.              -370.		-370.
+ STATIC PRESSURE          STATIC TEMPERATURE
+  -1.			        -1.
+ K or Nu~                 OMEGA
+ -1.		                -1.
+******************************************************
+          POST-PROCESSING CONTROL PARAMETERS
+******************************************************
+------------------------------------------------------
+                 TURBULENCE STATISTICS
+------------------------------------------------------
+ TIME AT WHICH TO BEGIN CALCULATION OF TIME-AVERAGES
+     -1.
+------------------------------------------------------
+                 RESTART/SOLUTION FILE
+------------------------------------------------------
+ FREQUENCY (IN TIME-STEPS) OF RESTART FILE OUTPUT
+     -1
+------------------------------------------------------
+                 FLOW VIZ DATA AND FILE
+------------------------------------------------------
+ FLOW VIZ FILE FORMAT (0=NONE, 1=COBALT, 2=ENSIGHT, 3=FIELDVIEW, 4=TECPLOT)
+     2 
+ FLOW VIZ FILE NAME BASE
+   ramp
+ LIST OF AUXILIARY VARIABLES
+    22
+ DATA IN LAB REF FRAME?    DATA TIME-AVERAGED?
+     1                          0
+ FREQUENCY (IN TIME-STEPS) OF FLOW VIZ FILE OUTPUT
+     -10
+------------------------------------------------------
+                     TAP DATA AND FILE
+------------------------------------------------------
+ PROVIDE TAP DATA?    LIST OF TAP DATA
+     0                      
+ DATA IN LAB REF FRAME?    DATA TIME-AVERAGED?
+     0                           0
+ FREQUENCY (IN TIME-STEPS) OF TAP FILE OUTPUT
+     -1
+------------------------------------------------------
+    INTEGRATED FORCES/MOMENTS AND CONVERGENCE DATA
+------------------------------------------------------
+ DATA TIME_AVERAGED?
+    0
+ REFERENCE AREA
+    1.
+ X-, Y-, Z- COORDINATES OF MOMENT REFERENCE POINT
+    0.0	0.0	0.0
+ REFERENCE LENGTHS FOR MOMENTS ABOUT X-,Y- AND Z-AXIS
+    1.0	1.0	1.0
+ IF AXI-SYMMETRIC, PROVIDE FORCES OVER FOLLOWING SECTOR SIZE (DEGREES)
+    -1.
+ FREQUENCY (IN TIME-STEPS) OF CONVERGENCE OUTPUT
+    1
+******************************************************
+           END OF INPUT INFORMATION
+******************************************************
+EOF
+ 
+#------------------ CoMPIRUN script arguement list ------------------
+ 
+#----- executable options -----
+ 
+#  1: machine type 	! Options: compaq,ibm3,ibm4,linux,linuxgm
+#			!	   sgir10k,sgir12k,sgir14k,sun64
+#  2: precision switch	! Options: double, single
+ 
+#--------- input files ---------
+ 
+#  3: Cobalt input file name (aka stdin)
+#  4: bc file name
+#  5: grid file name
+#  6: motion file name
+#  7: user-specified profile file name
+#  8: tap location file name
+ 
+#-------- output files --------
+ 
+#  9: Cobalt output file name (aka stdout)
+# 10: external controller HDF file (an input and output file)
+# 11: 1-D heat equation restart file name (an input and output file)
+# 12: movie tap file name
+# 13: restart file name (an input and output file)
+# 14: directory for convergence files
+# 15: directory for flow viz files
+ 
+#--------------------------------------------------------------------
+ 
+$CBLTLOC/CoMPIRUN \
+amd64 \
+double \
+$CASEDIR/$CASE.inp \
+$CASEDIR/ramp.bc \
+$CASEDIR/$CASE.grd \
+$CASEDIR/dummy.mtn \
+$CASEDIR/$CASE.prf \
+$CASEDIR/$CASE.tap \
+$CASEDIR/$CASE.out \
+$CASEDIR/$CASE.hdf \
+$CASEDIR/$CASE.1dhe \
+$CASEDIR/$CASE.mtap \
+$CASEDIR/$CASE.rst.new \
+$CASEDIR/$CASE.cnvrg \
+$CASEDIR/viz 

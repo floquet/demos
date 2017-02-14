@@ -1,0 +1,15 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=36
+#PBS -l walltime=0:05:00
+#PBS -A account-id
+#PBS -j oe
+#PBS -q debug
+#PBS -N hello
+#PBS -l application=other
+
+cd $PBS_O_WORKDIR
+
+# Do not use mpirun for SGI MPT jobs.
+mpiexec_mpt -n 72 ./mpt_hello.exe
+
+exit

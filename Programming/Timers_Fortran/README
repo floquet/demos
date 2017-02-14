@@ -1,0 +1,40 @@
+Example: Demonstrate five different Fortran Timers.
+         Four are intrinsic timers, great for sequential codes.  The other
+         is MPI_WTIME(), recommended for MPI codes, but it can be used for
+         sequential codes as well.  It requires the MPI header file mpif.h
+         and calls to MPI_INIT and MPI_FINALIZE for proper initialization and
+         error/warning-free (clean) exit.
+
+                        Timer Intrinsic
+                        ===============
+!  F77 intrinsic          SECNDS
+
+!  F90/95 intrinsic       SYSTEM_CLOCK
+
+!  F90/95 intrinsic       CPU_TIME
+
+!  F95/2000+ intrinsic    DATE_AND_TIME
+
+   Notes: The accuracy of CPU_TIME is reported to be questionable.
+          For MPI codes, MPI_Wtime is recommended.  It requires the "mpif.h"
+          include file.
+
+Instructions:
+Copy the directory and its contents to your work directory:
+
+  cp -R $SAMPLES_HOME/Programming/Timers_Fortran $WORKDIR
+
+Enter that directory and compile the code:
+
+  cd $WORKDIR/Timers_Fortran ; ./compile
+
+After topaz enters production, you will need to edit submit.pbs to place
+the allocation charge code for your PBS job after #PBS -A.  Prior to,
+skip this edit.
+
+Submit the job:
+
+  qsub submit.pbs
+
+Review the output and the Fortran timers calls when the job is done. 
+

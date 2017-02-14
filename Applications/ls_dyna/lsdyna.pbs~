@@ -1,0 +1,33 @@
+#!/bin/csh -x
+#PBS -A my_project
+#PBS -l select=1:ncpus=36:mpiprocs=4
+#PBS -l mppdyna=4
+#PBS -l walltime=00:30:00
+#PBS -N ls_dyna_test
+#PBS -q debug
+#PBS -l application=ls-dyna
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+
+###   Load the LS-Dyna module for its path
+###   "module avail" will show the LS-Dyna versions available
+
+source /app/modules/default/init/csh
+# Use a recent version of ls-dyna.
+# The versions available can be found using the command "module avail ls-dyna"
+module load ls-dyna/971.R7.1.2
+
+set input=tube.k
+set ncpus=4
+set outfile=LS_Dyna_tube.mpt
+
+mpiexec_mpt -n $ncpus mpp971-double i=$input >& $outfile
+
+
+# Or with Intel MPI
+module swap mpi mpi/intelmpi
+
+set outfile=LS_Dyna_tube.impi
+
+mpirun -n $ncpus mpp971-double-intel i=$input >& $outfile

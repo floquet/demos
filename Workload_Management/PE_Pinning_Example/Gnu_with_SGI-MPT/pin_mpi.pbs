@@ -1,0 +1,70 @@
+#!/bin/bash
+#PBS -l select=3:ncpus=36:mpiprocs=4
+#PBS -l walltime=0:10:00
+#PBS -A your-project-no
+#PBS -q debug
+#PBS -j oe
+#PBS -N pin_mpi
+
+cd $PBS_O_WORKDIR
+
+echo "----------------------------------------"
+echo "Running on nodes"
+cat $PBS_NODEFILE | uniq
+echo "----------------------------------------"
+. $MODULESHOME/init/bash
+module swap compiler/intel compiler/gcc
+echo "Using SGI MPT with Gnu compilers:"
+module list
+echo "----------------------------------------"
+echo "Pinning Gnu processes in the SGI PE."
+echo "----------------------------------------"
+echo "MPI_DSM_DISTRIBUTE = enabled by default"
+
+#  MPT under Gnu compilers pins the MPI processes on the lead core of each
+#  NUMA node as reported by lscpu, if instructed by (default) setting of
+#  "enabled" for MPI_DSM_DISTRIBUTE.
+#
+#  If MPI_DSM_CPULIST is used, MPI_DSM_DISTRIBUTE is overridden. Note every
+#  process must be specified in MPI_DSM_CPULIST, else the system generates
+#  a DSM warning that the placement list was too short.  Remaining processes
+#  will be placed accordingly by cycling through short lists for nodes that
+#  have them, and not pinned at all for nodes beyond the end of
+#  MPI_DSM_CPULIST, that is, nodes lacking placement instructions.  MPI
+#  processes on such nodes will be allowed to roam throughout their node,
+#  including HT cores.
+
+#  Short setting of MPI_DSM_CPULIST
+#export MPI_DSM_CPULIST=0,9,18,27:0,9
+#echo "MPI_DSM_CPULIST = $MPI_DSM_CPULIST"
+#mpiexec_mpt -np 12 ./mpi_xthi
+#
+#  Complete setting of MPI_DSM_CPULIST.
+#export MPI_DSM_CPULIST=0,9,18,27:0,9,18,27:0,9,18,27
+#echo "MPI_DSM_CPULIST = $MPI_DSM_CPULIST"
+#mpiexec_mpt -np 12 ./mpi_xthi
+#
+#  Setting of MPI_DSM_CPULIST for 16 MPI processes on each node, grouped with
+#  4 processes per NUMA node.  This will require changing the PBS select
+#  statement in the preamble.
+#export MPI_DSM_CPULIST=0-3,9-12,18-21,27-30:0-3,9-12,18-21,27-30:0-3,9-12,18-21,27-30
+#mpiexec_mpt -np 48 ./mpi_xthi
+
+
+#  Processing elements are placed in the order created.  
+#  Note that Gnu code creates an extra process on each node which must
+#  be skipped in order to get the expected placement, whence "-s 1".
+echo "Using dplace"
+mpiexec_mpt -np 12 dplace -e -s 1 -c 0,9,18,27 ./xthi
+
+
+#  If "-s 1" is not specified, then every node's first process will be
+#  pinned on the first location in the placement list, and the list will be
+#  cycled for all subsequent processes, so MPI process 0 then goes on core 9,
+#  process 1 on core 18, process 2 on core 27, and process 3 back down on
+#  core 0.  MPI ranks on the other nodes are pinned similarly.
+#mpiexec_mpt -np 12 dplace -e -c 0,9,18,27 ./xthi
+
+echo "----------------------------------------"
+
+exit

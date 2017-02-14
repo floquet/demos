@@ -1,0 +1,17 @@
+#!/bin/sh
+
+jobid=`qsub Submit_first.pbs`
+echo $jobid
+jid="`echo $jobid | cut -d . -f 1`"
+
+cat Job_Depends.pbs | sed "s/DEPID/$jid/g" | sed "s/JOB-INDEX/2/g" > Submit_second.pbs
+
+jobid=`qsub Submit_second.pbs`
+echo $jobid
+jid="`echo $jobid | cut -d . -f 1`"
+
+cat Job_Depends.pbs | sed "s/DEPID/$jid/g" | sed "s/JOB-INDEX/3/g" > Submit_third.pbs
+
+qsub Submit_third.pbs
+
+exit

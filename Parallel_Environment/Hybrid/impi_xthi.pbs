@@ -1,0 +1,23 @@
+#! /bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=4
+#PBS -l walltime=0:05:00
+#PBS -A account_id
+#PBS -j oe
+#PBS -q debug
+#PBS -N xthi
+#PBS -l application=other
+
+cd $PBS_O_WORKDIR
+
+source $MODULESHOME/init/bash
+module swap mpi/sgimpt mpi/intelmpi
+
+# sh, ksh, bash
+export OMP_NUM_THREADS=9
+# csh, tcsh
+# setenv OMP_NUM_THREADS 9
+
+mpirun -np 8  ./impi_xthi.exe
+
+exit
+

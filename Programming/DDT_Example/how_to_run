@@ -1,0 +1,51 @@
+ 
+At present there are unlimited DDT Tokens available at all Centers.
+
+To start DDT in a batch job on compute nodes, you need to run an interactive
+batch job.  So first check to see how many cores are free using "qview".
+
+You should issue the command "ssh -Y topaz.erdc.hpc.mil" to get an SSH
+tunnel to Topaz from your (*nix) machine, or if you are using Windows, start a
+X-Server such as Xming or Cygwin, and then in PuTTy set the X11 forwarding
+in PuTTy's SSH - X11 Category table.
+
+Once on Topaz' login node, test the SSH tunnel with an "xclock".
+
+To get the X DISPLAY sent from your interactive batch job to your desktop,
+add the PBS option "-X" to the interactive command, as in the following
+interactive batch session with allocated compute nodes:
+  > qsub -X -A myproject -l walltime=01:00:00 -q debug -l select=2:ncpus=36:mpiprocs=36 -I
+Here, the string "myproject" should be the project id string under which you
+are performing this work.  It is listed if you execute "show_usage".
+
+Once interactive the batch session starts, do
+  > cd /p/work1/---/where_work_is
+
+Alternatively,
+  > cd $WORKDIR/.../where_work_is
+
+Then test that your X11 display works from the PBS mom node:
+  > xclock
+
+Load your DDT module:
+  > module load ddt 
+
+Now you can run ddt on your executable, in this example mpi_test.x:
+  > ddt -n 64 ./mpi_test.x
+
+A graphic window should come up, possibly after messages about having to
+restart because Allinea's fixed-width font couldn't be found so having to
+search for X fonts instead.
+
+The windows should display a pane with various choices for your code.  If
+the OpenMP box is checked, uncheck it for this example.  The code is pure MPI.
+
+Select run.  And hit the green arrow.
+
+The code will execute until the exception is encountered, and the line that
+generated the error will be displayed.  If you continue, error messages will
+be generated.  Here, the flag "-traceback" tells the compiler to issue
+instructions to generate a traceback listing in the event an exception is
+encountered.  In DDT, that trace will be displayed in one of the panes, and
+examination there will inform that the error occurred on line 25.
+

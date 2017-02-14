@@ -1,0 +1,36 @@
+This sample is named "Postprocess_Example".
+
+The sample is the PBS script post-process.pbs that runs the picalc.topaz MPI
+binary and then submits another script that performs post-processing work on
+the resulting data.  It demonstrates use of the transfer queue, archive
+command, and 'here' script to post-process data.  Note also use of a job
+dependency to inform PBS when to execute the post-processing job.
+
+The script itself is a bash script.  A modest change can be made to convert
+it to a csh/tcsh script. Just insert a single "set" command.
+
+To run it:
+
+Copy the example to any directory you own:
+
+    cp -R $SAMPLES_HOME/Data_Management/Postprocess_Example $WORKDIR
+
+Enter the directory and compile picalc.topaz:
+
+    cd $WORKDIR/Postprocess_Example ; make
+
+Edit post-process.pbs to place your project id string in the two locations
+"project_id".
+
+The post-process.pbs script is set for the default SGI MPT.  If you used
+Intel's MPI when linking, you will also need to swap to the same intelmpi
+module at any point in the script before mpirun is called.
+
+Submit the job:
+
+   qsub post-process.pbs
+
+Review the output of the job and the PBS job scripts when it has completed.
+Note that the job submitted from within post-process.pbs is set to place its
+job output in your $HOME directory.
+

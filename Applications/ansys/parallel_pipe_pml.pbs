@@ -1,0 +1,31 @@
+#!/bin/csh
+#PBS -N anspipe_pml
+#PBS -l walltime=0:15:00
+#PBS -l anshpc=4
+#PBS -l ane3fl=1
+#PBS -l select=2:ncpus=36:mpiprocs=4
+#PBS -l application=ansys
+#PBS -A your_account
+#PBS -q standard
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+
+source ${MODULESHOME}/init/csh
+module load ansys
+
+setenv ANS_SEE_RUN_COMMAND 1
+
+# Note that sed conversion from 36 to 4 corresponds the choice of
+# 4 for mpiprocs in PBS parameters.
+# The user could choose for processes per node.
+set NODES = `cat $PBS_NODEFILE | sort | uniq -c | awk '{printf "%s:%s:", $2, $1}' | sed 's/:$/\n/'`
+set NODES = `echo $NODES | sed 's/:36/:4/g'`
+
+echo "NODES is:"
+echo "$NODES"
+
+# Option "-b" is optional, it shows more information.
+
+ansys -p ANE3FL -dis -machines $NODES -b -mpi intelmpi -usessh -dir $PBS_O_WORKDIR -j pipe-pml < pipe_pml.inp > pipe_pml.jobout
+

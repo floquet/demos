@@ -1,0 +1,20 @@
+#!/bin/csh
+#PBS -N anspipe_pml
+#PBS -l walltime=0:15:00
+#PBS -l anshpc=4   
+#PBS -l ane3fl=1
+#PBS -l select=1:ncpus=36:mpiprocs=4
+#PBS -l application=ansys
+#PBS -A your_project
+#PBS -q standard
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+
+source ${MODULESHOME}/init/csh
+module load ansys
+
+cat $PBS_NODEFILE
+
+ansys -p ANE3FL -np 4 -j pipe-pml < pipe_pml.inp > pipe_pml.jobout
+

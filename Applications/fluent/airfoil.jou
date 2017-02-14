@@ -1,0 +1,5 @@
+file/read-case-data airfoil_test.cas
+solve/iterate 100
+file/write-case-data airfoil_test100.dat
+exit
+yes

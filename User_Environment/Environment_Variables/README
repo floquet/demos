@@ -1,0 +1,112 @@
+Common Environment Variables:
+============================
+
+The Baseline Configuration Team has established common variables to enhance
+portability of software and projects administered by the HPCMP.  These
+variables are intended to reduce the overhead to maintain operable scripts
+and software, and to ease migration of software and supporting scripts onto
+new systems and between systems as allocations change.  The definitions of
+these variables are common to every allocated system administered by the HPCMP,
+but the specific values differ from system to system.
+
+The variables are the following:
+
+$ARCHIVE_HOME
+ - user's directory on the archival file system that serves Topaz
+   This directory is not mounted on Topaz, but data can be placed and retrieved
+   using mpscp, archive commands (especially using the transfer queue), and ftp.
+
+$ARCHIVE_HOST
+ - The archive system, gold.
+
+$BC_CORES_PER_NODE
+ - The number of cores per node for the compute nodes to which a job has been
+   submitted.
+
+$BC_HOST
+ - generic hostname of the system in lowercase letters, ie topaz.
+
+$BC_MEM_PER_NODE
+ - approximate maximum memory in integer MBytes available for processing
+
+$BC_MPI_TASKS_ALLOC
+ - number of MPI tasks allocated for a particular PBS job
+
+$BC_NODE_ALLOC
+ - numer of nodes allocated to a PBS job
+
+$CC
+ - default C compiler, ie icc.  Changes to the compiler module, eg. by
+   "module swap compiler/intel compiler/gcc/4.9.3" will change the value to
+   that environment, in this case, gcc.
+
+$CENTER
+ - path for your directory on the Center Wide File System (CWFS)
+
+$COST_HOME
+ - path to the base directory of the default installation of Common Open Source
+   Tools (COST), ie /app/unsupported/COST on topaz.
+
+$CSI_HOME
+ - path to the base directory of the application codes installed on topaz under
+   the Consolidated Software Initiative (CSI), ie /app on topaz
+
+$CXX
+ - default C++ compiler, ie icpc.  Changes to the compiler module, eg. by
+   "module swap compiler/intel compiler/gcc/4.9.3" will change the value to
+   that environment, in this case, g++.
+
+$DAAC_HOME
+ - path to the base directory for the Data Analysis and Assessment Center (DAAC)
+   tools, ie /app/DAAC on topaz.  For more information, please refer to BC
+   policy FY08-01 (DAAC Supported Visualization Tools) in the BCT policies
+   webpage at the Centers website.
+
+$F77
+ - default Fortran 77 compiler, ie ifort.  Changes to the compiler module, eg. by
+   "module swap compiler/intel compiler/gcc/4.9.3" will change the value to
+   that environment, in this case, gfortran.
+
+$F90
+ - default Fortran 90 compiler, ie ifort.  Changes to the compiler module, eg. by
+   "module swap compiler/intel compiler/gcc/4.9.3" will change the value to
+   that environment, in this case, gfortran.
+
+$JAVA_HOME
+ - path to the base directory of the default installation of JAVA on topaz,
+   ie /usr/lib64/jvm/jre
+
+$KRB5_HOME
+ - path to the installation directory of the Kerberos utilities,
+   ie /usr/local/krb5
+
+$PET_HOME
+ - path to the system-wide directory containing tools installed and maintained
+   by the PETTT staff, ie /app/unsupported/PETtools/CE.
+ - The variable $PETTT_HOME has the same value.  
+ - This variable has been deprecated and will be removed from the Baseline
+   Configuration compliance monitoring in the future.  At that time, packages
+   in $PET_HOME will be migrated to $COST_HOME as appropriate.
+
+$PROJECTS_HOME
+ - path to the base directory that contains subdirectories for each of the
+   user-supported applications and codes under BC policy FY10-07 (Common
+   Location to Maintain Codes) in the BCT policies webpage at the Centers
+   website.
+
+$SAMPLES_HOME
+ - path to the base directory for example codes and scripts installed and
+   maintained by ERDC DSRC staff under BC policy FY06-15 (Sample Code
+   Repository) in the BCT policies webpage at the Centers website.
+
+$WORKDIR
+ - path to temporary local high-performance file system made available for use
+   by executing programs to avoid slower file I/O across a network-mounted
+   file system, such as the home and/or archival file systems.  Files in
+   $WORKDIR are temporary and are not backed up nor exported to any other
+   systems.  As such, files in $WORKDIR are your responsibility to retrieve
+   for analysis or to archive in a timely manner.  On topaz, $WORKDIR is
+   /p/work1/$USER
+ - $WORKDIR2, with value /p/work2/$USER, is also available, with identical
+   intent and usage regarding file preservation and lifetimes.
+

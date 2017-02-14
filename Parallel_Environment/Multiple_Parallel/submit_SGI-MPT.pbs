@@ -1,0 +1,83 @@
+#!/bin/ksh
+#PBS -l select=4:ncpus=36:mpiprocs=36
+#PBS -l walltime=00:11:00
+#PBS -A my-project-id
+#PBS -q debug
+#PBS -N test_multiple
+#PBS -j oe
+#PBS -l application=Other
+
+##  Define job execution directory variable and use it to create the
+##  directory in $WORKDIR where the job will execute:
+JID=`echo $PBS_JOBID | cut -d. -f1`
+JOBDIR="test_multiple_o$JID"
+mkdir $WORKDIR/$JOBDIR
+
+##  Place the binaries in the job execution directory and go there,
+##  so as NOT to execute in $HOME:
+cd $PBS_O_WORKDIR
+cp exec_*.x $WORKDIR/$JOBDIR
+cd $WORKDIR/$JOBDIR
+
+##  To run multiple distinct MPI jobs at the same time, first capture
+##  the node names in the node list:
+echo $PBS_NODEFILE contains
+HOST_NAMES=`cat $PBS_NODEFILE | uniq`
+echo $HOST_NAMES
+
+##  In this example, parallel tasks 1 and 2 share node 1, task 3 has node 2,
+##  and task 4 has nodes 3 and 4.
+node1=`echo $HOST_NAMES | awk -F ' ' '{ print $1 }'`
+node2=`echo $HOST_NAMES | awk -F ' ' '{ print $2 }'`
+node3=`echo $HOST_NAMES | awk -F ' ' '{ print $3 }'`
+node4=`echo $HOST_NAMES | awk -F ' ' '{ print $4 }'`
+
+host1="$node1"
+host2="$node1"
+host3="$node2"
+host4="$node3,$node4"
+echo "Task 1 to execute on $host1"
+echo "Task 2 to execute on $host2"
+echo "Task 3 to execute on $host3"
+echo "Task 4 to execute on $host4"
+
+#  Define host lists for each task:
+touch hostlist1 hostlist2 hostlist3 hostlist4
+let ii=0
+until [ "$ii" == "8" ] ; do
+  echo $node1 >> hostlist1
+  echo $node1 >> hostlist2
+  let ii=ii+1
+done
+let ii=0
+until [ "$ii" == "36" ] ; do
+  echo $node2 >> hostlist3
+  echo $node3 >> hostlist4
+  let ii=ii+1
+done
+let ii=0
+until [ "$ii" == "36" ] ; do
+  echo $node4 >> hostlist4
+  let ii=ii+1
+done
+
+##  Execute the parallel tasks:
+export PBS_NODEFILE="`pwd`/hostlist1"
+( mpiexec_mpt -np 8 ./exec_1.x > exec_1.out.o$JID ) &
+export PBS_NODEFILE="`pwd`/hostlist2"
+( mpiexec_mpt -np 8 ./exec_2.x > exec_2.out.o$JID ) &
+export PBS_NODEFILE="`pwd`/hostlist3"
+( mpiexec_mpt -np 36 ./exec_3.x > exec_3.out.o$JID ) &
+export PBS_NODEFILE="`pwd`/hostlist4"
+( mpiexec_mpt -np 72 ./exec_4.x > exec_4.out.o$JID ) &
+
+##  Mandatory:  must wait for all to finish 
+wait
+
+##  Move data back to $PBS_O_WORKDIR, clean up, exit cleanly
+mv exec_*.out.o* $PBS_O_WORKDIR
+cd ..
+/bin/rm $JOBDIR/*
+/bin/rmdir $JOBDIR
+
+exit

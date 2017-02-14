@@ -1,0 +1,26 @@
+
+# Task parameters
+Calculate                     energy
+Symmetry                      on
+Max_memory                    2048
+
+# Electronic parameters
+Spin_polarization             restricted
+Charge                        0
+Basis                         dnd
+Pseudopotential               none
+Functional                    gga(p91)
+Aux_density                   octupole
+Integration_grid              medium
+Occupation                    fermi
+Cutoff_Global                 3.3000 angstrom
+Scf_density_convergence       1.0000e-005
+Scf_charge_mixing             0.2000
+Scf_iterations                50
+Scf_diis                      6 pulay
+
+# Print options
+Print                         eigval_last_it
+
+# Calculated properties
+Frequency_analysis            on

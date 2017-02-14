@@ -1,0 +1,17 @@
+How to use Totalview to Debug a Parallel Code in an Interactive PBS Job
+
+
+This example demonstrates how to start a TotalView debug session in a PBS job.
+
+Copy the code and compilation script to your $WORKDIR and run there.
+
+To compile:
+  The compilation requires the Intel compilers.
+  You can either
+  -  run "compile" from the command line, or
+  -  copy the compile line in "compile" to the command line and
+     hit <enter>.
+
+Edit the PBS job script to conform to your project (enter the correct
+project code after #PBS -A) and submit the job.
+

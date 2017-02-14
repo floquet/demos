@@ -1,0 +1,62 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=36
+#PBS -l walltime=00:10:00
+#PBS -A project_id
+#PBS -j oe
+#PBS -q debug     
+#PBS -N job_prepost
+#PBS -l application=home-grown
+#
+
+cd $PBS_O_WORKDIR
+JOBID=`echo $PBS_JOBID | cut -f1 -d.`
+# Alternative csh/tcsh version
+#set JOBID=`echo $PBS_JOBID | cut -f1 -d.`
+
+JOBDIR=job_prepost_$JOBID
+mkdir $WORKDIR/$JOBDIR
+
+# Copy any files you need from the job submission directory to TMPD
+cp picalc.topaz $WORKDIR/$JOBDIR || echo "***ERROR*** Problem with copy picalc.topaz $WORKDIR/$JOBDIR!"
+
+#
+# change directory to temporary directory in $WORKDIR
+#
+cd $WORKDIR/$JOBDIR
+
+echo Job $JOBID starting at `date` on `hostname`
+echo starting in `pwd`
+
+#
+#  Following line will run your program!!!
+#
+mpiexec_mpt -np 72 ./picalc.topaz | tee >& picalc.out
+
+echo "Execution ended at `date`"
+
+#############################################################################
+#
+#  YOU CAN USE THE SAMPLE POST PROCESSING PHASE CODE BELOW IN YOUR OWN SCRIPT
+#  JUST BE SURE ARCHIVE_HOME IS SET and JOBDIR is set to
+#  ${WORKDIR}/${JOBDIR} containing your run data.
+#
+#############################################################################
+echo "ENTERING POST-PROCESSING PHASE...."
+echo "MASTER JOBID=${JOBID}"
+echo "ARCHIVE_HOME=${ARCHIVE_HOME}"
+#
+#------------Post Processing Phase------------------------------
+#
+qsub -l walltime=00:15:00 -N post-${JOBID} -j oe -k oe -q transfer -l select=1:ncpus=1 -A project_id -W depend=afterok:${JOBID} -r n << EOF
+#
+echo "Post processing job submitted on host `hostname` at `date`"
+cd ${WORKDIR}/${JOBDIR}
+echo "Listing of ${JOBDIR}:"
+ls -l
+cd ..
+tar cvf - ${JOBDIR} | gzip > ${JOBID}.tar.gz || echo "ERROR: Tar of files failed, look in ${WORKDIR}/${JOBDIR} for output files!"
+archive put ${JOBID}.tar.gz || echo "ERROR: Copy of ${JOBID}.tar.gz to ${ARCHIVE_HOME}  failed...."
+echo "output file copied to archive for job $JOBID ended at `date`"
+exit
+EOF
+exit

@@ -1,0 +1,22 @@
+#! /bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=4
+#PBS -l walltime=0:05:00
+#PBS -A account_id
+#PBS -j oe
+#PBS -q debug
+#PBS -N xthi
+#PBS -l application=other
+
+cd $PBS_O_WORKDIR
+
+# sh, ksh, bash
+export OMP_NUM_THREADS=9
+# csh, tcsh
+# setenv OMP_NUM_THREADS 9
+
+# Do not use mpirun for SGI MPT jobs.
+echo "mpiexec_mpt -np 8 omplace -s 1 -c 0-35:bs=${OMP_NUM_THREADS}+st=9 ./mpt_xthi.exe"
+mpiexec_mpt -np 8 omplace -s 1 -c 0-35:bs=${OMP_NUM_THREADS}+st=9 ./mpt_xthi.exe
+
+exit
+

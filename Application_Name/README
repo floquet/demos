@@ -1,0 +1,25 @@
+In order to make the most efficient use of DoD funding, the HPCMP is trying to 
+better understand actual software utilization on its HPC platforms. As a part 
+of this effort, a character string resource called “application” has been 
+introduced. Users are encouraged to add a line to their batch script of 
+the form:
+
+    #PBS -l application=name
+
+For example:
+
+    #PBS -l application=Abaqus
+or
+    #PBS -l application=LS-Dyna
+
+For the purposes of characterizing actual resource utilization on DoD HPCMP 
+resources, the resource “application” is set to the name of the application 
+used within the batch script. A list of recognized application names is
+provided in the file called application_names. A value of "Other" is acceptable
+for applications not in the list.
+   
+Capitalization is not important, for example, Abaqus, ABAQUS, and abaqus are 
+all equally acceptable. What is most important is that the application name be 
+one from the list of possible choices found in the application_names file. 
+
+Users are encouraged to add this new line to ALL their PBS scripts. 

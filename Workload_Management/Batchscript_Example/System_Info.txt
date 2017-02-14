@@ -1,0 +1,67 @@
+
+Information on Topaz.
+
+Logins:
+ topaz
+  - logs user in to
+    topaz00 - topaz08
+  - user may also log in to topaz00, topaz01, ... directly
+
+Login nodes:
+Support compiling, editing, general interactive use by all users
+ - execute only small applications requiring less than 10 minutes of runtime
+   and less than 8 GB of memory.  Offending jobs may be unilaterally terminated.
+ - each login node is populated with two 2.6 GHz Intel Xeon E5-2697v3 Haswell
+   64-bit 14-core processors. Each login node has 128 GB of memory, of which
+   8 GB is accessible.
+
+Compute nodes:
+ - equipped with two 2.3 GHz Intel Xeon E5-2699v3 Haswell 64-bit 18-core
+   processors.  Each compute node has 128 GBytes of memory, of which 117 GB
+   is accessible.  Each core has its own L1 data and instruction caches, 32 KB
+   each; its own L2 cache, 256 KB; but the L3 cache, 22.5 MB, is shared by all
+   18 cores on each socket.
+
+GPU nodes (aka Visualization nodes):
+ - equipped with two 2.6 GHz Intel Xeon E5-2697 v3 Haswell 64-bit 14-core
+   processors and featuring NVIDIA Tesla GPU K40P co-processor.  There are 128
+   GBytes of memory on each service node, of which 117 GB is accessible.
+   The Tesla GPU co-processor has 12 GB memory.
+
+Large Memory nodes (aka Big-mem nodes):
+ - equipped with four 2.6 GHz Intel Xeon E5-4620 v2 Ivy Bridge 64-bit 8-core
+   processors and having 990 GByte of memory per node.
+
+Interconnect:
+ - FDR 14x Infiniband in a Hypercube architecture.
+
+Lustre Filesytem:
+ - $HOME has 152 TBytes of space
+ - $WORKDIR has 6.112 PBytes of disk space. The default striping has a count of
+   4 stripes with 1 MB width per stripe.
+ - $WORKDIR2 has 6.112 PBytes of disk space. The default striping has a count of
+   4 stripes with 1 MB width per stripe.
+
+If you have a program that generates very large files by large writes, then
+increasing the stripe count is necessary.  See Tips & Tricks at 
+  http://www.erdc.hpc.mil/documentation
+
+
+To submit
+
+% qsub run_script.pbs
+
+
+For an interactive PBS batch submission, for example:
+
+% qsub -l select=1:ncpus=36:mpiprocs=36 -l walltime=00:20:00 -A proj-id -q debug -I
+
+
+Useful commands:
+% qview              ( list jobs in queue)
+% qhist -n # "jobid" ( history of job, -n # number of days to look in logs )
+% qlim               ( show limits on queues )
+% qstat -u #####     ( status of all of your jobs, -u ##### your user id )
+% show_disk          ( show disk usages )
+% show_storage       ( show disk usage on DMS )
+% show_usage         ( show allocation usage )

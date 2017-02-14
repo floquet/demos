@@ -1,0 +1,23 @@
+#!/bin/bash
+#PBS -A your_account
+#PBS -l select=2:ncpus=36:mpiprocs=32
+#PBS -l walltime=00:10:00
+#PBS -q standard
+#PBS -N C60
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+
+# Define "module" function.
+# source /opt/modules/default/init/<your shell>
+# For this example batch job script that uses bash,
+source /app/modules/default/init/bash
+# load module
+module load accelrys/8.0
+
+export MS_INSTALL_ROOT=$ACCELRYS_HOME
+/bin/cp -f $PBS_NODEFILE mpd.hosts
+export DSD_MachineList=`pwd`/mpd.hosts
+NPROCS=64
+
+$MS_INSTALL_ROOT/etc/DMol3/bin/RunDMol3.sh -np $NPROCS C60

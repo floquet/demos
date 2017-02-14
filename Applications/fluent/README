@@ -1,0 +1,8 @@
+Description:
+
+This directory contains a small test run for Fluent, a fluid flow modelling application. 
+
+Copy this directory to your $WORKDIR,
+Edit the fluent.pbs file for your project, and
+submit job "qsub fluent.pbs".
+

@@ -1,0 +1,18 @@
+ScaLAPACK out-of-core LU,QR,LL^t factorization input file
+testdriver.out
+6                 device out
+1                 number of factorizations
+LU                factorization methods -- QR, LU, or LT
+1                 number of problem sizes
+8192              values of M
+8192              values of N
+1                 values of nrhs
+64000000          values of Asize
+1                 number of MB's and NB's
+32                values of MB
+32                values of NB
+1                 number of process grids
+8                 values of P
+8                 values of Q
+                                                                                    
+                                                                                    

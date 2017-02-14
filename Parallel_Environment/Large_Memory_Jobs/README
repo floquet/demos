@@ -1,0 +1,39 @@
+Instructions on Execution of jobs Requiring Big-Memory Nodes on Topaz:
+----------------------------------------------------------------------
+
+A sample PBS job script is provided for you to copy for use to execute
+large memory jobs, those requiring significantly more than about 3 GB memory
+per node.
+
+There are 4 large memory nodes, each having 32 cores per node.  The nodes
+have Intel Xeon E5-4620 v2 Ivy Bridge processors operating at 2.6 GHz base
+speed.  Turbo-boost and hyperthreading are enabled.
+
+Importantly, the large memory nodes do not support all of the instruction sets
+that the standard compute and GPU nodes support.  Therefore, it may be wise,
+if compiling a highly optimized code, to add the flags "-xAVX" for code
+intended for the large memory nodes, but "-xCORE-AVX2" for code to run on the
+standard compute and GPU nodes.  Use of the flag "-xHOST", if used on the
+login nodes, which are Haswell nodes, could generate code using instructions
+sets that will not execute on the large memory nodes.  Such codes would
+generate errors from attempted use of illegal instructions.
+
+To specify the big memory nodes, the 'select' statement in the preamble
+has the following form:
+
+  #PBS -l select=<1-4>:ncpus=32:mpiprocs=<1-64>:bigmem=1
+
+Attempts to submit jobs to the big memory nodes that do not follow this
+specification, and that do not satisfy the specifications for standard compute
+nodes or GPGPU nodes, will result in an error message being issued that may
+include information detailing the correct format of the 'select' statement.
+
+This script is provided for you to adapt as you require.  Although job
+submission may be in any directory owned by the user, execution is to
+be in either $WORKDIR or $WORKDIR2, NOT $HOME.  Once you have a working
+revision of "large_memory.pbs", a copy can be placed in $HOME as a backup
+to guard against inadvertent deletion.
+
+
+
+

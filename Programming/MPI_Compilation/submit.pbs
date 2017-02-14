@@ -1,0 +1,40 @@
+#!/bin/ksh
+#PBS -l select=1:ncpus=36:mpiprocs=36
+#PBS -l walltime=00:01:00
+#PBS -A my_project_id
+#PBS -j oe
+#PBS -q debug
+#PBS -N MPI_Compile
+#PBS -l application=Other
+
+#  Set up the job to run in $WORKDIR
+JID=`echo $PBS_JOBID | cut -d. -f1`
+mkdir $WORKDIR/MPI_Compile.o$JID
+
+cd $PBS_O_WORKDIR
+cp hello-MPI-F90_* prime-MPI-C_* $WORKDIR/MPI_Compile.o$JID
+
+cd $WORKDIR/MPI_Compile.o$JID
+
+#  Initiate the module commands and get a listing
+. $MODULESHOME/init/ksh
+module list
+
+#  The following assumes the initial modules include
+#  Intel compilers and SGI MPT
+
+#  Run the first binaries
+mpiexec_mpt -np 8 ./hello-MPI-F90_mpt
+mpiexec_mpt -np 8 ./prime-MPI-C_mpt
+
+#  Swap out SI MPT for Intel IMPI
+module swap mpi/sgimpt mpi/intelmpi
+module list
+
+#  Run the second binaries
+mpirun -np 8 ./hello-MPI-F90_impi
+mpirun -np 8 ./prime-MPI-C_impi
+
+#  Remove the copied binaries, exit cleanly
+/bin/rm hello-MPI-F90_* prime-MPI-C_*
+exit

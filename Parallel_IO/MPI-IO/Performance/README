@@ -1,0 +1,148 @@
+
+The performance of MPI-IO was measured on topaz using the tool IOR.
+The specific measurement was write bandwidth for collective parallel IO.
+
+The IOR parameters were
+ ./IOR -a MPIIO -w -c -H -C -g -s 3220 -b 100000 -t 10000 -i 2 -o myfile
+
+POSIX runs were also done with IOR parameters
+ ./IOR -a POSIX -w -C -e  -g -s 3220 -b 100000 -t 10000 -i 2 -o myfile
+
+  144 processes were run using 36 MPI processses on each of 4 nodes.
+
+Both file systems /p/home and /p/work2 were testing using both
+SGI MPT and Intel MPI.
+
+The tests for SGI MPT simply used the command line
+
+mpiexec_mpt -n 144 ./IOR -a MPIIO \
+ -w -c -H -C -g -s 3220 -b 100000 -t 10000 -i 2 -o myfile
+
+The tests for Intel MPI needed to set environment variables
+as shown below.
+
+source $MODULESHOME/init/bash
+module unload mpi
+module load mpi/intelmpi/15.0.2
+
+export I_MPI_EXTRA_FILESYSTEM=on
+export I_MPI_EXTRA_FILESYSTEM_LIST=lustre
+
+mpirun -n 144 ./IOR -a MPIIO \
+ -w -c -H -C -g -s 3220 -b 100000 -t 10000 -i 2 -o myfile
+
+If the I_MPI_EXTRA_FILESYSTEM[_LIST] environment variables
+are not set, then writing is slow.
+
+Hints for opening files for MPI-IO can be set be defining a hint file
+export ROMIO_HINTS=<filename>
+For example, to change ind_wr_buffer_size
+the hint file could have a line
+ind_wr_buffer_size 1048576
+
+
+The bandwidth measurements are the following.
+
+On topaz, using SGI MPT on $HOME
+MPI IO: Max Write: 90.20 MiB/sec (94.59 MB/sec)
+MPI IO: Max Write: 90.94 MiB/sec (95.36 MB/sec)
+POSIX:  Max Write: 30.96 MiB/sec (32.47 MB/sec)
+
+On topaz, using Intel MPI on $HOME
+MPI IO: Max Write: 88.09 MiB/sec (92.37 MB/sec)
+MPI IO: Max Write: 90.69 MiB/sec (95.10 MB/sec)
+( Without I_MPI_EXTRA_FILESYSTEM=on , I_MPI_EXTRA_FILESYSTEM_LIST=lustre
+MPI IO: Max Write: 24.30 MiB/sec (25.48 MB/sec)
+MPI IO: Max Write: 23.94 MiB/sec (25.10 MB/sec)
+the bandwidth is much less. )
+POSIX:  Max Write: 34.13 MiB/sec (35.79 MB/sec)
+
+On topaz, using SGI MPT on $WORKDIR
+MPI IO: Max Write: 185.74 MiB/sec (194.77 MB/sec)
+MPI IO: Max Write: 192.49 MiB/sec (201.84 MB/sec)
+POSIX:  Max Write: 33.21 MiB/sec (34.82 MB/sec)
+
+On topaz, using Intel MPI on $WORKDIR
+MPI IO: Max Write: 188.29 MiB/sec (197.44 MB/sec)
+MPI IO: Max Write: 193.04 MiB/sec (202.42 MB/sec)
+POSIX:  Max Write: 35.74 MiB/sec (37.48 MB/sec)
+
+For comparison, on garnet, MPI-IO for collective IO calls
+compared to POSIX I/O as measured by IOR on $WORKDIR
+MPI IO: Max Write: 158.99 MiB/sec (166.71 MB/sec)
+POSIX:  Max Write:  83.86 MiB/sec  (87.93 MB/sec)
+
+The default hints were found to be (using IOR)
+
+SGI MPT
+hints returned from opened file {
+	direct_read = false
+	direct_write = false
+	romio_lustre_co_ratio = 1
+	romio_lustre_coll_threshold = 0
+	romio_lustre_ds_in_coll = enable
+	cb_buffer_size = 16777216
+	romio_cb_read = automatic
+	romio_cb_write = automatic
+	cb_nodes = 4
+	romio_no_indep_rw = false
+	romio_cb_pfr = disable
+	romio_cb_fr_types = aar
+	romio_cb_fr_alignment = 1
+	romio_cb_ds_threshold = 0
+	romio_cb_alltoall = automatic
+	ind_rd_buffer_size = 4194304
+	ind_wr_buffer_size = 524288
+	romio_ds_read = automatic
+	romio_ds_write = automatic
+	cb_config_list = *:1
+	romio_filesystem_type = LUSTRE:
+	romio_aggregator_list = 0 36 72 108 
+	striping_unit = 1048576
+	striping_factor = 4
+	romio_lustre_start_iodevice = 0
+}
+
+Intel MPI
+hints returned from opened file {
+	direct_read = false
+	direct_write = false
+	romio_lustre_co_ratio = 1
+	romio_lustre_coll_threshold = 0
+	romio_lustre_ds_in_coll = enable
+	cb_buffer_size = 16777216
+	romio_cb_read = automatic
+	romio_cb_write = automatic
+	cb_nodes = 4
+	romio_no_indep_rw = false
+	romio_cb_pfr = disable
+	romio_cb_fr_types = aar
+	romio_cb_fr_alignment = 1
+	romio_cb_ds_threshold = 0
+	romio_cb_alltoall = automatic
+	ind_rd_buffer_size = 4194304
+	ind_wr_buffer_size = 524288
+	romio_ds_read = automatic
+	romio_ds_write = automatic
+	cb_config_list = *:1
+	romio_filesystem_type = LUSTRE:
+	romio_aggregator_list = 0 36 72 108 
+	striping_unit = 1048576
+	striping_factor = 4
+	romio_lustre_start_iodevice = 0
+}
+
+The hints for Intel MPI are when Lustre is specified using
+export I_MPI_EXTRA_FILESYSTEM=on
+export I_MPI_EXTRA_FILESYSTEM_LIST=lustre
+
+An example program is provided for showing the hints of a file
+opened by MPI_File_open().  Copy the contents to your directory,
+for example, a subdirectory of $WORKDIR .
+Change the account information and "qsub test_hints.pbs" .
+The PBS script will compile and link hints.c and
+launch hints.exe .
+
+
+
+

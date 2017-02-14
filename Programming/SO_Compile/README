@@ -1,0 +1,29 @@
+Description:
+Simple example of creating a SO (Shared Object) library, using
+it to compile, and running against it on the compute nodes.
+
+To use a home-grown SO library, you will need to compile using position-
+independent-code flags, then link against it using -L, -l flags on the
+link line.  To execute against it, you will need to extend the value of
+LD_LIBRARY_PATH with the path to the SO library at execution time.
+
+
+To run this example:
+  Copy the entire contents of this example to a directory you own, say $WORKDIR:
+    > cp -R $SAMPLES_HOME/Programming/SO_Compile  $WORKDIR
+
+  cd into the subdirectory $WORKDIR/SO_Compile/LIB_SRC/, and compile the
+  example code there using the script "compile_so".
+
+    > cd $WORKDIR/SO_Compile/LIB_SRC ; ./compile_so
+
+  Modify the PBS script submit.pbs with your subproject id and submit.
+  It should work as-is for SGI MPT.  Note that binaries compiled with Intel
+  IMPI will require you to execute with the Intel IMPI module, in order to load
+  all of the dynamic MPI libraries that Intel's mpirun will need.  PBS
+  automatically loads the SGI MPT modules into your environment at job
+  execution, so you may need to load the correct MPI module in the
+  script to ensure correct execution at run time.  Uncomment the module
+  swap commands and the mpirun command, and comment out the mpiexec_mpt
+  command, to execute in the Intel IMPI environment.
+ 

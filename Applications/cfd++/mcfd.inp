@@ -1,0 +1,546 @@
+system begin
+#mc_filecopy cdepsout.bin cdepsin.bin
+#mc_filecopy cdaveout.bin cdavein.bin
+system end
+#-------------------------------------
+iofiles begin
+lm_type STANDARD
+lm_cells_limit 0
+lm_cpus_limit 0
+lm_ser2par 0
+ifinbc 0
+invoke_script 0
+mcpusin_fn mcpusin.bin
+nodesin_fn nodesin.bin
+cellsin_fn cellsin.bin
+exbcsin_fn exbcsin.bin
+inbcsin_fn inbcsin.bin
+ovsetin_fn ovsetin.bin
+cdepsin_fn cdepsin.bin
+pltosin_fn pltosin.bin
+eqsetin_fn eqsetin.bin
+zobcsin_fn zobcsin.bin
+ovsetin_fn ovsetin.bin
+blankin_fn blankin.bin
+cgrpsin_fn cgrpsin.bin
+#---------------------------
+mcpusout_fn mcpusout.bin
+nodesout_fn nodesout.bin
+cellsout_fn cellsout.bin
+exbcsout_fn exbcsout.bin
+inbcsout_fn inbcsout.bin
+ovsetout_fn ovsetout.bin
+cdepsout_fn cdepsout.bin
+pltosout_fn pltosout.bin
+eqsetout_fn eqsetout.bin
+zobcsout_fn zobcsout.bin
+ovsetout_fn ovsetout.bin
+blankout_fn blankout.bin
+cgrpsout_fn cgrpsout.bin
+#---------------------------
+iofiles end
+#-------------------------------------
+celltypes 1
+celltype 3 fluxmasks 0 0 0 0
+celltype 3 vtfpmasks 0 0 0 0
+celltype 3 vtxpmasks 0 0 0 0
+#-------------------------------------
+tsteps begin
+istart 0
+ntstep 50 
+ntstop 0
+ntsmin 0
+ntrmin 0
+dtsmoo 0
+dtsmoo_iters 6
+dtsmoo_param 0.5
+runmod 1
+dtauin -1.000000e+00
+dtlomx 1.000000
+cflbot 1.000000e-02
+rstcfl 0
+ntbclr 1
+nteclr 100
+cfllbg 1.000000e+00
+cfllen 1.000000e+02
+cflglo 1.000000e+15
+ilcfla 0
+igcfla 0
+itsync 0
+ntbmdr 100
+ntemdr 200
+mdisbg 0.000000e+00
+mdisen 0.000000e+00
+ntbbfr 100
+ntebfr 200
+blfnbg 0.000000e+00
+blfnen 1.000000e+00
+cdepsave_compute 0
+cdepsave_restart 1
+cdepsave_ntsave  0
+tsteps end
+#-------------------------------------
+options begin
+ntdsko 20
+ntdsks 0
+ntplto 20
+ntplts 0
+ntdskc 0
+ntdskr 0
+ntacou 0
+ntout1 1
+ntout2 0
+ntout3 0
+ntout4 0
+ntout5 0
+ntout6 0
+ntout7 0
+ntout9 0
+ntout10 0
+ntout11 0
+ntout12 0
+ntout13 0
+ntout14 0
+ntout15 0
+ntout16 0
+ntout17 0
+ntout18 0
+ntout19 0
+ntout20 0
+ntout21 0
+ntout22 0
+ntout23 0
+ntout24 0
+ntout25 0
+ntout26 0
+ntout28 0
+nt6dof1 0
+ntoutfv 0
+ntsuffv 0
+mpidri 0
+mcpuse 0
+mcgrps 0
+#---------------
+nodebg 0
+inbczb 0
+autozb 0
+osetyp 0
+osetdb 0
+osetbr 0
+osetbc 0
+osetbz 0
+osetzo 0
+osetsl 0
+osetir 0
+osnocn 1
+osnosg 1
+blnkdb 0
+zobcdb 0
+iregrd 0
+iregrq 1
+irezon 0
+reblnk 0
+igrvs1 0
+igrvs7 0
+igrvs9 0
+igrvs10 0
+igrvs13 0
+igrvs14 0
+ifrbd1 0
+#---------------
+viscos 1
+vibnew 1
+ifmdis 0
+mdislh 0.250000
+disson 0.100000
+ifmdps 0
+mdisps 0.050000
+mdtype 1
+mdpscf 0.300000
+mdpsmx 1.000000
+ifmdcb 0
+mdcbfr 0.250000
+#---------------
+xyzpol xy
+ispcac 2
+iblend 0
+iblenz 0
+blenzf 1.000000
+bextac 1
+bzonac 2
+bzoncd 1
+slidzb 0
+arcozb 0
+zobcty 2
+celpol 1
+cenpol 2
+nodnei 1
+viscrs 0
+celpoj 0
+limfac 0
+rhsopt 1
+rhsink 0
+tolpol 1.000000e-13
+limtvd 1
+tvdcmp 2.0
+tvdphi 0.333330
+chkvol 1
+tolvol 1.000000e-20
+grqua1 0
+grqua2 0
+grqua3 0
+grqua6 1
+gq1dis 0.100000
+gq2ang 2.000000
+gq3dis 0.100000
+gq6dis 0.100000
+gq6ang 40.000000
+#---------------
+rtcord 5.000000
+convo1 0
+convo2 0
+simstr 1
+dultim 0
+glitrc 0.100000
+gloits 1
+pc_method 0
+memopt1 0
+method 2
+itimac 2
+impave 0
+ifunlx 1
+undrlx 0.750000
+implic 1
+impits 16
+mg_mpio 1
+fg_mpfb 0
+mg_mpfb 0
+mg_type 1
+mg_lint 2
+mg_itns 1
+mg_levs 20
+mg_mxcg 1048576
+mg_cycl 6
+mg_resc 5.000000e-01
+mg_terc 1.000000e-01
+mg_floc 1.000000e-10
+fg_resc 5.000000e-01
+fg_terc 1.000000e-01
+fg_floc 1.000000e-10
+mg_cvis 1.0
+celord 1
+subdomain_mode 0
+options end
+#-------------------------------------
+infsets 5
+#---------------------------------------------------------
+seq.# 1 #vals 31 title eqnset_define
+values 101 1 1 2 2 
+values 0 0 1 1 1 
+values 1 7 5 2 0 
+values 0 0 0 0 0 
+values 0 11 12 1 5 
+values 3 0 0 0 0 
+values 0 
+#---------------------------------------------------------
+seq.# 2 #vals 7 title primitive_variables_2
+values 0 288 68.0 0.0 0.0 
+values 6.242400e+00 3.119302e+03 
+#---------------------------------------------------------
+seq.# 3 #vals 1 title back_pres
+values 0 
+#---------------------------------------------------------
+seq.# 4 #vals 4 title ptot_ttot_etc.
+values 38000 320 3.037500e+01 3.348146e+04 
+#---------------------------------------------------------
+seq.# 5 #vals 4 title ptot_ttot_etc.
+values 70000 480 5.400000e+01 7.936347e+04 
+#---------------------------------------------------------
+eqslct 101
+icslct 2
+#
+mbcons 7
+seq# type modi info
+   1   16    0    2 INFLOW                                            
+   2   16    0    2 FARFIELD                                          
+   3   35    0    3 OUTFLOW                                           
+   4   55    0    0 WALLS                                             
+   5   82    1    5 NOZZLE2                                           
+   6   82    1    4 NOZZLE1                                           
+   7    6    0    0 SYMMETRY                                          
+#-------------------------------------
+#seq mtyp info
+   5    1    0
+   6    1    0
+#-------------------------------------
+octree begin
+toldup 1.000000e-06
+tolins 1.000000e-06
+toldfn 1.000000e-06
+tolzco 1.000000e-06
+typzco 0
+trxdir 1
+trydir 1
+trzdir 0
+dfcmax 1.000000e+32
+octree end
+#-------------------------------------
+physics begin
+meq_eqsets 0
+meq_eqsgrp 0
+meq_icslct 0
+meq_inityp 0
+cht_matprp 0
+absour 0
+absour_selftune 0
+cldriver 0
+rotor_model1 0
+anchor_pressure 0
+moddif 0
+moddif_type 2
+icsrot 0
+prerot 0
+preacc_opt 0
+preacc_dti 0.05
+pretyp 1
+ipreof 20
+prebet 5.000000e-02
+previs 5.000000e-02
+prevel 1.000000e-06
+prevlo 1.000000e-06
+pfloor 0.000000e+00
+gasnam Air
+gasgam 1.400000
+gasmwt 28.950000
+advcon 1.000000e+00
+difcon 1.000000e+00
+ed_con 1.000000e+00
+ed_cap 0.000000e+00
+iunits 0
+lenuni m
+masuni kg
+temuni K
+timuni s
+grduni m
+inityp 0
+qcvrti 0
+qcvrto 0
+ifrpow 0
+ifreac 0
+ifrebx 0
+frctin 2
+temulx 2.500000e-01
+frcint 1
+frclim 0
+frclif 0.050000
+frccfl 1
+ifscon 1
+ifrsrc 0
+ifvols 0
+ifvelp 0
+ifrmai 0
+frcxmn 0.000000e+00
+frcxmx 0.000000e+00
+frcymn 0.000000e+00
+frcymx 0.000000e+00
+frczmn 0.000000e+00
+frczmx 0.000000e+00
+frsrcu 0.000000
+frsrcl 1.000000
+frsrct 1.000000
+frsrcm 1.000000
+istiff 0
+sureac 0
+surspe 0
+surmap 0
+toltem 1.000000e-05
+tolfrc 1.000000e-05
+edp_yesno 0
+edp_model 0
+edp_ifbuoy 0
+edp_gravtx 0.000000
+edp_gravty 0.000000
+edp_gravtz 0.000000
+sourc1 0
+sourc2 0
+ifaxix 1
+ifaxiy 0
+ifwzro 1
+ifaxst 0
+ifaxsw 0
+ifswrl 0
+swrxmn 0.000000e+00
+swrxmx 0.000000e+00
+swrymn 0.000000e+00
+swrymx 0.000000e+00
+swrzmn 0.000000e+00
+swrzmx 0.000000e+00
+swreta 0.500000
+ifblck 0
+blkxmn 0.000000e+00
+blkxmx 0.000000e+00
+blkymn 0.000000e+00
+blkymx 0.000000e+00
+blkzmn 0.000000e+00
+blkzmx 0.000000e+00
+ipbulk 0
+bulkpr 0.000000
+irbulk 0
+bulkro 0.000000e+00
+bulktm 2.880000e+02
+presab 101325.000000
+presmn -1.000000e+20
+presmx 1.000000e+20
+tempmn -1.000000e+00
+tempmx 1.000000e+20
+univgc 8314.000000
+refmwt 1.000000
+reflen 1.000000
+reftem 1.000000
+refden 1.000000
+refvel -1.000000
+refpre 1.000000
+refpgf 101325.000000
+ifbuoy 0
+gravtx 0.000000
+gravty 0.000000
+gravtz 0.000000
+grvcnx 0.000000e+00
+grvcny 0.000000e+00
+grvcnz 0.000000e+00
+grvbet -0.003000
+liqgas 0
+refmuu 1.000000e+00
+refkap 1.000000e+00
+prndtl 0.72
+prlatu 0.800000
+schmla 1.000000
+schmtu 1.000000
+rmuusl 1.716000e-05
+tmuusl 273.110000
+smuusl 111.000000
+rkapsl 2.410000e-02
+tkapsl 273.110000
+skapsl 194.000000
+liqtlo 0.0
+liqtup 5000.0
+yppfac 1.000000
+ifporo 0
+ifpmut 0
+isporo 0
+ifcjht 0
+ifnlas 0
+ls_numeqns 0
+ntrbst 11
+iftold 0
+smagcf 0.050000
+lnstyp 1
+lnsdtm 1
+lnsbox 0
+mnfltr 0.000000e+00
+sync_alpha 1
+nlas_allscales 0
+rfg_sample_modes 100
+mulnyq 1
+ifmuon 0
+ifdpds 0
+ifwfne 2
+ifwfol 0
+ifcomp 1
+ifmccw 1
+ifskar 0
+ifpope 0
+ifbrad 0
+iftran 0
+iftrat 0
+ifmbsl 0
+iftcon 1
+iftrbf 0
+turbf1 1.000000
+turbf2 1.000000
+turbf3 1.000000
+tunrlx 0.5
+kmxval 1.000000e+20
+tmnval 1.0e-12
+maxmut 100000.000000
+turlim 100.000000
+turxyz 0
+turxmn 0.000000e+00
+turxmx 0.000000e+00
+turymn 0.000000e+00
+turymx 0.000000e+00
+turzmn 0.000000e+00
+turzmx 0.000000e+00
+sa_cb1 0.135500
+sa_sig 0.666667
+sa_cb2 0.622000
+sa_kap 0.410000
+sa_cw2 0.300000
+sa_cw3 2.000000
+sa_cv1 7.100000
+sa_ct3 1.100000
+sa_ct4 2.000000
+shaper 0
+physics end
+#-------------------------------------
+probe begin
+probe end
+#-------------------------------------
+debug begin
+debug end
+#-------------------------------------
+guiopts begin
+turbi_lev 1
+turbi_len 1
+turbi_mutmu 50.000000
+turbi_jet 0
+turbi_int 1
+turbi_tlev 3.000000e-02
+turbi_tlen 5.000000e-03
+turbi_tfrs 1.000000e-04
+turbi_yp 1.000000e+00
+turbi_replen 1.000000e+00
+auto_pres 1.013250e+05
+auto_temp 2.880000e+02
+auto_u 3.000000e+01
+auto_v 0.000000e+00
+auto_w 0.000000e+00
+auto_tlvl 1.000000e-02
+auto_tlnl 1.000000e-03
+auto_tl 1
+auto_lt 1
+auto_eqinf 0
+auto_ininf 0
+auto_bpinf 0
+aero_intyp 1
+aero_unit 1
+aero_pres 8.987628e+04
+aero_temp 2.816510e+02
+aero_deltat 0.000000e+00
+aero_u 1.682560e+02
+aero_v 0.000000e+00
+aero_w 0.000000e+00
+aero_tlvl 2.000000e-02
+aero_tlnl 1.000000e-03
+aero_tl 1
+aero_lt 1
+aero_eqinf 1
+aero_ininf 2
+aero_bcinf 3
+aero_altid 1.000000e+00
+aero_ma 5.000000e-01
+aero_alpha 0.000000e+00
+aero_beta 0.000000e+00
+aero_plane 0
+aero_re 1.000000e+06
+aero_mutmu 30.000000
+incomp_tlvl 5.000000e-02
+incomp_tlnl 1.000000e-02
+incomp_eqinf 0
+incomp_ininf 0
+incomp_bpinf 0
+guiopts end
+#-------------------------------------
+system begin
+system end
+#-------------------------------------

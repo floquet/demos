@@ -1,0 +1,14 @@
+Description:
+LS-Dyna is a multi-physics structure code. 
+
+This directory contains a small test case for LS-Dyna. 
+
+Copy this directory to your $WORKDIR, edit the lsdyna.pbs file for your project, and
+submit job "qsub lsdyna.pbs".
+
+You can use a version of "lsprepost...." in the directory "/usr/local/applic/ls-dyna/lsprepost"
+    to view your output d3plot files.
+
+
+LS-Dyna is a restricted access application, contact the ERDC DSRC for access.
+

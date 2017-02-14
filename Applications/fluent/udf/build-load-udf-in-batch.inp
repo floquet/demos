@@ -1,0 +1,19 @@
+/define/user-defined/compiled-functions compile 
+stator
+y
+crank_pressure.c
+two_stroke_efficiency.c
+
+/define/user-define/compiled-functions load 
+stator
+/file/set-batch-options
+y
+y
+y
+n
+rc stator.cas
+rd stator.dat
+it 100
+wd test100.dat
+exit
+yes

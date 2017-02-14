@@ -1,0 +1,21 @@
+#!/bin/csh
+#PBS -A your-project-id
+#PBS -q standard
+#PBS -l select=1:ncpus=36:mpiprocs=36
+#PBS -l walltime=1:00:00
+#PBS -l matlab=1
+#PBS -j oe
+
+# Set up the environment for MATLAB processing
+
+source /app/modules/default/init/csh
+module load matlab
+
+
+# Enter directory and perform the MATLAB task
+
+cd $PBS_O_WORKDIR
+matlab -nodisplay -nodesktop < test.m >& test.out
+
+# Or a processing job like this:
+# matlab -nojvm -r convert_fluent_data_to_binary

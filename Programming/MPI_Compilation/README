@@ -1,0 +1,14 @@
+To compile MPI codes:
+
+There are two compilers, Intel and Gnu, and two flavors
+of MPI - SGI's MPT and Intel's IMPI.
+
+Read MPI_Compilers.txt to find which MPI compiler scripts to use.
+
+If no specific version number is stated, then the default is assumed,
+although you may use any available version.
+
+To see what module compiler/intel/15.0.3 is, for example, enter
+"module show compiler/intel/15.0.3".
+
+

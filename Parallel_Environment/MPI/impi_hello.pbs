@@ -1,0 +1,21 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=36
+#PBS -l walltime=0:05:00
+#PBS -A account_id
+#PBS -j oe
+#PBS -q debug
+#PBS -N hello
+#PBS -l application=other
+
+cd $PBS_O_WORKDIR
+
+# $MODULESHOME has the value of either
+# /p/home/apps/modules_dest/Modules/3.2.10
+# or /p/home/apps/modules/default
+source $MODULESHOME/init/bash
+module swap mpi/sgimpt mpi/intelmpi
+
+mpirun -n 72 ./impi_hello.exe
+
+exit
+

@@ -1,0 +1,49 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=36:mpiprocs=36
+#PBS -l walltime=0:20:00
+#PBS -A your-project-id
+#PBS -q debug
+#PBS -N First_Job
+#PBS -j oe
+#PBS -l application=other
+
+#
+#  First job, to establish the dependency in this example.
+#
+
+sleep 60
+
+OUTFILE=$PBS_O_WORKDIR/queued_record
+JOBID=`echo ${PBS_JOBID} | cut -d'.' -f 1`
+
+touch $OUTFILE
+echo "================================================================================" >> $OUTFILE
+
+echo "First job executing, id $JOBID." >> $OUTFILE
+echo "Queued jobs at time of execution:" >> $OUTFILE
+printf "Job id            Name             User              Time Use S Queue\n" >> $OUTFILE
+printf -- "----------------  ---------------- ----------------  -------- - -----\n" >> $OUTFILE
+qstat | grep $USER >> $OUTFILE
+
+cd $WORKDIR
+
+# Make a directory for output of each task 
+mkdir Job_Deps.o$JOBID
+
+# cd to directory to run each task 
+cd Job_Deps.o$JOBID
+
+# Retrieve the job's binary
+cp $PBS_O_WORKDIR/exec_1 .
+
+# run job and redirect output 
+mpiexec_mpt -n 36 ./exec_1 >& output.o$JOBID
+
+# clean up and exit gracefully
+
+ls
+mv output.o$JOBID $PBS_O_WORKDIR
+/bin/rm exec_1
+echo "Job $JOBID ending." >> $OUTFILE
+
+exit

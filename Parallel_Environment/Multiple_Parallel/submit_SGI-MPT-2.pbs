@@ -1,0 +1,22 @@
+#!/bin/ksh
+#PBS -l select=4:ncpus=36:mpiprocs=36
+#PBS -l walltime=24:00:00
+#PBS -A $ACCOUNT
+#PBS -q standard
+#PBS -N test_multiple
+#PBS -j oe
+#PBS -l application=Other
+
+cd $PBS_O_WORKDIR
+
+echo $PBS_NODEFILE contains `cat $PBS_NODEFILE | uniq`
+
+split -l 36 $PBS_NODEFILE
+
+( export PBS_NODEFILE=xaa; mpiexec_mpt -n 36 ./exec_1.x > exec_1.out ) &
+( export PBS_NODEFILE=xab; mpiexec_mpt -n 36 ./exec_2.x > exec_2.out ) &
+( export PBS_NODEFILE=xac; mpiexec_mpt -n 36 ./exec_3.x > exec_3.out ) &
+( export PBS_NODEFILE=xad; mpiexec_mpt -n 36 ./exec_4.x > exec_4.out ) &
+
+wait
+

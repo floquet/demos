@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=32:mpiprocs=32:bigmem=1
+#PBS -l walltime=1:00:00
+#PBS -A your-project-id
+#PBS -q debug
+#PBS -j oe
+#PBS -N big-mem-job
+
+cd $PBS_O_WORKDIR
+
+mpiexec_mpt -np <num-procs> ./<your-code-here>
+
+exit

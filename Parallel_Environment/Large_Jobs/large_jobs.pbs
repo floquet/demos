@@ -1,0 +1,23 @@
+#!/bin/bash
+#PBS -l select=306:ncpus=36:mpiprocs=36
+#PBS -l walltime=8:00:00
+#PBS -A account_id
+#PBS -j oe
+#PBS -q standard
+#PBS -N hello
+#PBS -l application=other
+
+cd $PBS_O_WORKDIR
+
+#  Starting with version 2.12, SGI MPT has included everything required
+#  to handle large jobs on Topaz.  All that is required is to set one
+#  environment variable that informs MPT to adjust IB communication for
+#  large jobs.  The breakoff was determined to be around 11000 cores.
+#  Here, an additional variable is set to display the settings.
+
+export MPI_IB_CONGESTED=1
+export MPI_DISPLAY_SETTINGS=1
+
+mpiexec_mpt -v -np 11016 ./<your-code-here>
+
+exit

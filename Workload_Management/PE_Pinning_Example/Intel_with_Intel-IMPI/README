@@ -1,0 +1,40 @@
+Pinning Processing Elements for Intel code with Intel IMPI:
+
+Code that uses Intel's IMPI may be pinned using settings of several environment
+variables.  Documentation about the possible variables is available in section
+3.2 "Process Pinning" of the document "Intel MPI Library for Linux* OS",
+available in /p/home/apps/intel/parallel_studio_2015_u2/impi/5.0.3.048/doc/,
+"Reference Manual", either html or pdf.
+
+For MPI codes, I_MPI_PIN must be set to "enable" or "1" or "on" or "yes" to
+enable pinning.  Default setting places the MPI processes evenly across the
+NUMA nodes, 4 per compute node, in the job; the processes are allowed to
+wander among certain cores, including the hyperthreading cores, belonging to
+the NUMA node.  Review ../compute-cpu_arch for a description of the compute
+nodes including listings of the NUMA nodes by cores.  Placement of MPI
+processes can be directed to specific cores by setting
+I_MPI_PIN_PROCESSOR_LIST to those cores on which the MPI processes are
+to be pinned, in order.
+
+The PBS script pin_mpi.pbs shows the placement of 24 MPI processes on 2 nodes
+using only I_MPI_PIN.  Uncomment I_MPI_PIN_PROCESSOR_LIST to see how to pin
+the processes to specific cores.  Two equivalent definitions of the processor
+list definition are presented, to demonstrate an apparent way to define the
+list and a more compact notation to define it.
+
+For hybrid MPI/OpenMP jobs, I_MPI_PIN must be set similarly as for MPI codes,
+but the variables I_MPI_PIN_DOMAIN and KMP_AFFINITY should also be set.
+I_MPI_PIN_DOMAIN plays a role similar to I_MPI_PIN_PROCESSOR_LIST; indeed,
+I_MPI_PIN_DOMAIN will override I_MPI_PIN_PROCESSOR_LIST if the latter is
+set.  Information on how to set KMP_AFFINITY is available at
+https://software.intel.com/en-us/articles/openmp-thread-affinity-control and
+https://software.intel.com/en-us/node/522691 .
+
+The PBS script pin_openmp.pbs demonstrates how to use the environment variables
+to place 4 MPI processes on the NUMA nodes of one compute node and then pin
+the OpenMP threads of each process to that process' NUMA node.  KMP_AFFINITY
+is set to pin one OpenMP thread per physical core.  An alternate definition
+of KMP_AFFINITY, using "scatter", is commented out that accomplishes the same
+pinning.  A definition using "compact" shows one way to set KMP_AFFINITY so
+as to use the hyperthread contexts to pin OpenMP threads.
+

@@ -1,0 +1,29 @@
+
+# Copy these files to your work directory, for example,
+
+mkdir $WORKDIR/example01
+cp * $WORKDIR/example01/
+
+# Use the SGI MPT implementation of MPI, which is the default.
+
+# Load the ADIOS module before compiling.
+
+# module load unsupported/uspinit  (no longer needed)
+module load usp-adios/intel/sgimpt/1.8.0
+
+# Compile program using Makefile.
+
+make
+
+# Run the batch job.
+
+qsub adios_global.pbs
+
+# The file result.dat should be empty unless there was an error.
+
+# This run creates 1 output file adios_global.bp
+# To see contents
+bpls -l adios_global.bp
+OR
+bpls -d  adios_global.bp
+

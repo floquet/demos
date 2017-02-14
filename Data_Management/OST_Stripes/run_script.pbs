@@ -1,0 +1,33 @@
+#!/bin/ksh
+#PBS -l select=1:ncpus=36:mpiprocs=36
+#PBS -l walltime=00:05:00 
+#PBS -A project-id
+#PBS -N testjob
+#PBS -q standard 
+#PBS -j oe
+
+# In ths example, a directory called LargeDir is created with its striping set
+# to 1 MByte stripe size across 8 OSTs, with LFS on topaz choosing which
+# OSTs to use.  This is useful because the binary a.out creates one or more
+# very large output files (10 GB - 100 GB) that can benefit from increased
+# striping.
+
+JID="`echo $PBS_JOBID | cut -d. -f1`"
+JOBDIR=testjob_o$JID
+mkdir $WORKDIR/$JOBDIR
+cd $WORKDIR/$JOBDIR
+
+mkdir LargeDir
+
+lfs setstripe LargeDir 1048576 -1 8
+
+cd LargeDir
+
+cp $HOME/a.out .
+   
+mpiexec_mpt -n 36 ./a.out
+
+lfs getstripe ./*
+
+exit
+

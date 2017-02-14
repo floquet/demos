@@ -1,0 +1,25 @@
+#!/bin/bash
+#PBS -A myproject
+#PBS -l select=2:ncpus=36:mpiprocs=2
+#PBS -l walltime=00:15:00
+#PBS -l acfd=4
+#PBS -q debug
+#PBS -N airfoil
+#PBS -l application=fluent
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+JID=`echo $PBS_JOBID | cut -d "." -f 1`
+
+source /app/modules/default/init/bash
+module load fluent
+
+# This example uses two nodes and two processes on each node.
+# Each node can run as many as 36 processes per node.
+# The total number of processes should correspond to the
+# value of acfd in the PBS parameter (above) and the -t option
+# in the fluent command line (below).
+
+fluent 2d -pinfiniband -mpi=intel -ssh -g -driver null -t4 -cnf=$PBS_NODEFILE -i airfoil.jou > test.out.o$JID 2>&1
+
+exit

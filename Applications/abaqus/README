@@ -1,0 +1,55 @@
+Checked/verfied May, 2012
+
+Description:
+Basic batch script and input deck for an Abaqus job.
+
+Change the account information in file abaqus.pbs
+Run job using
+qsub abaqus.pbs
+
+The file abaqus_v6.env must be changed to reflect the version
+you are using.  As of September 2014 the options are
+
+/app/abaqus/6.12-1/SMA/site/abaqus_v6.env
+/app/abaqus/6.12-3/SMA/site/abaqus_v6.env
+/app/abaqus/6.13-1/SMA/site/abaqus_v6.env
+/app/abaqus/6.14-1/SMA/site/abaqus_v6.env
+
+If the batch script has the command
+module load abaqus/6.12-3
+then before running the script you need to copy the environment
+file using
+
+cp /app/abaqus/6.12-3/SMA/site/abaqus_v6.env .
+
+The above also applies to the current default since
+module load abaqus
+implies version 6.12-3
+
+To explain further using a different example, if you have
+in the batch script
+module load abaqus/6.14-1
+
+then before using qsub to start the job you need to do
+
+cp /app/abaqus/6.14-1/SMA/site/abaqus_v6.env .
+
+On the other hand, if there is no abaqus_v6.env file in your
+$HOME directory and no abaqus_v6.env file in the work directory
+from which you launch the job, then abaqus will find the
+correct file based on which abaqus module version was loaded.
+
+Moreover, if users have their own abaqus_v6.env file --
+if, for example, they use a different license server --
+then when changing the version of abaqus that they utilize,
+some lines in their abaqus_v6.env file many need to
+be changed.  The difference between two abaqus_v6.env files
+from different versions may server as a guide for how a
+user will need to change his/her file.
+
+Notes:
+ 1. As of Dec 2015, csh is required for abaqus to execute
+    correctly.
+ 2. The keyword 'interactive' is required at the end of the
+    abaqus command for it to execute.
+

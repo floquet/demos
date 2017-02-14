@@ -1,0 +1,56 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=36
+#PBS -l walltime=00:05:00
+#PBS -A <your-job-id-here>
+#PBS -q debug
+#PBS -N serial_pack-1
+#PBS -j oe
+## Please see $SAMPLES_HOME/Application_Name/application_names for a list of application_names
+#PBS -l application=home-grown
+
+export JOBID="`echo $PBS_JOBID | cut -d. -f1`"
+export JOBDIR="$WORKDIR/topaz_o$JOBID"
+mkdir $JOBDIR
+cp $PBS_O_WORKDIR/serial_test.x $JOBDIR
+
+#
+#  Set up node list for check using ps while the background tasks are
+#  executing
+#
+cat $PBS_NODEFILE | uniq > ./nodefile
+
+#
+# Set up a numerical index.  This could be used for naming different
+# binaries or input decks in the loop below.  Here, it is used for
+# naming different output files.
+#
+i=1
+for host in `cat $PBS_NODEFILE` ; do
+  echo $host
+  ( ssh $host "cd $JOBDIR ; \
+               ./serial_test.x > job-stdout$i.o$JOBID ; \
+               date --rfc-3339=seconds >> job-stdout$i.o$JOBID" ) &
+  i=`expr $i + 1`
+done
+
+echo "Execute loop ended `date --rfc-3339=seconds`"
+
+sleep 1
+
+#
+#  Now execute ps command to see what is running on each node and the
+#  percentage usage of each task
+#
+for host in `cat $PBS_NODEFILE | uniq` ; do
+  ( ssh $host "hostname ; \
+               w ; \
+               ps -o user,pid,ppid,lwp,pcpu,psr,etime,vsz,rss,stat,cmd -e | grep -e PID -e ${USER} " ) &
+done
+
+wait
+
+echo "Wait ended `date --rfc-3339=seconds`"
+
+/bin/rm $JOBDIR/serial_test.x
+
+exit

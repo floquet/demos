@@ -1,0 +1,10 @@
+Checked/verfied May, 2012
+
+Description:
+CFD++ is a multi-physics CFD code. 
+
+This directory contains a small test case for CFD++. 
+
+Copy this directory to your $WORKDIR, edit the cfd.pbs file for your project, and
+submit job "qsub cfd.pbs".
+

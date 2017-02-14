@@ -1,0 +1,39 @@
+Pinning Processing Elements for Intel code with SGI MPT:
+
+Code that uses SGI's MPT may be placed using dplace or omplace; dplace is
+recommended for MPI jobs, but it can be used for OpenMP jobs also.  However
+omplace is preferable for OpenMP jobs (stand alone or hybrid with MPI).
+More information is available in the dplace and omplace man pages.
+
+If using dplace, note that Intel OpenMP jobs use an extra thread that does
+not need to be placed.  Moreover, Intel OpenMP jobs have Intel-driven cpu
+placement functionality that must be disabled first by setting KMP_AFFINITY
+to "disabled". For example,
+
+  export KMP_AFFINITY=disabled
+  export OMP_NUM_THREADS=<number>
+  dplace -e -x 2 -c 0-$OMP_NUM_THREADS [other dplace args] ./your.exe [exe args}
+
+Omplace disables KMP_AFFINITY automatically and specifies that the extra thread
+need not be placed:
+
+  export OMP_NUM_THREADS=<number>
+  omplace -e -c 0-$OMP_NUM_THREADS ./your.exe [exe args]
+
+The dplace and omplace flags here and in the PBS scripts do the following
+things:
+  -e = exact placement
+  -x = skip mask
+  -s = script this count of processing elements
+  -c = place processing elements on the following cores in the cpuset for the
+       job
+  -o = place output from the job in the logfile named by the following string
+  -vv = extremely verbose output, included here to provide placement
+        information
+  -n, -np = number of MPI processes to execute
+  -nt = number of OpenMP threads to execute
+
+The PBS scripts demonstrate how to place MPI and hybrid MPI/OpenMP jobs on
+distinct NUMA nodes.  Consult ../compute-cpu_arch for a description of each
+compute node and the listing of NUMA nodes by cores.
+

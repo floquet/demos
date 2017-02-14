@@ -1,0 +1,36 @@
+Instructions on execution of jobs requiring more than 11k cores on topaz:
+-------------------------------------------------------------------------
+
+A sample PBS job script is provided for you to copy for use to execute
+large jobs, those requiring more than 11,000 cores or 305 nodes, on topaz.
+
+1. SGI MPT 2.12 or later must be used.  To swap from an earlier version, do
+
+     module swap mpi/sgimpt/<earlier version> mpi/sgimpt
+
+   before you issue the mpiexec_mpt command.
+
+   For reference, SGI MPT 2.13 beta had been available for use with large jobs,
+   and the user was responsible to set the following variables:
+     export MPI_CONNECTIONS_THRESHOLD=8192
+     export MPI_BUFS_PER_PROC=2048
+     export MPI_IB_RECV_MSGS=16384
+     export MPI_IB_TIMEOUT=22
+     export MPI_IB_FAILOVER=127
+     export MPI_IB_ACCELERATE_AHS=true
+     export MPI_IB_MAX_RDMAS=1
+     export MPI_IB_PAYLOAD=128
+     export MPI_MSG_RETRIES=20000000
+     export MPI_IB_RNR_TIMER=26
+     export MPI_VERBOSE=1
+     export MPI_DISPLAY_SETTINGS=1
+
+   Recommendation was also made to use "mpiexec_mpt -v".
+
+2. "Export"/"setenv" one environment variable, MPI_IB_CONGESTED=1, to inform
+   Topaz that you intend to run a large job.
+
+The script is provided for you to adapt as you require.  Submission is to
+be in either $WORKDIR or $WORKDIR2, NOT $HOME.  Once you have a working
+revision, a copy can be placed in $HOME as a backup to guard against
+inadvertent deletion.

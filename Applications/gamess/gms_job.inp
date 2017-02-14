@@ -1,0 +1,24 @@
+ $CONTRL SCFTYP=rhf RUNTYP=energy ICHARG= 0 MULT=1 $END          
+ $SYSTEM MEMORY=18000000 memddi=8  TIMLIM=99999999 $END                                  
+ $basis gbasis=n311 DIFFSP=.true. DIFFS=.true. ngauss=6 ndfunc=1 npfunc=1 $end
+ $DATA                                                                          
+title C CASSCF                                                                  
+C1       1                                                                      
+c   6.0        1.088607   -0.624142    0.356206
+c   6.0       -0.180758   -0.205756    0.387396
+h   6.0       -0.817164    0.711904   -0.618670
+h   1.0        1.773214   -0.315057   -0.432391
+h   1.0        1.490047   -1.289882    1.116227
+h   1.0       -0.825795   -0.545187    1.199994
+h   1.0       -0.107297    1.006939   -1.399626
+h   1.0       -1.195330    1.624495   -0.137739
+h   1.0       -1.678261    0.231267   -1.103053
+ $END
+ $end
+ $GUGDIA NSTATE=1 ITERMX=200 $END
+ $DRT             GROUP=C1 FORS=.TRUE. NMCC=6 NDOC=6 NVAL=6 NALP=0
+      NAOS=0 NBOS=0  $END
+ $MCSCF CISTEP=GUGA MAXIT=1000  fullnr=.TRUE.  $END
+
+
+

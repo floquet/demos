@@ -1,0 +1,35 @@
+
+ATTENTION: Driver for CUDA 7.5 has not yet been installed.
+ATTENTION: Initially, use module cuda/6.5 .
+
+Topaz also has 32 GPU nodes, each populated with two
+2.6-GHz Intel Xeon E5-2697v3 Haswell 64-bit 14-core processors
+(for a total of 28 cores) and an NVIDIA Tesla K40P GPU.
+Each GPU node has 128 GBytes of memory for the CPUs
+and 10.8 GBytes of GDDR5 memory on the GPU boards.
+(The GPU board, has 12 GB physical memory but only
+around 10.8 GB is available for user programs.)
+
+To utilize a node with a GPU, the user needs to add the
+PBS option "ngpus=1".  As shown below
+
+#PBS -l select=<number of nodes>:ncpus=28:mpiprocs=<procs per node>:ngpus=1
+
+To compile GPU-capable code, the cuda module must be loaded.
+
+module load cuda
+
+or a specific version such as cuda/6.5, cuda/7.0 or cuda/7.5 .
+
+The compiler nvcc uses the Gnu compiler suite.
+A compiler more advanced than /usr/bin/gcc is recommended.
+The compiler module be swapped as shown below.
+
+module swap compiler/intel/15.0.3 compiler/gcc/4.8.5
+
+The compilation scripts "compile.sh" load the cuda module
+explicitly prior to compiling the binaries.
+
+Many additional examples can be found in
+/p/home/apps/cuda/6.5/samples/
+

@@ -1,0 +1,9 @@
+/define/user-defined/compiled-functions compile 
+muffler
+y
+crank_pressure.c
+two_stroke_efficiency.c
+
+
+exit
+y

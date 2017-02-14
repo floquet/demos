@@ -1,0 +1,62 @@
+Process Placement on Topaz
+---------------------------
+
+The placement of processes belonging to PBS job can be localized by using
+additional specifiers in the "#PBS select" statement.
+
+The format of the modified "select" statement is
+
+  #PBS place=scatter:excl:group=<specifier>
+
+where <specifier> is one of switch, iru, iru2, rack, rack2, rack4, rack8,
+or rack16.  Choice of the group is indicated by the following counts of nodes
+in which to place your job:
+ 
+  nodes <= 18     switch
+  nodes <= 36     iru
+  nodes <= 72     iru2
+  nodes <= 144    rack
+  nodes <= 288    rack2
+  nodes <= 576    rack4
+  nodes <= 1152   rack8
+  nodes <= 2304   rack16
+
+Use of a group specifier does not guarantee exclusive use of all nodes in
+that group; generally, the PBS job will share the group with other jobs, but
+the job will have exclusive use of the nodes that are assigned to it.  Note
+that use of a group may delay placement of the job, but in turn may allow
+better communication performance as a consequence of more locally placed
+processes.
+
+This directory contains a small program called show_placement.c that
+shows the placement of processes on the nodes assigned to the job.
+The user should copy the contents of this directory into a subdirectory
+in the user's $WORKDIR or $HOME.
+
+The program can be compiled by entering "make" at the command line prompt.
+The default MPI C compiler is mpicc, which uses Gnu C to compile, and it links
+SGI MPT.  To use Intel's IMPI, swap modules to one of the Intel MPI modules,
+say mpi/intelmpi, and uncomment the line setting MPICC to mpiicc
+in the Makefile.
+
+The program can be run using the batch script place.bat by entering
+
+  qsub place.bat
+
+at the prompt.  The account information in place.bat will need to be changed
+to match your project allocation(s).  Be certain to use the mpirun command
+appropriate for the MPI used in the compilation.
+
+Note that the PBS option
+
+#PBS -l select=1:ncpus=36:mpiprocs=36
+
+reserves 1 node of 36 cores.  If the cores of the nodes are not to be
+fully utilized, then the value of <num_cpus> = <num_nodes>*<36 cores/node>
+needs to be larger than the value of <procs>.  For example,
+
+#PBS -l select=4:ncpus=36:mpiprocs=9
+mpiexec_mpt -n 36 ./a.out
+
+will place 9 MPI processes on each of the 4 nodes for a total of 36 processes.
+

@@ -1,0 +1,34 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=36
+#PBS -l walltime=00:05:00
+#PBS -A your-project-no
+#PBS -j oe
+#PBS -q debug
+#PBS -N core_info
+#PBS -l application=other
+#
+export JID=`echo $PBS_JOBID | cut -d "." -f 1`
+
+#  Set up the job to run in work space
+
+cd $PBS_O_WORKDIR
+mkdir $WORKDIR/core_info_o$JID
+cp corec.x coref.x $WORKDIR/core_info_o$JID
+cd $WORKDIR/core_info_o$JID
+ls
+
+#  Submit the computation tasks
+
+mpiexec_mpt -n 72 ./corec.x >& corec_out.o$JID
+mpiexec_mpt -n 72 ./coref.x >& coref_out.o$JID
+
+#  Collect results and exit
+
+mv corec_out.o$JID $PBS_O_WORKDIR
+mv coref_out.o$JID $PBS_O_WORKDIR
+#
+/bin/rm corec.x coref.x
+cd ../
+rmdir core_info_o$JID
+#
+exit

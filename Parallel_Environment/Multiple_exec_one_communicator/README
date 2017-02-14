@@ -1,0 +1,66 @@
+Example of using several different executables for one MPI job.
+
+Note: This example works only for mpirun in SGI's MPT and mpirun in Intel's
+  IMPI.
+
+Different parallel executables can work together as one MPI program.
+Topaz' nodes can run multiple executables, and different nodes
+can run different executables, that are all part of the same program.
+This is called Multiple Program, Multiple Data (MPMD) mode.
+This can be useful, for example, when one task is specialized
+for distributing data, collecting data, or I/O and requires
+more memory than other tasks.  Moreover, algorithms developed
+independently, each with their own main() program, can be
+combined using the MPMD mode.
+
+The various executables share the same world communicator, and
+each process in the set of executables has a unique rank.
+
+A brief description is given in the output of the "man mpirun"
+command in the SGI MPT module; look for remarks about heterogeneous
+applications.  For mpirun in the Intel IMPI modules, review the
+information returned when "mpirun --help" is entered on the command
+line.
+
+The executables that work together are separated by colons on the mpirun
+comand line.  A space is required before and after each colon.  This syntax
+can be combined with the "mpirun hostlist numtasks binary" syntax to specify
+which tasks take how many processes on which nodes.
+
+The two different mpirun commands have slightly different syntax; review
+the two difference PBS job submission scripts to see them.
+
+The example program has three sources, part_one.c, part_two.c, and
+part_three.c, which can be compiled and linked using the commands
+in the file "compile".  The resulting three executables are
+part_one.exe, part_two.exe, and part_three.exe.  All three programs
+have the processes write their own rank and the node on which it runs,
+in order to show how the processes are distributed.  The program then
+communicates with the next higher rank using MPI in order to demonstrate
+that the three executables are able to communicate with each other.
+
+Note that this application uses potentially unsafe combinations of blocking
+sends and receives that may lock if the communication subsystem does not
+buffer the messages.
+
+Instructions:
+Copy this directory and its contents to your work directory:
+
+  cp -R $SAMPLES_HOME/Workload_Management/Multiple_exec_one_communicator $WORKDIR
+
+Enter that directory and compile the executables:
+
+  cd $WORKDIR/Multiple_exec_one_communicator ; ./compile
+
+Edit submit.pbs to place your allocation charge code after $PBS -A.
+
+Submit the job:
+
+  qsub submit_SGI-MPT.pbs
+
+and/or
+
+  qsub submit_Intel-IMPI.pbs
+
+Review the output when the job finishes.
+

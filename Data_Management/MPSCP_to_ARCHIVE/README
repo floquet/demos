@@ -1,0 +1,16 @@
+Description:
+The mpscp utility can generate multiple scp threads to transfer files.
+This directory has simple scripts which you can edit to move files to and from
+archive storage and topaz.
+
+You must copy and edit these scripts for your use.  In their present form,
+you are the user, and the file archive is on the archive host,
+gold.erdc.hpc.mil.  The file archive is NOT mounted on topaz. 
+
+In TAR_then_SAVE, the target directory there is Archive_Example/.
+
+Since mpscp uses scp, a valid Kerberos ticket is required.  Therefore, mpscp
+is not recommended for use in batch jobs.  Instead, you should use the
+"archive" utility in batch jobs.
+
+Please read the file mpscp.info for additional information.

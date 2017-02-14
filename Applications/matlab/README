@@ -1,0 +1,59 @@
+Instructions for Interactive and Queued PBS processing with MATLAB
+==================================================================
+
+In order to run MATLAB, you must have permission to execute it.  This
+is checked by listing your group permissions, viz groups userid, where userid
+is your user id.  If you have permission to execute MATLAB, the group id
+"matlab" will appear in  your group memberships.
+
+Access to MATLAB is typically made by request to the HPC Help Desk.
+
+Assuming you have access, MATLAB can be executed interactively or by
+submission of a PBS job script.
+
+You are requested to not run matlab on the login or PBS job (mom) nodes.
+Doing so may place very large demands upon those nodes and inhibit other
+users, in which case the system administrators will kill the MATLAB job.
+
+You can avoid running on the login and mom nodes by running either an
+interactive PBS job or a queued PBS job.
+
+
+--------------------------------------------------------------------------------
+Executing an interactive MATLAB job on the compute nodes:
+
+If  you need to run an interactive job, say to use the GUI, then you
+can submit an interactive job like this:
+
+  qsub -A your-project-id -q standard -l walltime=01:00:00 -l select=1:ncpus=36:mpiprocs=36 -l matlab=1 -X -I
+
+Note the request to use MATLAB licenses in -l matlab=x, where x is the number
+of nodes in the job.  In the line above, 1 node is requested both in the
+select= line and in the license request line matlab=1.
+
+When the job begins, load the MATLAB module:
+
+  module load matlab
+
+Begin MATLAB processing:
+
+  matlab
+
+When finished, exit matlab and the cluster mode session, and exit the
+interactive session.
+
+--------------------------------------------------------------------------------
+Submitting a queued MATLAB job to run on the compute nodes:
+
+If you do not need GUI or interactive access, you can submit a MATLAB job
+and let it run whenever the cores and licenses are available.
+
+So, create a MATLAB job script (.m script) and place it in the directory
+from which you will submit the PBS job.  In that directory, edit a copy
+of the PBS job script to copy the data files and script(s) to your work
+directory ($WORKDIR), and then submit the job.
+
+Be certain to retrieve your output data and results and archive it before it
+is erased.  $WORKDIR is not intended for permanent storage.  Files placed
+there are erased after 30 days.
+

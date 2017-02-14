@@ -1,0 +1,58 @@
+This example is named "Serial_Processing_1".
+
+Unlike Garnet, nodes from the compute pool are used to execute PBS jobs.
+This means that users are able to execute serial tasks on the compute
+nodes without having to use mpirun-type commands.
+
+This example demonstrates how ssh can be used to execute serial jobs on Topaz'
+compute nodes, one job per per core.  Note that since ssh requires a current
+Kerberos ticket, the jobs will fail when the ticket lifetime expires.
+
+Note use of the wait command to halt processing until all serial tasks
+complete.  This will prevent the job from exiting and thereby keep PBS from
+erroneously allocating busy nodes to other jobs.
+
+The files used are:
+
+1) Fortran 90 source code file "serial_test.f90"
+2) "Makefile", used for compiling "serial_test.x".  It presumes the Intel
+   compilers are visible in the path.
+3) The batch submission file "serial_1.pbs"
+
+Files generated are:
+
+1) The executable program file "serial_test.x".
+2) The output file from the batch job submission, "serial_pack-1.oNNNNNN",
+   where NNNNNN is the index assigned to the job by PBS.
+3) The output files "job-stdout.oNNNNNN" from the serial tasks themselves,
+   found after job completion in the execution directory "topaz.oNNNNNN" in
+   $WORKDIR.
+
+
+Instructions:
+1) Copy this example to a directory you own, such as $WORKDIR:
+
+      cp -R $SAMPLES_HOME/Workload_Management/Serial_Processing_1 $WORKDIR
+
+2) Enter that directory and generate the executable by using the make utility:
+
+      cd $WORKDIR/Serial_Processing_1 ; make
+
+3) The batch submission file "serial_1.pbs" specifies the number of nodes
+   and processors to be used (72 for this example - 2 nodes, 36 processors per
+   node), and the filenames to be used for the output (job-stdout.oNNNNNN).
+
+   One line in "serial_1.pbs" may need to be modified:
+   The line "PBS -A <your-job-id-here>" will need to be edited to place
+      the correct project id string for your project following "-A".
+
+4) Submit the job:
+
+      qsub  serial_1.pbs
+
+5) The job file can be reviewed to observe the records written as each job
+   was placed on the compute nodes and executed in background using ssh.
+   The output files for each task will be found in the work directory
+   $WORKDIR/topaz.oNNNNNN/, where NNNNNN is the id number assigned to the
+   job by PBS.
+

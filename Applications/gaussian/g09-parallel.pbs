@@ -1,0 +1,99 @@
+#! /bin/bash
+#PBS -l select=4:ncpus=36:mpiprocs=36
+#PBS -l walltime=1:30:00
+#PBS -q debug
+#PBS -A <your account>
+#PBS -j oe
+#PBS -N gauss
+
+cd $PBS_O_WORKDIR
+
+#   Load the Gaussian-09 module to set $g09root
+#   "module avail gaussian" will show the Gaussian versions available
+source ${MODULESHOME}/init/bash
+# Next line would be for the tcsh shell.
+# source /p/home/apps/modules/default/init/tcsh
+
+module load gaussian/g09.D01
+
+# There is a bug in launching the program, that a "core" file is created.
+# If the core file does not already exist, this assures that it will
+# be zero size.
+# "ulimit -c 0" (sh, ksh, bash) does not work as far as limiting the
+# size of the core file.
+# Gaussian support says it is a Linda issue on some SGI systems
+# and does not cause incorrect results.
+touch core
+chmod ugo-w core
+
+# Set location (directory) of scratch files by setting GAUSS_SCRDIR
+# The choice of $WORKDIR/tmp is an example, the user can choose a
+# different directory.  Using $PBS_O_WORKDIR would result in the scratch
+# files being written in the directory where the job was launched.
+export GAUSS_SCRDIR=$WORKDIR/tmp
+mkdir $GAUSS_SCRDIR
+
+# Next line for shells sh, ksh and bash.
+source $g09root/g09/bsd/g09.profile
+# Next line would be for the csh or tcsh shells.
+# source $g09root/g09/bsd/g09.login
+
+# Need to define the "Linda rsh argument" for accessing other nodes.
+export GAUSS_LFLAGS=" -opt \"Tsnet.Node.lindarsharg: ssh\""
+
+# Generate a test command file, below.
+
+lindaworkers='%LindaWorkers'
+workerstmp=`cat -n ${PBS_NODEFILE} | \
+  sort -k2 | uniq -f1 -c | \
+  awk '{print $2, $3}' | \
+  sort -n | awk '{print $2}'`
+
+no_interface=""
+for i in $workerstmp ; do
+   j=`echo $i | sed -e s/\.ib0.ice-x.erdc.hpc.mil//`
+   no_interface="${no_interface}$j "
+done
+for i in $no_interface ; do
+   lindaworkers=${lindaworkers},$i
+done
+
+#for i in $workerstmp ; do
+#   lindaworkers=${lindaworkers},$i
+#done
+lindaworkers=`echo ${lindaworkers} | sed -e "s/LindaWorkers,/LindaWorkers=/"`
+
+/bin/rm -f test.preamble test.com test.log
+
+# It is important to understand that test0397.com is an input file
+# only for this example.  If a user has an input file called
+# my_run_123.com then the next line would be
+# /bin/cp my_run_123.com test.user
+/bin/cp $g09root/g09/tests/com/test0397.com test.user
+echo " "  > test.preamble
+echo "$lindaworkers" >> test.preamble
+# The value of %NProcShared can be any value between 1 to 36 .
+echo '%NProcShared=8' >> test.preamble
+cat test.preamble test.user > test.com
+
+# In order to understand these shell commands, the user should
+# compare test.user and test.com.  The file test.com has additional
+# lines above the text of test.user in order to run a parallel program.
+
+# Generate a test command file, above.
+
+TBEGIN=`echo "print time();" | perl`
+
+# If the user has input data my_run_123.com and the user were to
+# use the command "$g09root/g09/g09 my_run_123.com > test.log 2>&1" ,
+# then the executable would run on only one node.  The
+# file test.com should look like my_run_123.com except that
+# test.com has a value set for "%NProcShared" and a list
+# of "%LindaWorkers".
+$g09root/g09/g09 test.com > test.log 2>&1
+
+TEND=`echo "print time();" | perl`
+echo "walltime: `expr $TEND - $TBEGIN` seconds"
+
+exit
+

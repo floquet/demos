@@ -1,0 +1,32 @@
+Example using simple codes to demonstate running multiple parallel executions 
+ from one batch job:
+
+The compile script will compile the four simple MPI codes that will be
+ executed simultaneously during one batch job.
+
+The key to this type of batch job is understanding that each "mpirun" command
+ will run on its own cores, and to use correct syntax to pass to each "mpirun"
+ command the node list upon which it is to run.
+ 
+Note:
+ This example works on Topaz for SGI's MPT (compilation and PBS scripts
+ with "SGI-MPT" in the name) and Intel's IMPI (compilation and PBS scripts
+ with "Intel-IMPI" in the name).
+
+Note:
+ Mpiexec_mpt will not work to direct execution to subsets of the job nodes.
+
+Note:
+ The syntax of using ksh (or bash) and ( )& puts each parallel execution
+ into the background so that the job script runs all of them simultaneously. 
+ Note also that when this is done, mandatory command of "wait" must be used
+ to ensure that the job not be terminated before the parallel execution tasks
+ are complete!
+
+Instructions:
+ - Copy this example to your home or work directory using "cp -R".  
+ - Edit the submit script to place your project allocation id number after -A
+   and submit it, or override that PBS entry with -A <your-id-no> on the
+   command line:  qsub -A your-id-no submit.pbs
+ - Review the exec_*.out.o* files and the job output file test_multiple.o*.
+

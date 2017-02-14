@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+set -v
+#
+#  For reference, Intel encourages use of their MKL Link Line Advsor at
+#  https://software.intel.com/en-us/articles/intel-mkl-link-line-advisor
+#
+#  The following information is relevant to this example:
+#  Topaz runs Parallel Studio XE 2015, Linux OS, no Xeon Phi Co-processors  
+#  Intel Fortran compiler, Intel (R) 64 architecture, static linking
+#  32-bit integer, sequential execution (ie, no OpenMP),  with SGI MPT
+#  communication library
+
+#  It yields:
+#
+# mpif90 -Wl,--start-group \
+#        ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a \
+#        ${MKLROOT}/lib/intel64/libmkl_core.a \
+#        ${MKLROOT}/lib/intel64/libmkl_sequential.a \
+#        -Wl,--end-group \
+#        ${MKLROOT}/lib/intel64/libmkl_blacs_sgimpt_lp64.a \
+#        blacs_hello.f -lpthread -lm
+#  
+#  Unfortunately, this didn't work on Topaz.
+#  However, following their lead on libraries, the following compilation
+#  did work:
+ 
+# (Settings for Intel compiler and SGI MPT)
+
+mpif90 -I${MKLROOT}/include -c blacs_hello.f
+
+mpif90 blacs_hello.o \
+      -L${MKLROOT}/lib/intel64 \
+      -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -lmkl_blacs_sgimpt_lp64
+
+# For Gnu compiler, use mkl_gf_lp64 instead of mkl_intel_lp64
+# For Intel MPI (IMPI), use mkl_blacs_intelmpi_lp64 instead of
+#   mkl_blacs_sgimpt_lp64
+

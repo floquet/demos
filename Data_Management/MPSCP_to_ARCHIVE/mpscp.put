@@ -1,0 +1,54 @@
+#!/bin/ksh
+# set -x
+
+#### Usage: mpscp.put filename_to_put user@archive_host:directory/to_put_file/to_archive
+
+# Example:  "mpscp.get data.x save_it"
+### file data.x will be sent into $ARCHIVE_HOME/save_it" directory, that must exist beforehand.
+
+if [ $# -lt 2 ] ; then
+  echo ""
+  echo "Usage:"
+  echo""
+  echo "  mpscp.put filename_to_put user@archive_host:existing_directory/to_put_file/to_archive"
+  echo ""
+  exit
+fi
+
+
+### get listing of file first
+echo " "
+echo "  Local File"
+ls -l ${1}
+
+echo " "
+### put file and send the banner in a temp file.
+mpscp -w 4 ${1} ${USER}@${ARCHIVE_HOST}:${ARCHIVE_HOME}/${2}/${1}  2> ${WORKDIR}/junk_${USER}
+echo " "
+
+
+###  get listing of the file you just put
+echo "  Remote File"
+ssh ${ARCHIVE_HOST} ls -l ${ARCHIVE_HOME}/${2}/${1}
+
+
+### CHECKSUM
+echo " "
+echo "  Doing checksum, this may take awhile "
+set -A LOC `cksum ${1}`
+set -A DIS `ssh ${ARCHIVE_HOST} cksum ${ARCHIVE_HOME}/${2}/${1}  2> /tmp/junk_${USER}`
+if [ ${LOC} == ${DIS} ]
+then echo " CheckSum Matches = ${DIS} "
+else echo " CheckSum Fails   ${LOC}  vs  ${DIS}"
+fi
+echo " "
+
+
+### remove the banner file
+rm ${WORKDIR}/junk_${USER}
+
+
+exit
+
+#  Copy and edit this script to your own needs.
+

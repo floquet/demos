@@ -1,0 +1,86 @@
+#!/bin/ksh
+#PBS -l select=3:ncpus=36:mpiprocs=36
+#PBS -l walltime=00:15:00
+#PBS -A project_id
+#PBS -q debug
+#PBS -N test_multiple
+#PBS -j oe
+#PBS -l application=Other
+
+# Set up execution directory in $WORKDIR
+JID=`echo $PBS_JOBID | cut -d. -f1`
+export JOBDIR=$WORKDIR/test_multiple_o$JID
+mkdir $JOBDIR
+
+# Copy binaries to execution directory and move into it
+cd $PBS_O_WORKDIR
+cp mpi_test.x serial_test.x serial_jobs.sh $JOBDIR
+cd $JOBDIR
+
+# Run the mixture of serial and parallel computation tasks
+echo "Complete list of available cores:"
+cat $PBS_NODEFILE
+echo
+echo "Set cores for serial processes:"
+cat $PBS_NODEFILE | tail -n 8 | sed "s//,/g" > hostfile_serials
+cat hostfile_serials
+echo
+echo "Set cores for MPI task:"
+cat $PBS_NODEFILE | head -n 72 | sed "s//,/g" > hostfile_mpi
+cat hostfile_mpi
+
+echo
+
+##  Start up 8 serial jobs: execute the "serial_jobs.sh" script on one
+##  compute node.  Puts 8 serial tasks, one on each of 8 different cores,
+##  same node.
+##  Note use of mpirun to place the serial tasks on the last node in the
+##  nodelist.  Placement on the first node in the nodelist could be done
+##  without mpirun, but the parallel task using that node would have to
+##  be placed on the last two nodes, not the first two.
+##  Note also that the serial mpirun task is put in background!
+
+. $MODULESHOME/init/ksh
+module swap mpi/sgimpt mpi/intelmpi
+
+ser_host="`uniq hostfile_serials`" #head -n 1 hostfile_serials`
+echo "  Mpirun argument for serial tasks is $ser_host"
+echo "  Serial  started  `date` "
+
+( mpirun -hosts $ser_host -np 1 ./serial_jobs.sh $JID > serial_runs.stdout.o$JID ) &
+
+module swap mpi/intelmpi mpi/sgimpt
+
+# Syntax for SGI MPT's mpirun:
+#( mpirun $ser_host 1 ./serial_jobs.sh $JID > serial_runs.stdout.o$JID ) &
+
+sleep 5
+
+##  Start up the parallel job on the first 2 nodes with 72 mpi processes.
+##  Sample code mpi_test.f90 will list the nodes it is running on.
+
+par_host=""
+for node in `uniq hostfile_mpi`; do
+  par_host="${par_host}, ${node}"
+done 
+par_host=`echo $par_host | sed "s/^, //"`
+echo "  Mpirun host list for parallel MPI task is $par_host"
+
+echo "  Parallel  started  `date` "
+ls
+mpirun $par_host -np 36 ./mpi_test.x > parallel_run.stdout.o$JID
+echo "  Parallel  ended  `date` "
+
+##  Wait for the serial jobs to end, in case they last longer than the
+##  parallel job.
+
+wait
+
+##  Copy data back to $PBS_O_WORKDIR, clean up, exit cleanly.
+
+mv hostfile_serials job-stdout*.o$JID serial_runs.stdout.o$JID $PBS_O_WORKDIR
+mv hostfile_mpi parallel_run.stdout.o$JID $PBS_O_WORKDIR
+cd ..
+rm -rf $WORKDIR/test_multiple_o$JID
+
+exit

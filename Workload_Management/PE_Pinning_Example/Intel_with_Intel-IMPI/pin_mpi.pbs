@@ -1,0 +1,36 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=12
+#PBS -l walltime=0:10:00
+#PBS -A your-project-no
+#PBS -q debug
+#PBS -j oe
+#PBS -N pin_mpi
+
+cd $PBS_O_WORKDIR
+JID="`echo $PBS_JOBID | cut -d. -f1`"
+
+echo "----------------------------------------"
+echo "Running on nodes"
+cat $PBS_NODEFILE | uniq
+echo "----------------------------------------"
+. $MODULESHOME/init/bash
+module swap mpi/sgimpt mpi/intelmpi
+echo "Using Intel MPI:"
+module list
+echo "----------------------------------------"
+export I_MPI_PIN="enable"
+#export I_MPI_PIN_PROCESSOR_LIST="0,3,6,9,12,15,18,21,24,27,30,33"
+# Alternatively, a more compact expression of the processor list:
+#export I_MPI_PIN_PROCESSOR_LIST="fine,grain=1,shift=3"
+echo 
+echo "----------------------------------------"
+echo "Using Intel variables to direct placement and pinning:"
+echo "I_MPI_PIN=$I_MPI_PIN"
+echo "I_MPI_PIN_PROCESSOR_LIST=$I_MPI_PIN_PROCESSOR_LIST"
+echo "----------------------------------------"
+
+mpirun -np 24 ./mpi_xthi
+
+echo "----------------------------------------"
+
+exit

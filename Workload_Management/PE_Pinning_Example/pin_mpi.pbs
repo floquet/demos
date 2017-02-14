@@ -1,0 +1,27 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=4
+#PBS -l walltime=0:10:00
+#PBS -A your-project-no
+#PBS -q debug
+#PBS -j oe
+#PBS -N pin_mpi
+
+cd $PBS_O_WORKDIR
+JID="`echo $PBS_JOBID | cut -d. -f1`"
+
+echo "----------------------------------------"
+echo "Running on nodes"
+cat $PBS_NODEFILE | uniq
+echo "----------------------------------------"
+. $MODULESHOME/init/bash
+echo "Using Intel code with SGI MPT:"
+module list
+echo "----------------------------------------"
+echo "Using dplace in the SGI PE, balanced placement:"
+echo "----------------------------------------"
+
+mpiexec_mpt -np 8 dplace -o dplace_log.o$JID -s1 -c0,9,18,27 ./mpi_xthi
+
+echo "----------------------------------------"
+
+exit

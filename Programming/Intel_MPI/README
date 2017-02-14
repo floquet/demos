@@ -1,0 +1,16 @@
+To compile MPI codes with Intel IMPI:
+
+There are two compilers, Intel and Gnu.
+of MPI - SGI's MPT and Intel's IMPI.
+
+Read Intel_MPI.txt to find which MPI compiler scripts to use to compile
+and which modules to use to execute Intel MPI code.
+
+If no specific version number is stated, then the default is assumed,
+although you may use any available version.  The default version is
+15.0.3.
+
+To see what module mpi/intelmpi/16.0.0 is, for example, enter
+"module show compiler/intel/16.0.0".
+
+

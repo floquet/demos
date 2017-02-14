@@ -1,0 +1,40 @@
+This sample is named "Core_Info_Example".
+
+This sample provides a tool you can use to determine MPI process or MPI
+process/OpenMP thread association for each core used in your job.  Two
+examples, mainc.c and mainf.f, are provided to show you how to do this.
+
+No assumption is made on the login shell.  Csh commands will function
+under tcsh, and bash commands will function under ksh and sh. To ensure
+settings from shell resource files are available to the job script,
+the job script consistent with your default shell is recommended.
+
+From the parent directory $SAMPLES_HOME/Workload_Management/, copy the
+entire directory and its contents to your $WORKDIR:
+
+    cp -R Core_Info_Example $WORKDIR
+
+Enter that directory ("cd $WORKDIR/Core_Info_Example") and create either
+the sequential binaries
+
+    make
+
+or the hybrid MPI/OpenMP binaries
+
+    make openmp
+
+You should find corec.x and coref.x upon successful compilation.
+
+The PBS job scripts core_info-mpi.pbs and core_info.pbs show how to set up
+and execute corec.x and coref.x on 2 nodes using 72 MPI processes or 
+8 MPI processes each owning 9 OpenMP threads.
+
+Edit core_info.pbs if you wish to execute the OpenMP versions of corec.x and
+coref.x, or core_info-mpi.pbs if you wish to execute the pure MPI versions
+of coref.x and corec.x, to place your project id number after #PBS -A. At your
+option, you may change the value of the environment variable "OMP_NUM_THREADS"
+to an integer between the values 2 and 36 in core_info.pbs. 
+
+Execute "qsub core_info.pbs" or "qsub core_info-mpi.pbs".
+
+Compare your output to the sample output in "corec.out", "coref.out".

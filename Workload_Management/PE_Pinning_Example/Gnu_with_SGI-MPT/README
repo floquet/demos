@@ -1,0 +1,62 @@
+Pinning Processing Elements for Gnu code with SGI MPT:
+
+Code that uses SGI's MPT may be placed by setting MPI_DSM_DISTRIBUTE or
+MPI_DSM_CPULIST.  More information on these variables is available at
+http://techpubs.sgi.com/library/tpl/cgi-bin/getdoc.cgi/linux/bks/SGI_EndUser/books/MPT_UG/sgi_html/ch07.html#Z11757 and also in the MPI man page in the
+SGI MPT programming environment.
+
+MPI_DSM_CPULIST specifies a list of CPUs upon which to run an MPI application,
+with a colon, :, separating core lists for each node.  The list must be of
+length at least the number of MPI processes to be pinned - a short list for
+a node will be cycled through until all processes for that node are placed, and
+no MPI processes will be placed on nodes past the end of list.
+
+For example, suppose a PBS job has 12 MPI processes to be placed on 3 nodes,
+4 processes each, but MPI_DSM_CPULIST consists of a list of 4 cores, then a
+colon, then 2 cores.  The MPI processes on the first node will be pinned as
+instructed.  The list for the second node will be used twice, so each core
+will have 2 MPI processes.  The third node will have no processes pinned, so
+all processes will be allowed to wander across the entire node, including HT
+cores.  Finally, warning messages saying so will be issued.
+
+If MPI_DSM_CPULIST is longer than the number of MPI processes, then placement
+will be according to MPI_DSM_CPULIST on each node as specified, moving up to
+the next node when the number of MPI processes for that node is reached.  In
+this case, MPI_DSM_CPULIST will have unused placement instructions for one or
+more nodes depending on how it was set.
+
+MPI_DSM_CPULIST does not take into account NUMA nodes, but places MPI proceses
+as instructed.  To activate NUMA placement mode, in which each MPI process is
+guaranteed a unique CPU core and physical memory in the NUMA node for it, use
+MPI_DSM_DISTRIBUTE.  MPI_DSM_DISTRIBUTE takes the values "enabled" and
+"disabled"; it is "enabled" by default.  If "enabled", MPI processes are
+pinned on the cores starting with process 0 to core 0 and placed incrementally
+according to the PBS select statement until all processes have been placed.
+Setting MPI_DSM_CPULIST overrides this placement.
+
+Dplace can also be used for MPI jobs, but omplace is not working quite properly
+for OpenMP threads in a hybrid MPI/OpenMP code when compiled with the Gnu
+compilers.  (Best results for Gnu hybrid MPI/OpenMP codes have been to use
+MPI_DSM_CPULIST and MPI_OPENMP_INTEROP and not use omplace in the mpiexec_mpt
+command.)  If using dplace, the flag "-s 1" needs to be used, for Gnu creates
+an additional process on each node which will be placed on the first core
+according to dplace' instructions.  The MPI processes will not then be placed
+quite as expected.
+
+  dplace -e -x 1 -c 0-$OMP_NUM_THREADS [other dplace args] ./your.exe [exe args]
+
+The dplace flags here and in the PBS scripts do the following things:
+  -e = exact placement
+  -x = skip mask
+  -c = place processing elements on the following cores in the cpuset for the
+       job
+  -s = skip this count of processing elements
+  -vv = extremely verbose output, included here to provide placement
+        information
+  -n, -np = number of MPI processes to execute
+  -nt = number of OpenMP threads to execute for each MPI process
+
+The PBS scripts demonstrate how to place MPI and hybrid MPI/OpenMP jobs on
+distinct NUMA nodes.  Consult ../compute-cpu_arch for a description of each
+compute node and the listing of NUMA nodes by cores.
+

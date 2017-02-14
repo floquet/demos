@@ -1,0 +1,39 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=36:mpiprocs=4
+#PBS -l walltime=0:10:00
+#PBS -A your-project-no
+#PBS -q debug
+#PBS -j oe
+#PBS -N pin_openmp
+
+cd $PBS_O_WORKDIR
+
+export OMP_NUM_THREADS=8
+
+echo "----------------------------------------"
+echo "Running on nodes"
+cat $PBS_NODEFILE | uniq
+echo "----------------------------------------"
+. $MODULESHOME/init/bash
+module swap mpi/sgimpt mpi/intelmpi
+echo "Using Intel IMPI:"
+module list
+echo "----------------------------------------"
+echo "Using Intel environment variables to control placement:"
+echo "----------------------------------------"
+export I_MPI_PIN="enable"
+export I_MPI_PIN_DOMAIN=auto
+export KMP_AFFINITY="granularity=thread,proclist=[0-7,9-16,18-25,27-34],explicit"
+#export KMP_AFFINITY="granularity=thread,scatter"
+#export KMP_AFFINITY="granularity=thread,compact"
+# Possible values for KM_AFFINITY include: compact, explicit (use proclist
+# modifier), none (do not pin threads), scatter, balanced (phi only)
+echo "I_MPI_PIN=$I_MPI_PIN"
+echo "I_MPI_PIN_DOMAIN=$I_MPI_PIN_DOMAIN"
+echo "KMP_AFFINITY=$KMP_AFFINITY"
+
+mpirun -np 4 ./hybrid_xthi
+
+echo "----------------------------------------"
+
+exit

@@ -1,0 +1,187 @@
+info: Writing node (*manpages*)mpscp...
+info: Done.
+File: *manpages*,  Node: mpscp,  Up: (dir)
+
+MPSCP(1)                                                              MPSCP(1)
+
+NAME
+       mpscp - high-performance remote file copy
+
+SYNOPSIS
+       mpscp  [-prvBCaF]  [-m path-to-mpscp] [-S path-to-ssh] [-o ssh-options]
+       [-P port] [-c cipher] [-i identity] [-h hash] [-a] [[user@]host1:]file-
+       name1 ...  [[user@]host2:]filename2
+
+DESCRIPTION
+       Non-encrypted,  TCP-streams, host-to-host file copy utility intended to
+       enable greater transfer rates, while having  the  basic  user-interface
+       concept of BSD rcp(1).
+
+       The  underlying design provides the opportunity to maximize performance
+       by allocating supplemental IP  sockets  as  dedicated  and  optimizable
+       data-channels,  in a mode similar to FTP.  Additionally, a parallel I/O
+       scheme, based on the HPSS paradigm, is also employed,  offering  poten-
+       tials  for multiple-sockets over a single network connection (which, in
+       many circumstances, especially those in  involving  heterogeneous  host
+       platforms,  or  large  latency situations, can capture more bandwidth),
+       and also the distribution of the sockets across a manifold of  parallel
+       IP network connections.
+
+OPTIONS
+       -a     Alternate  the  direction  of  the data-socket connections.  The
+              default has the local side listening and  accepting,  while  the
+              remote  connects.  In alternate mode, the remote side also looks
+              to read a configuration file.
+
+       -m path
+              Specifies a variant path-to- mpscp executable on the remote side
+              of  the  connection.   The  default  is mpscp (a relative path).
+              Note that you can use "-m" to set environment  variables  and/or
+              command line options on the remote instance of mpscp.  For exam-
+              ple:
+                mpscp -F -m "mpscp -F" local-file remoteHost:remote-file
+
+       -w width
+              Sets width of data-stripe; i.e.; number of TCP-streams  used  in
+              parallel.  Default is 1, maximum is 64.
+
+       -b blocksize
+              Sets  the  blocksize  for  reads and writes in each data stream.
+              Default is 1048576, maximum is 33554432.
+
+       -h hash
+              Selects the hash algorithm to use for message integrity  checks.
+              Choices  are  "md5",  "sha1", and the default "none".  When sup-
+              ported by OpenSSL choices for "sha224", "sha256", "sha384",  and
+              "sha512"  may  also be available.  Use "none" for backwards com-
+              patibility with older versions of mpscp,  but  please  also  add
+              "-p" as the method used resets the file date.
+
+       -c cipher
+              Selects  the cipher to use for encrypting the control channel of
+              the data transfer.  This option is directly passed to ssh.
+
+       -i identity_file
+              Selects the file from which the identity (private key)  for  RSA
+              authentication  is read.  This option is directly passed to ssh.
+
+       -o ssh-options
+              Ssh options passed to ssh.
+
+       -p     Preserves modification times, access times, and modes  from  the
+              original file.
+
+       -r     Recursively copy entire directories.
+
+       -v     Verbose  mode,  useful  in debugging connection, authentication,
+              and configuration problems.  Three levels are supported:
+              -v   :  Displays progress meter
+              -vv  :  Adds mpscp debugging messages.
+              -vvv :  Adds ssh and scp debugging messages.
+
+       -P port
+              Sets the port to connect to on the remote host.  Note that  this
+              option  is  written  with  a  capital P, because "-p" is already
+              reserved for preserving the times and modes of the file in  rcp.
+              Default is 22.
+
+       -F     Use random data ports, as was the default in the original mpscp.
+              The new default uses the TCP range 9000-9999, as if these  envi-
+              ronment variables were set:
+                setenv MPSCP_PORTS 'tcp[9000-9999]'
+                setenv RPC_RESTRICTED_PORTS 'ncacn_ip_tcp[9000-9999]'
+              See also "-m", above.
+
+       -S path-to-ssh
+              Specifies the path to the ssh program.
+
+ENVIRONMENT VARIABLES
+       MPSCP_CONFIG_FILENAME
+              The  MPSCP_CONFIG_FILENAME  variable  can  be  used to supply an
+              alternate  location  for  the   /usr/local/ossh/etc/mpscp_config
+              file.
+
+       MPSCP_SERVER
+              Provides  an  alternate path-to- mpscp on the remote side of the
+              connection, just like the "-m" option.
+
+       MPSCP_DATA_IP
+              Specifies the IP address of the local interface to be used.
+
+       MPSCP_PORTS
+              Specifies the range of destination data ports.  The  value  must
+              be formatted as: tcp[9000-9999]
+
+       RPC_RESTRICTED_PORTS
+              Specifies  the  range  of  source data ports.  The value must be
+              formatted as: ncacn_ip_tcp[9000-9999]
+
+       MPSCP_BLOCKED_FILE
+              The MPSCP_BLOCKED_FILE variable can be used to supply an  alter-
+              nate  location  for  the /usr/local/ossh/etc/mpscp_blocked_ports
+              file.
+
+FILES
+       /usr/local/ossh/etc/mpscp_config
+              Default path for configuration file.  Can be reassigned  dynami-
+              cally with the environment variable MPSCP_CONFIG_FILENAME.
+
+       The following shows the formatting and an example for this file:
+
+       # Any numeric value coming as the first, non-white character
+       # on a line will be interpreted as an IP address to be used
+       # for a data channel. This seems like a bug in the inet_addr
+       # routines I have encountered on multiple vendor, unix
+       # platforms, but I have accepted it as true.
+
+       # This machine has four OC-3 ATM to be utilized in parallel
+       132.175.26.150
+       192.168.1.3
+       192.168.2.3
+       192.168.3.3
+       # keyword "filesize" the first non-white string
+       # filesize                                         Optional
+       # key word  file size  I/O blocksize  Stripewidth  TCP window size
+       filesize   9999999999    1048576        16         262144
+       filesize    999999999    8388608         8
+       filesize     99999999    4194304         4
+       filesize      9999999    4194304         1
+
+       # This hierarchy of file sizes is a convoluted example.
+       # Also, they do not have to be listed in order as shown,
+       # the application will sort them to find the best match,
+       # as large as a listed size, less than the next larger.
+
+       /usr/local/ossh/etc/mpscp_blocked_ports
+              Default  path for blocked ports file.  Can be reassigned dynami-
+              cally with the environment variable MPSCP_BLOCKED_FILE.
+
+       The following shows an example for this file:
+
+       9000 9023 9024 9025 9026 9060 9082 9090 9100 9117 9148 9260
+       9284 9301 9325 9329 9400 9401 9536 9561 9563 9704 9870 9872
+       9873 9874 9875 9876 9877 9878 9879 9898 9900 9919 9989 9996
+       9999
+
+INSTALLATION
+       Similiar to scp, an executable mirroring the local side mpscp  must  be
+       found  on  the remote host. The default is simply the name mpscp; which
+       is the simplest approach: the same name is expected to be  on  a  users
+       default   login   path.    This  could  be  changed  to  a  full  path,
+       usr/local/bin/mpscp, for  instance,  by  modifying  the  Makefile,  and
+       recompiling.   Also, dynamically, the local shell environment variable,
+       MPSCP_SERVER, can be set, and finally the "-m" option can  be  used  on
+       the command line.
+
+       For  options  such as multiple IP addresses for data channels, or auto-
+       matic assignments of stripe-widths and blocksizes based on file size, a
+       configuration  file  must  be  found by the local client (or the remote
+       side if the "-a" option is used).  The default for this is hardcoded at
+       usr/local/ossh/etc/mpscp_config, and, again, this has several opportun-
+       ties for adjusting,  including  the  environment  variable,  MPSCP_CON-
+       FIG_FILENAME.  Also, the Makefile can reset this hardcoded pathname.
+
+SEE ALSO
+       scp(1), ssh(1), ssh_config(5)
+
+                               November 6 2008                        MPSCP(1)

@@ -1,0 +1,105 @@
+
+Simple MPI example.
+-------------------
+
+This document is for the Intel compiler.
+The document README_Gnu is for MPI using the Gnu compiler suite.
+
+This directory contains example batch scripts for three types
+placement of MPI processes.
+  1) 36 MPI processes per node that use the 36 cores available
+     on each node.
+  2) 72 MPI processes per node, which takes advantage of hyperthreading.
+  3) 18 MPI processes per node, for example, when each process needs
+     more memory than case 1. 
+
+Copy these files to a subdirectory of your $HOME or $WORKDIR.
+
+The C language program hello.c lists the node name for each MPI process.
+
+This example shows how to compile the program using the Intel compiler.
+
+1) 36 MPI processes per node
+----------------------------
+
+The utilization of two different MPI environments are shown,
+MPT (SGI MPI) and IMPI (Intel MPI).
+
+The default MPI of topaz is MPT.  The "module list" command should
+show some version of sgimpt, for example
+
+> module list
+Currently Loaded Modulefiles:
+  1) mpi/sgimpt/2.12
+
+To use Intel MPI the module swap command would be
+
+module swap mpi/sgimpt mpi/intelmpi
+
+The module names could also have a version number.
+
+Before submitting a job, the user needs to compile and link
+the program using the following command.  (The option "-O3" is
+optional. Typically users will want to have compiler optimization.)
+
+Either
+
+icc -O3 -o mpt_hello.exe hello.c -lmpi  # SGI MPT
+
+or
+
+mpiicc -O3 -o impi_hello.exe hello.c   # Intel MPI
+
+depending on whether you are using  mpi/sgimpt or mpi/intelmpi .
+
+For SGI MPT, the command mpicc, mpicxx and mpif90 will use the compiler
+specified by MPICC_CC, MPICXX_CXX and MPIF90_F90.
+If not set, the default values are gcc, g++ and ifort respectively.
+Alternatives are icc, icpc and gfortran respectively.
+[As of June 9, 2015, this may change in the future so that the default
+are the Intel compilers.]
+An executable compiled for SGI MPT can be submitted with the script
+mpt_hello.pbs.  Notice that the executable is launched with
+mpiexec_mpt.  For SGI MPT, do not use mpirun to launch the job.
+
+An executable compiled for Intel MPI can be submitted with the script
+impi_hello.pbs.  Notice that the executable is launched with mpirun.
+
+In the batch script, change the account number to the value assigned to
+your project.
+
+2) 72 MPI processes per node
+----------------------------
+
+For the CPUs on topaz, hyperthreading has been enabled.  Use of
+hyperthreading is not recommended if different processes use different
+parts of a dataset that causes processes to compete for cache space.
+On the other hand, if an algorithm is compute intensive, then
+hyperthreading may utilize the arithmetic units more efficiently.
+The scripts mpt_HT_hello.pbs and impi_HT_hello.pbs show how to use
+hyperthreading.  The 37th process uses the same core as the 1st
+process, the 38th process uses the same core as the 2nd process,
+so a node can have up to 72 hyperthreaded processes.
+
+3) 18 MPI processes per node
+----------------------------
+
+For MPT, the dplace command can be used to distribute the processes
+sparsely.  Each node has 4 9-core NUMA nodes.  The batch script
+sparse_mpt.pbs shows how to distribute 18 MPI processes on a node
+(rather than 36 MPI processes on 36 cores on a node) in such a way
+that 9 MPI processes use the first socket and 9 MPI processes use
+the second socket.  Let us look at the command to launch the job.
+
+mpiexec_mpt -n 36 dplace -s1 -c0-3,9-13,18-21,27-31 ./mpt_hello.exe
+
+The processes are spread over the NUMA nodes.  Each compute node
+has four NUMA nodes, two per socket.  Each NUMA node contains
+nine cores.
+
+The dplace option "-c0-3,9-13,18-21,27-31" says that the first
+4 MPI processes will run on cores 0-3 on the first NUMA node,
+the next 5 MPI processes will run on cores 9-13 on the second
+NUMA node, and so on.  The dplace option "-s1" is due to an
+attribute of MPT MPI jobs, specifically, the first thread on
+each node is a shepherd process that uses very little CPU time.

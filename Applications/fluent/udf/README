@@ -1,0 +1,50 @@
+
+This example shows how to build (compile and link) a Fluent
+application with your own code.  However, no run example is
+provided.
+
+For compiling a code to be used with Fluent, the "fluent" command
+can be used on a login node.  However, in this example, two types
+of license tokens are needed whereas only one interactive solver
+license can be reserved per user.
+
+If two licenses could be reserved on a login node, the procedure
+would be the following.  It is shown here in order to demonstrate
+the user of SLB_make_resv.pl, SLB_disp_all_resv.pl and
+SLB_term_resv.pl.
+
+SLB_make_resv.pl --app=acfd nlic 1 --tok acfd_solver=1
+SLB_make_resv.pl --app=acfd nlic 1 --tok anshpc=1
+
+Run fluent for compiling, shown later in this text.
+
+To terminate the license reservations....
+
+To determine what the reservation id is, use this command...
+SLB_disp_all_resv.pl --app acfd | grep $USER
+
+Then to terminate the reservation us this command...
+SLB_term_resv.pl --app=acfd --id=<ID from above>
+
+Notice that only one anshpc license is needed for the compilation.
+
+For compiling on a compute node using PBS, the first step is
+to start an interative PBS job.  Note that the -X option is
+needed to forward the X11 display the GUI is to be used.
+Note also, to use the GUI the login to topaz would need the -Y option,
+that is "ssh -Y topaz.erdc.hpc.mil".
+
+qsub -l walltime=00:50:00 -l acfd_solver=1,anshpc=2 \
+ -l select=1:ncpus=36:mpiprocs=2 -A <your project> -q debug -X -I
+
+module load fluent
+export I_MPI_FALLBACK=1   for ksh and bash
+# setenv I_MPI_FALLBACK 1  for csh and tcsh
+
+cd <your copy of the example>
+
+Run fluent for compiling, does not use the GUI.
+
+fluent 3ddp -pib -mpi=intel -ssh -gu -driver null -t2 \
+ -i compile-interactively-udf.inp
+

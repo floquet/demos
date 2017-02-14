@@ -1,0 +1,41 @@
+Execution of Interactive PBS Jobs on Topaz:
+
+This example demonstrates two ways to execute an interactive job to perform
+parallel tasks on Topaz.  Included are source code for "hello_interactive"
+written in C, a Makefile to assemble its binary, and an example PBS file
+that may be used to submit an interactive job to execute it.  Note use of
+the preamble statement "#PBS -I" to inform PBS that the job is to be
+interactive.
+
+At the user's option, the following command line may be used to accomplish
+the same task instead:
+
+  qsub -I -l select=1:ncpus=36:mpiprocs=36 -l walltime=00:10:00 -A <your_account_id> -q debug -N interactive_ex
+
+Alternatively,
+
+  qsub -I -l select=1:ncpus=36:mpiprocs=36,walltime=00:10:00 -A <your_account_id> -q debug -N interactive_ex
+
+When the job launches, the prompt is placed at $HOME.  The path to the
+directory in which the qsub command was executed is saved in the environment
+variable PBS_O_WORKDIR.  Commands in the PBS script after the preamble are
+not executed at the start of the interactive shell.
+
+In order to get an SSH tunnel to Topaz from your *nix desktop, use "-Y" in
+the command:
+
+  ssh -Y topaz.erdc.hpc.mil
+
+If connecting from a Windows login, start a X-server such as Xming or Cygwin,
+and then in PuTTy, set X11 forwarding the PuTTy's SSH - X11 Category Table.
+
+To then get X DISPLAY from the interactive job to your desktop, add the PBS
+option "-X".  For example,
+
+  pbs -X hello_interactive.pbs
+
+or
+
+  qsub -I -X -l select=1:ncpus=36:mpiprocs=36,walltime=00:10:00 -A <your_account_id> -q debug -N interactive_ex
+
+

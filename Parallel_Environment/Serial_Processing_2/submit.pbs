@@ -1,0 +1,57 @@
+#!/bin/ksh
+#PBS -l select=1:ncpus=36:mpiprocs=36
+#PBS -l walltime=00:11:00
+#PBS -A your_project_id
+#PBS -q debug
+#PBS -N multiple_serial
+#PBS -j oe
+#PBS -l application=Other
+
+# Set up a job execution directory in $WORKDIR so as NOT to
+# execute in $HOME
+JID=`echo $PBS_JOBID | cut -d "." -f 1`
+#  Export the JOBDIR variable so that serial_jobs.sh has it.
+export JOBDIR="$WORKDIR/topaz_o$JID"
+mkdir $JOBDIR
+
+# Copy needed script to job directory
+
+cp $PBS_O_WORKDIR/serial_jobs.sh $JOBDIR
+
+# For this example only, compile in this job script
+# Otherwise,  NOT RECOMMENDED!
+
+cd $PBS_O_WORKDIR
+ifort serial_test.f90 -o serial_test.x
+cp serial_test.x $JOBDIR
+cd $JOBDIR
+
+# Start up 8 serial tasks on the compute node:
+
+echo "  Serial  started  `date` "
+
+./serial_jobs.sh $JID > serial_runs.stdout 
+
+echo "  Serial  ended  `date` "
+
+# Topaz has 36 cores per node, so 36 jobs could execute simultaneously.
+#  In that case, edit serial_jobs.sh.
+
+mv serial_runs.stdout $PBS_O_WORKDIR/serial_runs.stdout.o$JID
+mv job-stdout* $PBS_O_WORKDIR
+/bin/rm serial_test.x serial_jobs.sh
+
+# It is possible to use an mpirun command to execute serial jobs from
+# a Korn shell script.  For this, use Intel IMPI's mpirun and specify
+# exactly 1 core.
+#
+# Exchange SGI MPT for Intel IMPI - this avoids erroneous error messages
+#. $MODULESHOME/init/ksh
+# module swap mpi/sgimpt mpi/intelmpi
+
+# Start up 8 serial tasks: " -np 1" executes the "serial_jobs.sh" script
+#  with one process distributing the other eight to the cores of the
+#  compute node.
+#mpirun -np 1 ./serial_jobs.sh $JID > serial_runs.stdout 
+
+exit

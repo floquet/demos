@@ -1,0 +1,33 @@
+Compiling and executing code using ScaLAPACK and BLACS routines in Intel's MKL
+------------------------------------------------------------------------------
+
+Intel has tuned BLACS and ScaLAPACK routines in their Math Kernel Library.
+As such, MKL is probably the best choice for heavy numerical computations
+using parallelized array and vector operations.
+
+Using Intel's compiler, SGI's MPI library (MPT), and Intel's Math Kernel
+  Library (MKL).
+
+Compile.sh will use the MKL library to compile the example code with SGI's
+  MPT. 
+
+Instructions:
+Copy the directory and its contents to your work directory:
+
+  cp -R $SAMPLES_HOME/Programming/MKL-ScaLAPACK_Example $WORKDIR
+
+Enter that directory and compile the code:
+
+  cd $WORKDIR/MKL-ScaLAPACK_Example ; ./compile.sh
+
+After topaz enters production, you will need to edit submit.pbs to place
+the allocation charge code for your PBS job after
+#PBS -A.
+
+Submit the job:
+
+  qsub submit.pbs
+
+Review the mpiexec_mpt command statement in submit.pbs and the output when
+the job is done.
+

@@ -1,0 +1,6 @@
+#!/bin/sh
+set -v
+
+mpicc part_one.c -o part_one.exe
+mpicc part_two.c -o part_two.exe
+mpicc part_three.c -o part_three.exe

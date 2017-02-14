@@ -1,0 +1,5 @@
+This example runs up to 128 serial processes simultaneously, executing 1 at 
+a time from the file LIST. Processes are run evenly across the 4 requested 
+nodes, 32 processes per node in this case. No more than 128 are run at any 
+one time, and only when a job ends is the next process from the file LIST
+started.

@@ -1,0 +1,38 @@
+#!/bin/bash
+#PBS -A <your project>
+#PBS -l select=2:ncpus=36:mpiprocs=36
+#PBS -l walltime=0:05:00
+#PBS -q debug
+#PBS -j oe
+#PBS -N namd
+
+cd $PBS_O_WORKDIR
+JID=`echo $PBS_JOBID | cut -d "." -f 1`
+
+# Define the "module" function.
+source ${MODULESHOME}/init/bash
+# Unload the default SGI MPT module.
+# The version number may be different from what is shown here.
+module unload mpt/2.11-sgi711r13
+# Load the Intel MPI module.
+# The module name may be different from what is shown here.
+# namd was compiled with Intel version 15.0.1 so the corresponding
+# Intel MPI is loaded
+module load devel/mpi/intelmpi/15.0.1
+
+NAMD_BINDIR=/p/home/apps/unsupported/namd/6.6.1-intel-intelmpi/NAMD_2.10_Source/Linux-x86_64-icc
+
+export PATH=${NAMD_BINDIR}:$PATH
+
+echo "using `which namd2`"
+
+# Dynamic libraries used by namd2.
+export LD_LIBRARY_PATH=/p/home/apps/unsupported/COST/tcltk/8.6/intel/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/p/home/apps/unsupported/fftw-serial/2.1.5-intel/lib:$LD_LIBRARY_PATH
+
+# It is assumed that apoa1.namd has been edited and the directory
+# part of outputname option in that file does exist.
+# See README
+
+mpirun -n 64 ${NAMD_BINDIR}/namd2 apoa1.namd  > run64.${JID}log 2>&1 
+

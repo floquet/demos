@@ -1,0 +1,15 @@
+This sample is named "Transfer_Queue_Example".
+
+Overview:
+This sample has two basic PBS scripts for use in the transfer queue.
+
+They should be edited to place your project account number in the appropriate
+position in the script preambles.  The location of the tar command should be
+edited to be the parent directory of the data you need to archive or to be
+placed, and the tar command should be edited appropriately to retrieve or
+place your data.
+
+Usage:
+Submit the transfer_get and/or transfer_put queue jobs at the same time as
+the primary processing job and use dependencies to control the execution order.
+

@@ -1,0 +1,32 @@
+#!/bin/csh
+#PBS -A myproject 
+#PBS -N myjob
+#PBS -l select=1:ncpus=36:mpiprocs=2
+#PBS -l walltime=1:00:00
+#PBS -l abaqus=6
+#PBS -q standard
+#PBS -l application=abaqus
+#PBS -j oe
+
+###  Licenses Needed:
+###    if <= 8 cores used, tokens needed = 4 + number of cores
+###    if > 8 and <= 10 cores used, tokens needed = 3 + number of cores
+###    if > 10 and <= 12 cores used, tokens needed = 2 + number of cores
+###    if > 12 and <= 14 cores used, tokens needed = 1 + number of cores
+###    if > 14 and <= 18 cores used, tokens needed = 16
+
+###   Load the Abaqus module for its path
+###   "module avail" will show all Abaqus versions available
+
+
+cd $PBS_O_WORKDIR
+setenv TMPDIR ${WORKDIR}
+
+source /app/modules/default/init/csh
+module load abaqus
+
+
+### Add mp_mode=THREADS to command line or abaqus_v6.env for OpenMP (1 node)
+### Add mp_mode=MPI to command line or abaqus_v6.env for MPI (2+ nodes)
+
+abaqus job=beamgap cpus=2 interactive

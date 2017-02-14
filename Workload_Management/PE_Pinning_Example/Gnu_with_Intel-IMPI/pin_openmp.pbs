@@ -1,0 +1,42 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=4
+#PBS -l walltime=0:10:00
+#PBS -A project-id
+#PBS -q debug
+#PBS -j oe
+#PBS -N pin_openmp
+
+cd $PBS_O_WORKDIR
+
+export OMP_NUM_THREADS=4
+
+echo "----------------------------------------"
+echo "Running on nodes"
+cat $PBS_NODEFILE | uniq
+echo "----------------------------------------"
+. $MODULESHOME/init/bash
+module swap compiler/intel compiler/gcc
+module swap mpi/sgimpt mpi/intelmpi
+echo "Using Gnu binary with Intel IMPI:"
+module list
+echo "----------------------------------------"
+export I_MPI_PIN="enable"
+#export I_MPI_PIN_PROCESSOR_LIST=0,9,18,27
+export I_MPI_PIN_DOMAIN="auto"
+#export OMP_PLACES="threads"
+#export OMP_PROC_BIND=close
+#export OMP_PROC_BIND=spread
+echo "----------------------------------------"
+echo "Using Gnu and Intel environment variables to control placement:"
+echo "I_MPI_PIN=$I_MPI_PIN"
+echo "I_MPI_PIN_DOMAIN=$I_MPI_PIN_DOMAIN"
+echo "I_MPI_PIN_PROCESSOR_LIST=$I_MPI_PIN_PROCESSOR_LIST"
+echo "OMP_PLACES=$OMP_PLACES"
+echo "OMP_PROC_BIND=$OMP_PROC_BIND"
+echo "----------------------------------------"
+
+mpirun -np 8 ./hybrid_xthi
+
+echo "----------------------------------------"
+
+exit

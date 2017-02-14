@@ -1,0 +1,41 @@
+How to set up a job dependency:
+
+This example demonstrates use of the PBS flag -W to set up a job dependency.
+A job dependency informs PBS about conditions under which to execute a job
+that depends on how other job(s) finish or sets up something that subsequent
+job(s) depend upon to start.
+
+To set up a job dependency, use "#PBS -W depend=<dependency-string>:<jobid(s)>
+where <dependency-string> is any one of
+  after
+  afterok
+  afternotok
+  afterany
+  before
+  beforeok
+  beforenotok
+  beforeany
+  on
+and <jobid(s)> is the job id number of a currently executing job.  <jobid(s)>
+may be a colon-separated list of jobs that are on Topaz at the time of 
+submission.  Read the "qsub" man page for more information about how to use
+the dependency strings above.
+
+Copy this example to a directory you own, such as $WORKDIR:
+  cp -R $SAMPLES_HOME/Workload_Management/Job_Dependency_Example $WORKDIR
+
+Enter it and edit the two files Submit_first.pbs and Job_Depends.pbs to place
+the correct string for your project charge code after  "#PBS -A".
+
+Assemble the example binaries using the Makfile:
+  make
+
+Run the example by executing the script "run_example".  The script submits
+the first job using Submit_first.pbs, then captures the job id of that job
+and places it in the #PBS -W preamble statement of a new PBS script it writes
+named "Submit_second.pbs".  It submits that script and captures the job id
+of the new job and places it in the same position as before in a new script
+named "Submit_third.pbs".  It then submits Submit_third.pbs.
+
+Output showing the dependencies is saved in the ascii file "queued_record".
+

@@ -1,0 +1,19 @@
+#! /bin/bash
+#PBS -l select=3:ncpus=36:mpiprocs=2
+#PBS -l walltime=0:05:00
+#PBS -A account-id
+#PBS -j oe
+#PBS -q debug
+#PBS -N adiosglobal
+#PBS -l application=other
+
+cd $PBS_O_WORKDIR
+
+source ${MODULESHOME}/init/bash
+# module load unsupported/uspinit  (no longer needed)
+module load usp-adios/intel-15.0.3/sgimpt/1.8.0
+
+mpiexec_mpt -n 6 ./adios_global > result.dat 2>&1 
+
+exit
+

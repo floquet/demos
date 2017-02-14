@@ -1,0 +1,10 @@
+#!/bin/sh
+set -v
+
+mpif90 exec_1.f90  -o exec_1.x
+
+mpif90 exec_2.f90  -o exec_2.x
+
+mpif90 exec_3.f90  -o exec_3.x
+
+mpif90 exec_4.f90  -o exec_4.x

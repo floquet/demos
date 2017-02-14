@@ -1,0 +1,90 @@
+
+ If you have binary formatted files created on other archtiectures, then you
+ may need to do one of two procedures to read them on topaz: 
+
+1) The first is to, if possible, read the binary formatted file on the other
+   system and re-write all the values as text. This will very likely quadruple
+   the size of your file, but it can then be easily transferred to any system
+   accepting ASCII text.
+
+-OR-
+
+2) If option 1 above is not possible, then you must compile your code with an
+   extra Fortan switch that will re-arrange the byte order depending on
+   where your binary formatted file was created. The Intel compiler provides
+   many switches to do this. The Gnu compiler has only a few switches to do
+   this.
+
+
+ 
+INTEL - FORTRAN/Fortran90
+============================
+ -convert big_endian
+   Specifies that the format will be big endian for INTEGER*1, INTEGER*2,
+   INTEGER*4, or INTEGER*8, and big endian for REAL*4, COMPLEX*8, REAL*8,
+   COMPLEX*16, REAL*16, or COMPLEX*32.
+
+ -convert cray
+   Specifies that the format will be big endian for INTEGER*1, INTEGER*2,
+   INTEGER*4, or INTEGER*8, and CRAY* floating-point for REAL*4, COMPLEX*8,
+   REAL*8, COMPLEX*16, REAL*16, or COMPLEX*32.
+
+ -convert fdx
+   Specifies that the format will be little endian for INTEGER*1, INTEGER*2,
+   INTEGER*4, or INTEGER*8, and VAX processor floating-point format
+   F_floating for REAL*4 or COMPLEX*8, D_floating for REAL*8 or COMPLEX*16,
+   and X_floating for REAL*16 or COMPLEX*32.
+
+ -convert fgx
+   Specifies that the format will be little endian for INTEGER*1, INTEGER*2,
+   INTEGER*4, or INTEGER*8, and VAX processor floating-point format
+   F_floating for REAL*4 or COMPLEX*8, G_floating for REAL*8 or COMPLEX*16,
+   and X_floating for REAL*16 or COMPLEX*32.
+
+ -convert ibm
+   Specifies  that the format will be big endian for INTEGER*1, INTEGER*2,
+   or INTEGER*4, and IBM* System370 floating-point format for REAL*4
+   or COMPLEX*8 (IBM short 4) and REAL*8 or COMPLEX*16 (IBM long 8).
+
+ -convert little_endian
+   Specifies that the format will be little endian for INTEGER*1, INTEGER*2,
+   INTEGER*4, or INTEGER*8, and little endian  IEEE  floating-point
+   for REAL*4, REAL*8, REAL*16, COMPLEX*8, COMPLEX*16, or COMPLEX*32.
+
+ -convert native
+   Specifies that unformatted data should not be converted. This is the
+   default.
+
+ -convert vaxd
+   Specifies that the format will be little endian for INTEGER*1, INTEGER*2,
+   INTEGER*4, or INTEGER*8, and VAX processor floating-point format
+   F_floating for REAL*4 or COMPLEX*8, D_floating for REAL*8 or COMPLEX*16,
+   and H_floating for REAL*16 or COMPLEX*32.
+
+ -convert vaxg
+   Specifies that the format will be little endian for INTEGER*1, INTEGER*2,
+   INTEGER*4, or INTEGER*8, and VAX processor floating-point format
+   F_floating for REAL*4 or COMPLEX*8, G_floating for REAL*8 or COMPLEX*16,
+   and H_floating for REAL*16 or COMPLEX*32.
+
+
+Gnu - Fortran
+=============
+ This option has effect only when used in the main program.
+
+ -fconvert=native
+   Specifies the format will be that of the native architecture.
+
+ -fconvert=swap
+   Specifies that the format will be swapped between big-endian and
+   little-endian.
+
+ -fconvert=big-endian
+   Specifies that the format will be big-endian for INTEGER*1, INTEGER*2,
+   INTEGER*4, or INTEGER*8, and big-endian for REAL*4, COMPLEX*8, REAL*8,
+   COMPLEX*16, REAL*16, or COMPLEX*32.
+
+ -fconvert=little-endian
+   Specifies that the format will be little-endian for INTEGER*1, INTEGER*2,
+   INTEGER*4, or INTEGER*8, and little-endian for REAL*4, COMPLEX*8, REAL*8,
+   COMPLEX*16, REAL*16, or COMPLEX*32.

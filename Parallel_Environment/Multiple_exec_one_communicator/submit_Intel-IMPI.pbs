@@ -1,0 +1,47 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=36
+#PBS -l walltime=0:05:00
+#PBS -A my_project
+#PBS -q debug
+#PBS -N test_hetero
+#PBS -j oe
+#PBS -l application=other
+
+#  Define job execution directory variable and use it to create the
+#  directory in $WORKDIR where the job will execute:
+JID=`echo $PBS_JOBID | cut -d. -f1`
+JOBDIR="test_hetero_o$JID"
+mkdir $WORKDIR/$JOBDIR
+
+#  Place the binaries in the job execution directory and go there,
+#  so as NOT to execute in $HOME:
+cd $PBS_O_WORKDIR
+cp *.exe $WORKDIR/$JOBDIR
+cd $WORKDIR/$JOBDIR
+ls
+
+# Swap modules over to Intel IMPI:
+. $MODULESHOME/init/bash
+module swap mpi/sgimpt mpi/intelmpi
+module list
+
+# This mpirun command says to place 1 MPI process executing part_one.exe on the
+# first node, exactly 8 MPI processes executing part_two.exe on the same
+# node, and exactly 16 MPI processes executing part_three.exe on the second
+# node, all in the same computational task, so that they will all use the same
+# communicator.
+
+hosts=`uniq $PBS_NODEFILE`
+host1=`echo $hosts | awk '{ print $1 }'`
+host2=`echo $hosts | awk '{ print $2 }'`
+echo $PBS_NODEFILE
+echo $hosts
+
+mpirun -hosts $host1 -np 1 ./part_one.exe : -hosts $host1 -np 8 ./part_two.exe : -hosts $host2 -np 16 ./part_three.exe
+
+# This example does not generate any output data files, so simply erase the
+# copied binaries and exit.
+
+/bin/rm *.exe
+
+exit

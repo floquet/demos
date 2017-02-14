@@ -1,0 +1,16 @@
+
+   The script for launching gamess, rungms, is a wrapper
+that records the usage of the application.  The
+actual script for setting-up environment variables
+and starting gamess is rungms.orig.  The user may
+need to copy and modify rungms.orig.  The file
+"rungms.orig" is not the original rungms supplied by
+the gamess developers, but rather, a version modified
+for running on topaz.
+
+Notice that, unlike some implementations of rungms,
+the version of the executable is not a command
+line option.  The version is always set to "00".
+
+
+

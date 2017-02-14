@@ -1,0 +1,8 @@
+MPT: Launch error on r1i6n17.ib0.ice-x.erdc.hpc.mil
+Usage: 
+    mpirun -np numproc \
+        omplace [-b cpu] [-c cpulist] [-nt numthreads] \
+        [-r replicate] [-s skip] [-tm none|intel|open64|pthreads] \
+        [-v] [-vv] prog [args ...]
+MPT ERROR: could not run executable
+/p/home/apps/sgi/mpt-2.12-11203/bin/mpiexec_mpt: line 393:   985 Killed                  $mpicmdline_prefix -f $paramfile

@@ -1,0 +1,14 @@
+
+This is an example of OpenCL for GPUs.
+The vecadd routine is implemented in the OpenCL language.
+
+Copy these files to a workspace that you own.
+
+Build the executable using the command
+./compile.sh
+Run the job using the command
+qsub opencl.pbs
+
+Notice that you will need to change the -L option
+in the compile.sh script.
+

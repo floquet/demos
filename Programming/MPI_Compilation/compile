@@ -1,0 +1,37 @@
+#!/bin/csh
+source $MODULESHOME/init/csh
+module purge
+
+echo "-------------------------------------------------------------------------"
+echo "Compiling Fortran and C with Intel compilers, SGI MPT and Intel IMPI"
+echo "-------------------------------------------------------------------------"
+echo ""
+
+module load compiler/intel mpi/sgimpt
+module list
+echo ""
+
+echo "  mpif90 -o hello-MPI-F90_mpt hello-MPI.f90"
+mpif90 -o hello-MPI-F90_mpt hello-MPI.f90
+echo "  mpicc  -o prime-MPI-C_mpt   prime_mpi.c"
+mpicc  -o prime-MPI-C_mpt   prime_mpi.c
+
+echo ""
+echo "-------------------------------------------------------------------------"
+echo ""
+
+module swap mpi/sgimpt mpi/intelmpi
+module list
+echo ""
+
+echo "  mpif90 -o hello-MPI-F90_impi hello-MPI.f90"
+mpif90 -o hello-MPI-F90_impi hello-MPI.f90
+echo "  mpicc   -o prime-MPI-C_impi   prime_mpi.c"
+mpicc   -o prime-MPI-C_impi   prime_mpi.c
+
+echo ""
+echo "-------------------------------------------------------------------------"
+echo ""
+
+exit
+

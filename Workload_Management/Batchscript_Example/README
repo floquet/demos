@@ -1,0 +1,15 @@
+Description:
+Simple PBS batch script showing all required statements and a few optional 
+  statements.
+
+Brief description of Topaz and its available computing resources.
+
+Advanced run script showing more advanced job management options.
+
+
+Control of job placement by selection of group resources is in the
+  subdirectory Job_Placement.
+
+Control of process placement on compute nodes is described in the
+  subdirectory Process_Placement.
+

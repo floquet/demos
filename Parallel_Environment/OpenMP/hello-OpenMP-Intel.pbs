@@ -1,0 +1,35 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=36:mpiprocs=36
+#PBS -l walltime=0:10:00
+#PBS -A account-id
+#PBS -j oe
+#PBS -q debug
+#PBS -N hello-OpenMP
+#PBS -l application=other
+
+cd $PBS_O_WORKDIR
+
+export OMP_NUM_THREADS=4
+
+echo "----------------------------------------"
+echo "Running on nodes"
+cat $PBS_NODEFILE
+echo "----------------------------------------"
+
+echo "Swap modules over to Intel PE":
+. $MODULESHOME/init/bash
+module swap mpi/sgimpt mpi/intelmpi
+module list
+
+echo "----------------------------------------"
+echo "Using mpirun in the Intel PE."
+echo "Host: `hostname`"
+echo "----------------------------------------"
+
+mpirun -np 1 ./hello-OpenMP_Intel
+echo "----------------------------------------"
+./hello-OpenMP_Intel
+
+echo "----------------------------------------"
+
+exit

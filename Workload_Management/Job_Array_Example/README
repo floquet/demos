@@ -1,0 +1,33 @@
+This sample is named "Job_Array_Example".
+
+Files used are:
+1) C source code "prime_mpi.c".
+2) Reference output file "prime_sysx_output.txt_ref".
+3) Makefile for compiling "prime_mpi.c".
+4) Scheduler submission file "Job_Array.pbs" used to execute the job.
+5) Gnu license file "gnu_lgpl.txt".
+
+Files generated are:
+1) Executable file "prime_mpi", which is copied to "exec_1", "exec_2",
+   "exec_3", and "exec_4".
+2) PBS job array directories "Job_Array.oMMMMMM[N]", where MMMMM is the
+   job identification number assigned by PBS upon job script submission,
+   and N takes the values 1, 2, 3, 4 of the job array index as required
+   in the job script preamble.
+3) Output file "output.oMMMMM[N]" from job execution in each directory
+   Job_Array.oMMMMM[N].
+4) Ascii files containing the dumps to standard output and standard error
+   containing the PBS logs of the job, "Job_Array_Test.pbs.oMMMMM.N".
+
+Commands:
+1) Copy the sample to your $WORKDIR:
+     cp -R $SAMPLES_HOME/Workload_Management/Job_Array_Example $WORKDIR
+2) Enter that directory and execute "make":
+     cd $WORKDIR/Job_Array_Example
+     make
+3) After Topaz enters production, edit Job_Array.pbs to place your project
+   id number after #PBS -A.
+4) Execute "qsub -r y Job_Array.pbs".
+5) Review the PBS job script Job_Array.pbs and the contents of the new
+   directories "Job_Array.oMMMMMM[N]".
+

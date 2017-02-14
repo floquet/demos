@@ -1,0 +1,12 @@
+
+Simple matrix multiplication on one GPU,
+on one compute node.
+Done by CPU and GPU, and results compared.
+
+Copy these files to a workspace that you own.
+
+Build the executable using the command
+./compile.sh
+Run the job using the command
+qsub matmult.pbs
+

@@ -1,0 +1,53 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=4
+#PBS -l walltime=00:05:00
+#PBS -A your-project-no
+#PBS -j oe
+#PBS -q debug
+#PBS -N core_info
+#PBS -l application=other
+#
+export JID=`echo $PBS_JOBID | cut -d "." -f 1`
+
+#  Set up the job to run in work space
+
+cd $PBS_O_WORKDIR
+mkdir $WORKDIR/core_info_o$JID
+cp corec.x coref.x $WORKDIR/core_info_o$JID
+cd $WORKDIR/core_info_o$JID
+ls
+
+#  Set the number of OpenMP threads.
+#    Note: Sequential codes require OMP_NUM_THREADS=1.
+#          OpenMP codes do not require that.
+
+#  Each compute node has 4 NUMA nodes, each of which has 9 cores.
+
+export OMP_NUM_THREADS=9
+PROCS=`expr 72 / $OMP_NUM_THREADS`
+
+#  Submit the computation tasks
+
+#  Use these for Intel binaries using SGI MPT
+mpiexec_mpt -n $PROCS omplace -c 0-35:bs=${OMP_NUM_THREADS}+st=9 ./corec.x >& corec_out.o$JID
+mpiexec_mpt -n $PROCS omplace -c 0-35:bs=${OMP_NUM_THREADS}+st=9./coref.x >& coref_out.o$JID
+
+#  Use these for Gnu binaries using SGI MPT
+#. $MODULESHOME/init/bash
+#module swap compiler/intel compiler/gcc
+#export MPI_DSM_DISTRIBUTE=
+#export MPI_OPENMP_INTEROP=
+#export MPI_DSM_CPULIST=0,0-8,9,9-17,18,18-26,27,27-35:0,0-8,9,9-17,18,18-26,27,27-35
+#mpiexec_mpt -n $PROCS ./corec.x > corec_out.o$JID
+#mpiexec_mpt -n $PROCS ./coref.x > coref_out.o$JID
+
+#  Collect results and exit
+
+mv corec_out.o$JID $PBS_O_WORKDIR
+mv coref_out.o$JID $PBS_O_WORKDIR
+#
+/bin/rm corec.x coref.x
+cd ../
+rmdir core_info_o$JID
+#
+exit

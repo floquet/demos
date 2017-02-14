@@ -1,0 +1,53 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=36:mpiprocs=36
+#PBS -l walltime=0:20:00
+#PBS -A <project_id#>
+#PBS -q debug 
+#PBS -N Job_Array_Test
+#PBS -J 1-4:1
+#PBS -j oe
+# Set the application name. See
+# $SAMPLES_HOME/Application_Name/application_names for a list of
+# acceptable values.
+#PBS -l application=other
+
+#
+#  PBS -J 1-4:1 signifies a job array from 1 to 4 in steps of 1.
+#
+
+cd $WORKDIR
+
+echo "PBS Job Id PBS_JOBID is ${PBS_JOBID}"
+
+echo "PBS job array index PBS_ARRAY_INDEX value is ${PBS_ARRAY_INDEX}"
+
+JOBID=`echo ${PBS_JOBID} | cut -d'.' -f1`
+#
+#  To isolate the job id number, cut on the character "[" instead of
+#  ".".
+#
+
+HPCMP_JA_DIR=Job_Array.o${JOBID}
+
+# Make a directory for output of each task 
+mkdir ${HPCMP_JA_DIR}
+
+# cd to directory to run each task 
+cd ${HPCMP_JA_DIR}
+
+# Retrieve the job's binary
+cp $PBS_O_WORKDIR/exec_$PBS_ARRAY_INDEX .
+
+# run job and redirect output 
+mpiexec_mpt -n 36 ./exec_$PBS_ARRAY_INDEX >& output.o$JOBID
+
+# clean up and exit gracefully
+
+ls
+mv output.o$JOBID $PBS_O_WORKDIR
+cd ..
+
+# note use of double quotes to clarify exactly what the directory name is,
+# since the job array characters [ and ] confuse the operating system!
+#/bin/rm "$HPCMP_JA_DIR"/* prime_mpi
+exit

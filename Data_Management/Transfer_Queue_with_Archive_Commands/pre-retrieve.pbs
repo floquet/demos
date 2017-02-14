@@ -1,0 +1,64 @@
+#!/bin/sh
+#PBS -l walltime=00:30:00
+#PBS -l select=1:ncpus=1
+#PBS -A <project-charge-no>
+#PBS -q transfer
+#PBS -N job_get
+#PBS -j oe
+#
+
+cd $WORKDIR
+JOBID=`echo $PBS_JOBID | cut -d . -f 1`
+mkdir oocore_job.o$JOBID
+
+cd oocore_job.o$JOBID
+
+TESTIT=`archive stat -retry 1 | grep 'on-line' | wc -l`
+if [ $TESTIT -ge 1 ] ; then
+  echo "Archive system is on-line; retrieving job files."
+  archive get -C archive_cmd_ex in_files.tar.gz
+else
+  echo "Archive system not on-line!!"
+  echo "Exiting"
+  echo `date`
+  exit
+fi
+
+echo "Input data files retrieved: `date`"
+echo "Unpacking input tar file"
+
+gunzip in_files.tar.gz
+tar -xf in_files.tar
+
+echo "Directory contents:"
+ls
+
+echo "Submitting computation job"
+
+qsub -l walltime=00:30:00 -N jobdo-${JOBID} -j oe -q debug -l select=2:ncpus=36:mpiprocs=32 -A <project-charge-no> -W depend=afterok:${JOBID} -r n  << EOFC
+#!/bin/sh
+
+cd $WORKDIR/oocore_job.o$JOBID
+
+echo "Executing computation"
+
+mpiexec_mpt -n 64 ./testzdriver | tee solution.out
+
+echo "Computation finished, submitting job to pack and archive data"
+
+COMP_JOB=`echo \$PBS_JOBID | cut -d. -f 1`
+
+echo "Submitting archive job to transfer queue: `date`"
+if [ -e post-archive.pbs ] ; then
+  qsub -W 'depend=afterok:${COMP_JOB}' post-archive.pbs
+else
+  echo "Post-archive.pbs missing!!!"
+  echo "Archive step to store data cannot be performed."
+  echo "Exiting."
+  exit 1
+fi
+
+exit
+EOFC
+
+exit

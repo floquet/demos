@@ -1,0 +1,63 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=4
+#PBS -l walltime=0:10:00
+#PBS -A your-project-no
+#PBS -q debug
+#PBS -j oe
+#PBS -N pin_openmp
+
+cd $PBS_O_WORKDIR
+
+export OMP_NUM_THREADS=4
+
+echo "----------------------------------------"
+echo "Running on nodes"
+cat $PBS_NODEFILE | uniq
+echo "----------------------------------------"
+. $MODULESHOME/init/bash
+module swap compiler/intel compiler/gcc
+echo "Using SGI MPT with Gnu compilers:"
+module list
+echo "----------------------------------------"
+echo "Pinning Gnu binaries using SGI MPT:"
+export MPI_OPENMP_INTEROP="enabled"
+export MPI_DSM_CPULIST=0-3,9-12,18-21,27-30:0-3,9-12,18-21,27-30
+echo "MPI_DSM_DISTRIBUTE=enabled by default"
+echo "MPI_DSM_CPULIST=$MPI_DSM_CPULIST"
+echo "MPI_OPENMP_INTEROP=$MPI_OPENMP_INTEROP"
+echo "----------------------------------------"
+
+# MPT under Gnu compilers:
+
+mpiexec_mpt -np 8 ./xthi
+
+
+#  Places the threads grouped with their MPI process in $OMP_NUM_THREADS
+#  groups.  Next MPI process and threads placed on the next consecutive group
+#  of cores, regardless of NUMA boundaries.
+#export MPI_DSM_DISTRIBUTE=
+#export MPI_OPENMP_INTEROP=
+#mpiexec_mpt -np 8 ./xthi
+
+
+#  Places all the threads on same core as the MPI process
+#export MPI_DSM_CPULIST=0,9,18,27:0,9,18,27
+#mpiexec_mpt -np 8 ./xthi
+
+
+#  Pins threads 0,2,3, on consecutive cores, but lets thread 1 roam the entire
+#  node, including HT cores.
+#  -c = pinning instructions
+#  -v = verbose mode
+#mpiexec_mpt -np 8 omplace -nt $OMP_NUM_THREADS -v -c 0-3,9-12,18-21,27-30 ./xthi
+
+
+#  Places the processing elements (pe) as they are created, not necessarily
+#  in the order expected.  So, master threads are placed first, THEN subsequent
+#  OpenMP threads in the order of creation according to placement specified in
+#  -c flag.
+#mpiexec_mpt -np 8 dplace -e -s 1 -c 0-3,9-12,18-21,27-30 ./xthi
+
+echo "----------------------------------------"
+
+exit

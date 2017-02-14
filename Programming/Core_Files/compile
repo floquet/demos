@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+#  NOTE: The Gnu compiler is used here.
+#
+## Compile to trap a divide by 0 floating point exception,
+##  also compile for code instrumented zero optimization.
+##
+## Read the Gnu gfortran man page for information on how floating point
+## exceptions can be handled.  In the man page, try a search for the term
+## "exception".
+
+set -v
+# Gnu compiler:
+export MPIF90_F90=gfortran
+mpif90 -ffpe-trap=invalid,zero,overflow,underflow -fdump-core -fbacktrace \
+  -g -O0 -c mpi_test.f90
+mpif90 -ffpe-trap=invalid,zero,overflow,underflow -fdump-core -fbacktrace \
+  -g -O0 -o mpi_test mpi_test.o
+
+exit
+# Intel compiler:
+#export MPIF90_F90=ifort
+#mpif90 -debug -g -assume ieee_fpe_flags -fexceptions -fp-model fast -fpe0 \
+#  -traceback -c mpi_test.f90 mpi_test.f90
+#mpif90 -debug -g -assume ieee_fpe_flags -fexceptions -fp-model fast -fpe0 \
+#  -traceback -o mpi_test mpi_test.o
+

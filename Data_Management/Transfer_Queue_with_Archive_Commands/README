@@ -1,0 +1,66 @@
+
+     Use of Transfer Queue and Archive Commands in a Best-Practice
+
+This example is intended to demonstrate a best-practice to use the transfer
+queue to retrieve data from archive storage prior to executing a parallel
+computation that needs it.  The data is then placed back in archive storage
+using the transfer queue again.
+
+Here, the jobs are chained together with execution restricted by dependency on
+successful completion.
+
+In practice, you may wish to place your output data in the Center Wide File
+System (CWFS) for post-processing using the local utility server.  However,
+consult storage policies for lifetimes of data stored if there is a chance
+your data may be erased prior to post-processing.  If such likelihood exists,
+you may prefer to place your data in archive storage immediately, and then
+later use the transfer queue to copy it from archive storage to the CWFS.
+
+Instructions:
+ - Copy the entire contents of this directory to your home directory or
+temporary work space:
+
+   cp -R $SAMPLES_HOME/Data_Management/Transfer_Queue_with_Archive_Commands $WORKDIR
+   cd $WORKDIR/Transfer_Queue_with_Archive_Commands
+
+ - The Makefile is set for the Intel compilers and MKL library.  Therefore
+   make certain that the following modules are loaded, or later versions:
+   
+   compiler/intel/15.0.2 mpi/sgimpt/2.12
+
+ - Compile the example code, testzdriver, using make:
+   cd src
+   make testzdriver
+   cd ..
+
+ - Modify the PBS scripts to place your project id after -A in all locations
+   it occurs.
+
+ - Tar the input data, executable, and job submission files into the tarfile
+   in_files.tar:
+
+   tar cvf - testdriver.in testzdriver post-archive.pbs | gzip > in_files.tar.gz
+
+ - Place the input data tar file in archive storage:
+
+   archive mkdir archive_cmd_ex
+   archive put -C archive_cmd_ex in_files.tar.gz
+
+ - Submit pre-retrieve.pbs to initiate the example:
+
+   qsub pre-retrieve.pbs
+
+ - Check your $WORKDIR for the directory oocore.oNNNNNN, where NNNNNN is
+   the job identification number assigned by PBS.  Inside you should find
+   a copy of the input tar file, the executable, the input data, and the
+   post-archive PBS script.  You should also find PBS job files summarizing
+   the post-processing job after the archiving job finishes.  You may find
+   the stdout and stderr output dumps for jobdo, the computation portion
+   of this sample, in your $HOME.
+
+ - Check archive storage to find the output data from the job - look for
+   the file out_files.tar.gz in a new directory oocore-out.oNNNNNN,
+   where NNNNNN is the id number assigned to the archive job by PBS.
+
+   archive ls oocore-out.oNNNNNN
+

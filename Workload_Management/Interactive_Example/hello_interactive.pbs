@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -l select=1:mpiprocs=36:ncpus=36
+#PBS -l walltime=00:10:00
+#PBS -A project-id
+#PBS -q debug
+#PBS -N interactive_ex
+#PBS -j oe
+#PBS -l application=Other
+##  Interactive job flag:
+#PBS -I
+
+echo "Location is `pwd` on node `hostname`"
+

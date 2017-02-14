@@ -1,0 +1,31 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=36
+#PBS -l walltime=00:04:00
+#PBS -A your_account
+#PBS -q debug
+#PBS -j oe
+#PBS -N memtest
+#PBS -l application=other
+
+cd $PBS_O_WORKDIR
+JOBDIR="topaz.o`echo $PBS_JOBID | cut -d. -f1`"
+mkdir $WORKDIR/$JOBDIR
+cp memtest_c.exe memtest_f.exe $WORKDIR/$JOBDIR
+cd $WORKDIR/$JOBDIR
+
+echo ""
+echo ""
+echo "Running C language executable:"
+mpirun -np 72 ./memtest_c.exe
+
+echo ""
+echo ""
+echo "Running Fortran language executable:"
+mpirun -np 72 ./memtest_f.exe
+
+echo ""
+echo ""
+
+/bin/rm memtest_c.exe memtest_f.exe
+
+exit

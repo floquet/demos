@@ -1,0 +1,17 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=72
+#PBS -l walltime=0:05:00
+#PBS -A account_id
+#PBS -j oe
+#PBS -q debug
+#PBS -N hello
+#PBS -l application=other
+
+cd $PBS_O_WORKDIR
+
+source $MODULESHOME/init/bash
+module swap mpi/sgimpt mpi/intelmpi
+
+mpirun -n 144 ./impi_hello.exe
+
+exit

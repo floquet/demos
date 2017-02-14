@@ -1,0 +1,26 @@
+#!/bin/csh
+#PBS -A myproject
+#PBS -N myjob
+#PBS -l select=1:ncpus=36:mpiprocs=4
+#PBS -l walltime=1:00:00
+#PBS -q standard
+#PBS -l application=cfd++
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+
+# This is the dual nozzle example from training/dual_nozzle
+# The mcfd.inp file came from the vendor. Comment out mc_filecopy statements or change to cp.
+# The mcpusin.bin.4 file is needed for 4 PEs.
+# Create the mcpusin.bin.4 file with "tometis pmetis 4" or with the mcfdgui: 
+#    Execute -> Domain Decomposition -> Metis -> Single-CPU. Use the default options and enter 4 
+#    for the "Number of Partitions" and hit "Run Tool".
+
+###   Load the CFD++ module for its path
+###   "module avail" will show the versions available
+
+source ${MODULESHOME}/init/csh
+module load cfd++
+
+#source $CFD_HOME/mcfdenv.csh
+mpiexec_mpt -n 4 $MCFD_HOME/exec/mpimcfd

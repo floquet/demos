@@ -1,0 +1,55 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=36:mpiprocs=36
+#PBS -l walltime=0:20:00
+#PBS -A your-project-id
+#PBS -q debug 
+#PBS -N DepOn-DEPID
+#PBS -j oe
+#PBS -l application=other
+#PBS -W depend=afterany:DEPID
+
+#  Script for jobs depending on previously submitted jobs exiting with any
+#  exit status.  To make it depend on successful exit of the previous job,
+#  use 'afterok'.  To make it depend on error exit of previous job, use
+#  'afternotok'.  DEPID is a string that must be a valid job id for a job
+#  that is in the system at the time this job is submitted; else an error
+#  condition results and PBS says so.  DEPID can be a colon-separated list
+#  of job ids.
+
+sleep 30
+
+OUTFILE=$PBS_O_WORKDIR/queued_record
+JOBID=`echo ${PBS_JOBID} | cut -d'.' -f1`
+echo "" >> $OUTFILE
+#  Divider to help delineate output for this job"
+echo "================================================================================" >> $OUTFILE
+echo "Job $JOBID executing." >> $OUTFILE
+echo "Queued jobs at time of execution:" >> $OUTFILE
+printf "Job id            Name             User              Time Use S Queue\n" >> $OUTFILE
+printf -- "----------------  ---------------- ----------------  -------- - -----\n" >> $OUTFILE
+qstat | grep $USER >> $OUTFILE
+
+sleep 30
+
+cd $WORKDIR
+
+# Make a directory for output of each task 
+mkdir Job_Deps.o$JOBID
+
+# cd to directory to run each task 
+cd Job_Deps.o$JOBID
+
+# Retrieve the job's binary
+cp $PBS_O_WORKDIR/exec_JOB-INDEX .
+
+# run job and redirect output 
+mpiexec_mpt -n 36 ./exec_JOB-INDEX >& output.o$JOBID
+
+# clean up and exit gracefully
+
+ls
+mv output.o$JOBID $PBS_O_WORKDIR
+/bin/rm exec_JOB-INDEX
+echo "Job $JOBID ending." >> $OUTFILE
+
+exit

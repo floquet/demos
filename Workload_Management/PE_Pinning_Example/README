@@ -1,0 +1,32 @@
+Pinning Processing Elements (PE) to Cores:
+=========================================
+
+These examples demonstrate methods available to pin processing elements,
+whether MPI processes or OpenMP threads, to cores or other hardware elements
+in order to retrict process migration by the Linux OS as your application
+executes.  The intent is to prevent separation of a process from its local
+memory, that is, to prevent the OS from moving it outside of its original
+NUMA node.
+
+Process placement is enabled by default on topaz for Intel code using SGI MPT.
+Therefore, MPI processes won't be moved around on the compute nodes.  However,
+this does not quarantee balanced placement of MPI processes across the node.
+SGI's tools dplace and omplace can be used for more precise placement of
+processing elements on topaz' nodes.  Refer to the PBS scripts pin_mpi.pbs
+and pin_openmp.pbs in this directory for basic examples of usage to balance
+MPI processes and OpenMP threads across topaz' nodes.
+
+Each different MPI and compiler combination available on topaz has its own
+subdirectory here with more detailed examples of process placement.
+Code compiled with the Gnu compiler doesn't quite do the right
+things with omplace and dplace, so other methods are presented for it.
+Other methods must be used with Intel IMPI, and they are presented here
+also.
+
+The file "compute-cpu_arch" presents output of the command "lscpu" for
+reference to see which cores form the NUMA nodes for nodes in the compute
+pool.  Use it to determine which PEs to pin for your application.
+
+Consult the README in each for more detailed information for specific
+compiler/MPI pairing.
+

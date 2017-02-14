@@ -1,0 +1,20 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=36
+#PBS -l walltime=0:05:00
+#PBS -A your-project-account
+#PBS -j oe
+#PBS -q debug
+#PBS -N hello
+#PBS -l application=other
+
+cd $PBS_O_WORKDIR
+
+# The actual choice of the version for compiler/gcc should be
+# the same as during compilation.
+source $MODULESHOME/init/bash
+module swap compiler/intel/15.0.3 compiler/gcc/4.9.3
+
+# Do not use mpirun for SGI MPT jobs.
+mpiexec_mpt -n 72 ./mpt_gcc_hello.exe
+
+exit

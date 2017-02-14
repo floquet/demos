@@ -1,0 +1,45 @@
+#!/bin/csh -x
+## requesting 72 cores (2 nodes), modify to your needs
+#PBS -l select=2:ncpus=36:mpiprocs=36
+
+## requesting 1 hour 10 minutes, modify to your needs 
+#PBS -l walltime=01:10:00
+
+## account against which to charge the time
+## do "show_usage"  to see your projects and allocations
+#PBS -A valid-proj-string
+
+## queue;  standard, challenge, etc
+#PBS -q standard
+
+## job name, your choice
+#PBS -N testjob
+
+## stdout and stderr go to a file with job name (testjob.#####) ##### is jobid
+#PBS -j oe
+
+## name of application from $SAMPLES_HOME/Application_Name/application_names
+#PBS -l application=other
+
+
+cd $PBS_O_WORKDIR          ## change directory to where job was submitted from.
+  
+mpiexec_mpt -n 72 ./a.out 
+
+exit
+
+
+##############################################################################
+
+####     Commands to submit your job  "qsub run_script.pbs"
+
+##    to view jobs in the queue, and kill jobs
+##  qview               ## list jobs, contains job_number
+##  qdel  <job_number>  ## to kill your job
+##  qstat -u <user_id>  ## to check the status of all of your jobs
+##  qstat <queue>       ## to list all the jobs in the <queue> queue
+
+#### Useful PBS Environment Variables
+PBS_O_WORKDIR
+PBS_JOBID
+PBS_NODELIST

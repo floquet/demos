@@ -1,0 +1,24 @@
+#!/bin/bash
+rm -f *.o lib*
+ls -l
+
+set -x
+
+## Compile the object files.
+##  The options used here work for Intel compilers
+##  on Topaz.
+mpif90 -fPIC  -O1  -c  so_one.f90
+mpif90 -fPIC  -O1  -c  so_two.f90
+mpif90 -fPIC  -O1  -c  so_three.f90
+
+## Make a Shared Library (SO)
+## Again, in every environment where Fortran exists
+mpif90  -shared -o libtstpie.so  *.o
+
+rm -f *.o
+
+## Compile main routine and link against built SO
+## Again, in every environment where Fortran exists
+mpif90 -O1   main_routine.f90 -o ../main_routine.x  -L. -ltstpie 
+
+exit

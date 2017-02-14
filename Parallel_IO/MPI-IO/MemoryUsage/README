@@ -1,0 +1,105 @@
+
+
+On topaz, MPI-IO can require a large amount of memory.
+
+This example shows how to increase the number of aggregators
+in order to reduce the memory usage on each node.
+
+This test is not easy to run because 320 nodes are needed.
+Without running the test, the user can see in the batch job
+script run_32_mpiio.pbs the key idea, specifically, the
+utilization of an MPI-IO hint.
+
+I you intend to run the test, copy these files to a subdirectory
+of your $WORKDIR. Be sure to change the account (project) ID in
+the files run_01_mpiio.pbs and run_32_mpiio.pbs .  The former
+uses one aggregator per OST and should fail because too much
+memory is required.  The latter uses 32 aggregators per
+OST and should run successfully.
+
+MPI-IO on topaz uses a very large amount of memory and some
+MPI processes can fail due to memory usage beyond the limit
+of available RAM memory.  In general, the approach of MPI-IO
+is to use "aggregators" to write to disks.  Each MPI process
+sends (receives) information to (from) the aggregator
+processes, then the aggregators communicate with the OSTs.
+(An OST is a set of disks that handles a single stripe of
+a Lustre file.)  The maximum number of aggregators available
+is equal to the number of nodes, though the default number
+of aggregators is the number of stripes (number of OSTs)
+of the file that has been opened.
+
+When different processes write to the same OST, there
+needs to be a software lock.  One advantage of aggregators
+is that different aggregators are working on different OSTs,
+so are not blocking each other with locks.  Even when there
+is more than one aggregator per OST, not all the processes
+are reading or writing directly to the OSTs, at most one
+per node.
+
+A default Lustre file uses four OSTs, so by default there
+would be four aggregators for an MPI executable.  But when
+hundreds or thousands of processes are involved in a
+collective MPI-IO operation, the number of buffers needed
+by those four aggregators exceeds the memory limit.
+The peak amount of memory used can be seen in the PBS epilogue.
+For run_32_mpiio.pbs, one line below is from a node with an
+aggregator and one line is from a node without an aggregator.
+
+Start Epilogue v2.5.3 Mon Feb  1 11:05:26 CST 2016 
+Memory usage reported in GB
+               % of     user     user     user    total    total
+Node          limit      max    limit  current  current     phys
+r17i0n0       18.19    21.28   117.00     5.73    15.16   125.81
+r18i3n15       6.25     7.31   117.00     0.02     7.09   125.81
+
+For run_01_mpiio.pbs, which uses fewer aggregators and crashes,
+the PBS epilogue for a node with an aggregator and one without
+is shown below.
+
+Start Epilogue v2.5.3 Mon Feb  1 11:21:39 CST 2016 
+Memory usage reported in GB
+               % of     user     user     user    total    total
+Node          limit      max    limit  current  current     phys
+r5i0n0       100.00   117.00   117.00     0.05     7.26   125.81
+r5i0n8         5.76     6.74   117.00     0.02     8.29   125.81
+
+With few aggregators, the required memory is 100% (actually, more
+than 100%) and the job crashes.
+
+The solution is to set the MPI-IO hint variable
+romio_lustre_co_ratio to a value greater than the
+default of 1.  This variable sets the number of
+aggregators per OST.  For example, setting
+romio_lustre_co_ratio to 32 means that for the
+default stripe count of 4, 128 aggregators will
+be active (assuming the job uses at least 128 compute
+nodes, that is, at least 4608 MPI processes when using
+36 processes per node).  The formula is
+   number of aggregators =
+      (number of stripes)*(romio_lustre_co_ratio)
+Having more aggregators reduces the memory usage
+for file I/O on each node.
+
+By the way, the printout of the hints has a list called
+"romio_aggregator_list" which shows one process on every node
+as an aggregator.  In fact, these are potential, not actual,
+aggregators.
+
+One way to set a hint is to have a hints file,
+for example, a hints.dat file with the line
+
+romio_lustre_co_ratio 32
+
+The value of "32" is just an example.
+
+The name of the hints file is specified using an
+environment variable.  If the user chooses the file
+name "hints.dat" then the environment variable would
+be set as shown below
+
+# sh, ksh, bash
+export ROMIO_HINTS=hints.dat
+# csh, tcsh
+setenv ROMIO_HINTS hints.dat
+

@@ -1,0 +1,39 @@
+archive      : Perform basic file-handling operations on the DMS.
+blocker      : Convert a file to fixed-record-length format.
+bull         : Display the system bulletin board.
+cal2jul      : Converts a date into the corresponding Julian date.
+datecalc     : Print an offset from today's date in various formats.
+extabs       : Expand tab characters to spaces in a text file.
+getarchome   : Display the value of ARCHIVE_HOME for a given userid.
+getarchost   : Display the value of ARCHIVE_HOST for a given userid.
+justify      : Justify a character string with padding.
+lss          : Show unprintable characters in file names.
+mpscp        : High-performance remote file copy.
+msfchmod     : Change file/directory permissions on the DMS.
+msfget       : Copy a single file from the DMS.
+msfls        : List files and directories on the DMS.
+msfmget      : Copy multiple files from the DMS.
+msfmkdir     : Create directories on the DMS.
+msfmput      : Copy multiple files to the DMS.
+msfmv        : Rename/move a file on the DMS.
+msfput       : Copy a single file to the DMS.
+msfrm        : Delete files on the DMS.
+msfrmdir     : Delete directories on the DMS.
+msfstat      : Check whether the DMS is up/down.
+news         : Print news items.
+node_use     : Display the amount of free and used memory for login nodes.
+qlim         : Report current batch queue usages and limits.
+qpeek        : Display spooled stdout and stderr for an executing batch job.
+qview        : Display information about batch jobs and queues.
+show_cost    : Display modulefiles included in Common Open Source Tools (COST).
+show_queues  : Report current batch queue status, usage, and limits.
+show_resv    : Show status of advance reservations.
+show_storage : Display disk/file usage and quota information.
+show_usage   : Display CPU allocation and usage by subproject.
+stripdos     : Strip DOS end-of-record control characters from a text file.
+stripe_large : Set the stripe width to 16 for one or more Lustre directories.
+stripe_medium: Set the stripe width to 8 for one or more Lustre directories.
+stripes      : Report the OST striping pattern of files in a Lustre filesystem.
+tails        : Display the last five lines of one or more files.
+trim         : Trim trailing blanks from text file lines.
+vman         : Browse an on-line man page using the 'view' command.

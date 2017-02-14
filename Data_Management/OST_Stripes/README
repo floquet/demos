@@ -1,0 +1,133 @@
+The workspace filesystems /p/work1 and /p/work2 on topaz are high-performance
+parallel file systems intended for use in batch jobs.  The home directories,
+ie /p/home/$USER, are intended for compilation, backup submit script storage,
+and storage for binaries, NOT execution.  The workspace filesystems are easily
+accessible using the environment variables $WORKDIR and $WORKDIR2.
+
+The file systems are each composed of 432 OSTs (raid sets) starting from 0
+across which files are striped for improved I/O performance.  Each OST is
+roughly 14.5 TBytes in size.
+
+By default, files created in $WORKDIR and $WORKDIR2 are striped across 4 OSTs.
+The default stripe (i.e. block) size is 1 MByte (1024**2).
+
+The syntax of the lfs command to set striping is
+
+  lfs setstripe --size stripe-width  --index OST-start-index --count stripe-count filename-or-directory
+
+where
+  stripe-width is in bytes
+  OST-start-index - use -1 (round-robin assignment)
+  count - default of 4
+
+Alternatively,
+
+  lfs setstripe -S stripe-width  -i OST-start-index -c stripe-count filename-or-directory
+
+may also be used.
+
+
+The setstripe command can be used to set single characteristics.  For example,
+to change the default stripe count on a working directory, say,
+
+  lfs setstripe --count new-count tmp-directory
+
+This will change the striping only of new files created in that directory.  It
+will NOT change the striping of resident files.
+
+
+To discover the striping properties of individual files or directories, the
+getstripe command can be used:
+
+  lfs getstripe --size  --index --count  file-or-directory
+
+Usage to determine a single properly is similar to setstripe.  For example,
+
+  lfs getstripe --count file-or-directory
+
+
+Users who generate files larger than 10 GBytes, or many small files, should
+consider changing the default striping to gain performance and to prevent
+over-usage of individual OSTs.  Very large files can fill individual OSTs,
+but spreading the files over more OSTs will help prevent this potentially
+harmful situation.
+
+SGI recommends the following stripe counts depending on file sizes:
+
+                        Stripe
+        Size            Count
+  -----------------------------
+         <= 1MB            1
+     1 MB - 10 GB          4
+    10 GB - 100 GB         8
+   101 GB - 512 GB        10
+   513 GB - 1 TB          36
+   1.1 TB - 2 TB          72
+   2.1 TB - 4 TB         144
+   4.1 TB - 8 TB         216
+
+Please consult the HPC Help Desk for files larger than 8 TB or compute tasks
+requiring more than 432 OSTs.
+
+
+There are two methods to set stripe parameters for files: 1) set the striping
+on their parent directory, so that all files susequently created in it inherit
+that striping, and 2) set the striping on individual files before any data is
+written to them.
+
+
+1) Set striping on a directory.
+
+Example:
+
+   cd $WORKDIR
+   mkdir LargeDir
+   lfs setstripe LargeDir 1048576 -1 16
+
+In this example, the new directory name is LargeDir, its stripe width is set to
+the default of 1 Mbyte (1048576 bytes), the system will decide which OSTs to use
+(-1), and files will be striped across 16 OSTs.
+
+Note that changing the striping on a directory does not automatically change the
+striping on files that already exist in the directory.  Only new files created
+in the directory after the stripe change would inherit the new characteristics.
+
+2) Set striping for an individual file.
+
+Example:
+
+   cd $WORKDIR
+   lfs setstripe LargeFile 1048576 -1 8
+
+Assuming the file LargeFile does not already exist, the lfs command will create
+the file with 0 bytes.  The newly-created file can be written to or copied to.
+It will be striped over any 8 OSTs with a stripe width of 1 MByte.
+
+Note that changing the striping on an existing file has no effect.
+
+To change the number of stripes used for a file, the file's name must be
+changed to a temporary name, then set the stripes for the original filename,
+and then copy the file from temporary name to original filename.  Afterwards,
+delete the old file.
+
+For example, suppose filename is stored across 4 stripes in 1 MB segments.
+To change it to 8 stripes in 1 MB segments:
+
+  mv filename tempname
+  lfs setstripe filename 1048576 -1 8
+  cp tempname filename
+  rm tempname
+
+
+Additional Notes:
+
+Stripe (i.e. block) sizes should be multiples of 64.
+
+Stripe sizes less than 1 Mbyte are discouraged.  Sometimes stripe sizes of
+2 MB or 4 MB are effective.
+
+The lfs command can be used within batch jobs.
+
+Please review http://www.erdc.hpc.mil/docs/Tips/lustreStripingOnTopaz.html
+for more information.
+

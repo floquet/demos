@@ -1,0 +1,41 @@
+#!/bin/bash
+#PBS -N fdlimit
+#PBS -l walltime=0:05:00
+#PBS -l select=1:ncpus=36:mpiprocs=1
+#PBS -A your_account
+#PBS -q debug
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+
+echo ""
+echo "----------------------------------------------"
+echo ""
+echo "Soft limits: (ulimit -S -a)"
+ulimit -S -a
+echo "----------------------------------------------"
+echo ""
+echo "----------------------------------------------"
+echo ""
+echo "Hard limits: (ulimit -H -a)"
+ulimit -H -a
+echo "----------------------------------------------"
+echo ""
+
+JID="`echo $PBS_JOBID | cut -d. -f1`"
+mkdir $WORKDIR/fdlimit_o$JID
+
+cp fdlimit.exe $WORKDIR/fdlimit_o$JID
+cd $WORKDIR/fdlimit_o$JID
+
+# fdlimit.exe is a serial code, so we can run it on the job
+# node, since those are compute nodes:
+
+./fdlimit.exe
+
+printf "\n`ls aaastub* | wc -l` files were created\n"
+
+/bin/rm fdlimit.exe aaastub*
+
+exit
+

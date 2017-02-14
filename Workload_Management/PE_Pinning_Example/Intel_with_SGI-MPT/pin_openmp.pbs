@@ -1,0 +1,28 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=4
+#PBS -l walltime=0:10:00
+#PBS -A your-project-no
+#PBS -q debug
+#PBS -j oe
+#PBS -N pin_openmp
+
+cd $PBS_O_WORKDIR
+
+export OMP_NUM_THREADS=4
+
+echo "----------------------------------------"
+echo "Running on nodes"
+cat $PBS_NODEFILE
+echo "----------------------------------------"
+. $MODULESHOME/init/bash
+echo "Using SGI MPT:"
+module list
+echo "----------------------------------------"
+echo "Using omplace in the SGI MPT:"
+echo "----------------------------------------"
+
+mpiexec_mpt -np 4 omplace -c 0-35:bs=${OMP_NUM_THREADS}+st=9 ./hybrid_xthi
+
+echo "----------------------------------------"
+
+exit

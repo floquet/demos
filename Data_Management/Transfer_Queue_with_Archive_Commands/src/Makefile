@@ -1,0 +1,109 @@
+############################################################################
+#
+#  Program:         ScaLAPACK
+#
+#  Module:          Makefile
+#
+#  Purpose:         Linear Equations Testing Makefile
+#
+#  Creation date:   March 20, 1995
+#
+#  Modified:
+#
+#  Send bug reports, comments or suggestions to scalapack@cs.utk.edu
+#
+############################################################################
+
+include SLmake.inc
+
+
+include common.inc
+# ======================================================
+
+#LIBRARIES=\
+#	$(LIBS) \
+#	$(PRLIBS) $(PBLIBS)
+#LIBRARIES = $(LIBS) $(PRLIBS)
+#LIBRARIES = $(PBLIBS) $(LIBS) $(PRLIBS)
+#LIBRARIES = $(PBLIBS) $(LIBS) $(PRLIBS) $(SMPLIB)
+LIBRARIES = $(SCALAPACKLIB) $(BLACSFINIT) $(BLACSLIB) $(BLASLIB) $(SMPLIB)
+
+
+# ======================================================
+
+
+single:	$(REAL_OBJECTS) $(AUXILIARY_OBJECTS) $(IO_OBJECTS)
+	$(AR) $(ARFLAGS)  \
+		$(OUTOFCORELIB) \
+		$(REAL_OBJECTS) \
+		$(AUXILIARY_OBJECTS) \
+		$(IO_OBJECTS) 
+	$(RANLIB)   $(OUTOFCORELIB)
+
+double:  $(DOUBLE_OBJECTS) $(AUXILIARY_OBJECTS) $(IO_OBJECTS)
+	$(AR) $(ARFLAGS) \
+		$(OUTOFCORELIB) \
+		$(DOUBLE_OBJECTS) \
+		$(AUXILIARY_OBJECTS) \
+		$(IO_OBJECTS)
+	$(RANLIB)   $(OUTOFCORELIB)
+
+zcomplex: $(ZCOMPLEX_OBJECTS) $(AUXILIARY_OBJECTS) $(IO_OBJECTS)
+	$(AR) $(ARFLAGS) \
+		$(OUTOFCORELIB) \
+		$(ZCOMPLEX_OBJECTS) \
+		$(AUXILIARY_OBJECTS) \
+		$(IO_OBJECTS)
+	$(RANLIB)   $(OUTOFCORELIB)
+
+complex: $(COMPLEX_OBJECTS) $(AUXILIARY_OBJECTS) $(IO_OBJECTS)
+	$(AR) $(ARFLAGS) \
+		$(OUTOFCORELIB) \
+		$(COMPLEX_OBJECTS) \
+		$(AUXILIARY_OBJECTS) \
+		$(IO_OBJECTS)
+	$(RANLIB)   $(OUTOFCORELIB)
+
+
+
+
+testddriver: driverinfo.o testddriver.o $(DOUBLE_OBJECTS) $(AUXILIARY_OBJECTS) $(IO_OBJECTS)
+	$(F77LOADER) $(F77LOADFLAGS) -o testddriver \
+		testddriver.o \
+		driverinfo.o \
+		$(OUTOFCORELIB) \
+		$(LIBRARIES)
+
+testzdriver: driverinfo.o testzdriver.o $(ZCOMPLEX_OBJECTS) $(AUXILIARY_OBJECTS) $(IO_OBJECTS)
+	$(F77LOADER) $(F77LOADFLAGS) -o ../testzdriver \
+		testzdriver.o \
+		driverinfo.o \
+		$(ZCOMPLEX_OBJECTS) $(AUXILIARY_OBJECTS) $(IO_OBJECTS) \
+		$(LIBRARIES)
+
+testcdriver: driverinfo.o testcdriver.o $(COMPLEX_OBJECTS) $(AUXILIARY_OBJECTS) $(IO_OBJECTS)
+	$(F77LOADER) $(F77LOADFLAGS) -o testcdriver \
+		testcdriver.o \
+		driverinfo.o \
+		$(COMPLEX_OBJECTS) $(AUXILIARY_OBJECTS) $(IO_OBJECTS) \
+		$(LIBRARIES)
+
+testsdriver: driverinfo.o testsdriver.o $(REAL_OBJECTS) $(AUXILIARY_OBJECTS) $(IO_OBJECTS)
+	$(F77LOADER) $(F77LOADFLAGS) -o testsdriver \
+		testsdriver.o \
+		driverinfo.o \
+		$(REAL_OBJECTS) $(AUXILIARY_OBJECTS) $(IO_OBJECTS) \
+		$(LIBRARIES)
+
+
+clean :
+	rm -f *.o *.mod
+
+.SUFFIXES: .o .c .f .for 
+
+.c.o: ; $(CC) -c $(CDEFS) $(CCFLAGS) $*.c
+
+.f.o : ; $(F77) -c $(F77FLAGS) $*.f
+
+.for.o: ; (cp $*.for $*.f ; $(F77) -c $(F77FLAGS) $*.f ; rm $*.f)
+	

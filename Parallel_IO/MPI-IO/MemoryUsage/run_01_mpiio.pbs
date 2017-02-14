@@ -1,0 +1,37 @@
+#!/bin/bash -l
+#PBS -l select=320:ncpus=36:mpiprocs=36
+#PBS -l walltime=01:00:00
+#PBS -N mpiio
+#PBS -A your_account
+#PBS -j oe
+#PBS -q standard
+
+cd $PBS_O_WORKDIR
+
+ echo "----- PBS Script -----" ; cat $0 ; echo "----- End PBS Script -----" ; echo
+
+nstripes=6
+ntasks=11520
+split="160,9,8"
+
+export MPI_DISPLAY_SETTINGS=0
+export MPI_STATUS_SIGNAL=1
+
+subdirname=datadir
+rm -rf ./${subdirname}
+mkdir ${subdirname}
+
+lfs setstripe -c $nstripes ./${subdirname}
+
+# Use default romio_lustre_co_ratio of 1.
+
+TBEGIN=`echo "print time();" | perl`
+
+mpiexec_mpt -np $ntasks ./mpiio.exe $split ${subdirname}/sample.dat
+
+TEND=`echo "print time();" | perl`
+echo "walltime: `expr $TEND - $TBEGIN` seconds"
+
+lfs getstripe -d ./${subdirname}
+ls -l ./${subdirname}
+

@@ -1,0 +1,27 @@
+#!/bin/ksh
+#PBS -l select=1:ncpus=36:mpiprocs=4
+#PBS -l walltime=00:05:00
+#PBS -A <your project id>
+#PBS -q debug
+#PBS -N debug_core
+#PBS -j oe
+#PBS -l application=other
+
+JOBDIR="corefile_example.o`echo $PBS_JOBID | cut -d. -f1`"
+cd $PBS_O_WORKDIR
+mkdir $WORKDIR/$JOBDIR
+cp mpi_test $WORKDIR/$JOBDIR
+cd $WORKDIR/$JOBDIR
+
+## Set core size to unlimited
+##  ( for csh scripts use  "limit coredumpsize unlimited" )
+
+ulimit -c unlimited
+ulimit -a
+
+mpirun -np 4 ./mpi_test
+
+/bin/rm mpi_test
+
+exit
+

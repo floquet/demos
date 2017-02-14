@@ -1,0 +1,46 @@
+====================
+3-D Rocket Problem
+====================
+
+The rocket problem is designed to be a GASP Version 4
+tutorial for new users.  This tutorial and the Duct
+should be the first tutorials that a user goes through. 
+The rocket problem has been set up to run 1000 cycles on the
+coarse grid, 2000 cycles on the medium grid, and 2000 cycles 
+on the fine mesh.  In addition, the physical resources have 
+been set up to run on a single processor for the coarse and 
+medium sequences, and on 6 processors for the fine sequence. 
+After the cycles have been completed, a PLOT3D grid and 
+solution file will be automatically created containing the 
+primitive variables.  If you desire to use more 
+processors, you should perform domain decomposition using 
+the GUI to meet target efficiencies. 
+
+The remainder of this file gives an overview of the contents 
+in this directory.
+
+
+File                 Purpose
+------------------------------------------------------
+rocket.p3d           The rocket PLOT3D grid file.
+rocket.pdf           The rocket tutorial in pdf format.
+README               This text file.
+
+
+
+Additional files for this tutorial can be downloaded from
+the GASP Version 4 ftp site.  The additional files are not
+necessary to perform the tutorial, but provides the user
+with a ready to run version and a finished version of the
+rocket problem.  These additional files appear as below.
+
+
+Directory            Purpose
+---------------------------------------------------------
+ReadyToRun           The rocket problem has been set up and is
+                     ready to run the coarse, medium and fine 
+                     grids.  The fine grid is set to run
+                     using 4 processors.  
+
+Finished             The final solution to the rocket problem.
+

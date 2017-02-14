@@ -1,0 +1,36 @@
+#! /bin/bash
+#PBS -l select=1:ncpus=36:mpiprocs=36
+#PBS -l walltime=0:02:00
+#PBS -A < your project >
+#PBS -j oe
+#PBS -q debug
+#PBS -N hints
+
+cd $PBS_O_WORKDIR
+
+export MPI_DISPLAY_SETTINGS=0
+
+/bin/rm test_file.tmp
+touch test_file.tmp
+
+lfs getstripe test_file.tmp
+
+/bin/rm -f hints.exe
+icc -o hints.exe hints.c -lmpi
+
+if test ! -x hints.exe ; then
+   echo "Failed to build hints.exe"
+   exit
+fi
+
+echo "Default hints"
+mpiexec_mpt -n 1 ./hints.exe
+
+export ROMIO_HINTS=hints.dat
+echo "ind_wr_buffer_size 1048576" > hints.dat
+
+echo "Hints using hints.dat file"
+
+mpiexec_mpt -n 1 ./hints.exe
+
+exit

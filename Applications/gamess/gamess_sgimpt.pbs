@@ -1,0 +1,64 @@
+#! /bin/bash
+#PBS -A <your account>
+#PBS -l select=2:ncpus=36:mpiprocs=72
+#PBS -l walltime=00:30:00
+#PBS -N gamess
+#PBS -q debug
+#PBS -l application=gamess
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+
+# For use with default mpi/sgimpt .
+
+# Please set these 2 environment variables, the scratch dir and binary dir.
+export GAMESSRUN=`pwd`
+export GAMESSBIN=/apps/unsupported/gamess/05Dec2014R1-intel
+
+# In some cases there is the fatal error
+# MPT ERROR: Failed to create necessary IB QueuePairs
+# It was found that the error could be eliminated using the following line
+# export MPI_CONNECTIONS_THRESHOLD=72
+
+echo "Note, if job fails to run because of error"
+echo "MPT ERROR: Failed to create necessary IB QueuePairs"
+echo "then set environment"
+echo "export MPI_CONNECTIONS_THRESHOLD=72"
+
+# The number of processes is set to select*mpiprocs
+# where the upper half of process IDs is used for communication.
+# Cores are shared between computation and communication using hyperthreading.
+# Proper placement require modifying the host of hosts.
+
+# Modify list of hosts, below.
+
+cat ${PBS_NODEFILE} | sort | uniq  > uniq_nodes.txt
+/bin/rm -f partial_nodefile.txt
+unique_nodes=`cat uniq_nodes.txt`
+for i in $unique_nodes ; do
+    for j in `seq 36` ; do
+       echo $i >> partial_nodefile.txt
+    done
+done
+cat partial_nodefile.txt partial_nodefile.txt > new_nodefile.txt
+
+export PBS_NODEFILE=`pwd`/new_nodefile.txt
+
+# Modify list of hosts, above.
+
+# To avoid busy wait for the communication processes, set MPI_NAP
+# to one milisecond polling.
+export MPI_NAP="1"
+
+TBEGIN=`echo "print time();" | perl`
+
+# Execution is performed by calling the rungms script, which
+# sets up the GAMESS job, and feeds 2 arguments to it, in order:
+# The name of the GAMESS input data file, number of compute
+# processes to run.  The number of compute processes should be
+# select*mpiprocs.
+${GAMESSBIN}/rungms std_long.inp 114 > gms_long.out 2>&1
+
+TEND=`echo "print time();" | perl`
+echo "walltime: `expr $TEND - $TBEGIN` seconds"
+

@@ -1,0 +1,245 @@
+################################################################################
+# Application_Name
+#
+# Use of the application name resource.
+################################################################################
+
+application_names          README and list of valid strings for application
+                              names intended for use in every PBS script
+                              preamble.  The HPCMP encourages applications not
+                              specifically named in the list to be denoted as
+                              "other".
+
+################################################################################
+# Applications
+#
+# Application-specific examples; interactive job submit scripts; software
+# license use.
+################################################################################
+
+fluent                     Sample input files and job script for the Fluent
+                              application.
+
+gaussian                   Job script for the Gaussian application.
+
+namd                       Instructions, PBS job script, and data files to set
+                              up and run an example NAMD job.
+
+nwchem                     Sample input files and job script for the NWChem
+                              application.
+
+gamess                     Sample input files and job script for the Gamess
+                              application.
+
+################################################################################
+# Data_Management
+#
+# Archiving and retrieving files; Lustre striping; file searching; $WORKDIR use.
+################################################################################
+
+MPSCP_to_ARCHIVE           Instructions and sample scripts on using the
+                              mpscp utility for transferring files to/from
+                              archival storage, aka DMS.
+
+OST_Stripes                Instructions and examples for striping large files
+                              on the Lustre file systems.
+
+Postprocess_Example        Example showing how to submit a post-processing
+                              script at the end of a parallel computation job
+                              to do such things as tar data and store it off
+                              of temporary storage to archive storage.
+
+Transfer_Queue_Example     PBS example scripts for data transfer using the
+                              transfer queue.
+
+Transfer_Queue_with_Archive_Commands
+                           Example and instructions on a recommended best
+                              practice to stage data from mass storage using
+                              the transfer queue prior to job execution, then
+                              processing using that data, then passing output
+                              data back to mass storage using the transfer
+                              queue again.
+
+################################################################################
+# Parallel_Environment
+#
+# MPI, OpenMP, and hybrid examples; large memory jobs; packing
+# nodes with single-core jobs; running multiple applications within a
+# single PBS job.
+################################################################################
+
+Hybrid                     Sample code xthi.c, README file, and job scripts
+                              showing how to compile and execute hybrid
+                              MPI/OpenMP code using the Intel compiler and
+                              SGI MPT or Intel IMPI.
+
+Large_Jobs                 Example PBS script and brief README instructing
+                              actions that must be performed to execute
+                              parallel jobs requiring more than 11,000 cores
+                              (305 nodes) on topaz.  No single set of actions
+                              and environment variable settings can guarantee
+                              the fastest execution for large-scale jobs.
+
+Large_Memory_Jobs          Example PBS script and README instructing correct
+                              structure of the PBS 'select' statement for
+                              jobs to execute on the big-memory nodes on
+                              topaz.
+
+Mix_Serial_with_Parallel   Demonstration of executing multiple serial tasks
+                              on one node of a PBS job while executing a
+                              concurrent parallel task on the other nodes
+                              in that job.
+
+MPI                        Sample code, README file, and job scripts
+                              demonstrating MPI compilation and execution using
+                              SGI MPT and Intel IMPI.
+
+Multiple_exec_one_communicator
+                           Demonstration of how to use multiple binaries on
+                              multiple nodes in a single parallel computation.
+
+Multiple_Parallel          Demonstration on how to execute multiple parallel
+                              tasks concurrently on subsets of the PBS job
+                              nodes in the same PBS job.
+
+OpenMP                     Sample code, README file, and job scripts showing how
+                              to compile and excute OpenMP code generated
+                              using the Intel and Gnu compilers.
+
+TotalView_Example          How to use TotalView to debug a small example code
+                              in an interactive PBS job.
+
+Serial_Processing_1        Demonstration of how to use a loop on
+                              $PBS_NODEFILE with ssh and tasks executed
+                              in background to execute multiple serial jobs
+                              on the compute nodes in a PBS job.
+
+Serial_Processing_2        Demonstration of how to use a Korn-shell script
+                              to execute multiple serial tasks simultaneously
+                              in the same PBS job.
+
+################################################################################
+# Parallel_IO
+#
+# Tools for performing parallel I/O.
+################################################################################
+
+ADIOS                      Two examples on how to use the ADIOS parallel I/O
+                              libraries in Fortran 90 MPI codes.
+
+MPI-IO/Performance         A description of MPI-IO hints and results from
+                           testing using IOR.
+
+MPI-IO/MemoryUsage         MPI-IO on topaz requires a large amount of
+                           memory.  A technique for dividing the memory
+                           usage for MPI-IO over many nodes is described.
+
+################################################################################
+# Programming
+#
+# Basic code compilation; debugging; use of library files; static vs. dynamic
+# linking; Makefiles; Endian conversion.
+################################################################################
+
+Core_Files                 Instructions and example code for viewing core files
+                              with Totalview and Gnu gdb.
+
+DDT_Example                How to use DDT to debug a small example code in an
+                              interactive PBS job.
+
+Endian_Conversion          Text file presenting the Intel and Gnu
+                              compiler options for enabling binary data
+                              formatted on a different architecture to be
+                              readable by code compiled on topaz.
+
+Intel_MPI                  Instructions and files to compile and execute C and
+                              Fortran binaries using Intel's MPI, IMPI.
+
+Memory_Usage               A routine callable from Fortran or C for
+                              determining how much memory a process is using.
+
+MKL_BLACS                  Sample BLACS Fortran program, compile script and
+                              PBS submission script.  The BLACS are from
+                              Intel's Math Kernel Library (MKL).
+
+MKL-ScaLAPACK_Example      Sample ScaLAPACK Fortran program, compile script
+                              and PBS job script.  The ScaLAPACK solver, BLACS
+                              communication, and supporting LAPACK and BLAS
+                              routines are all from Intel's MKL.
+
+MPI_Compilation            Brief examples of how to compile MPI code using
+                              the Intel compilers and SGI MPT or Intel IMPI
+                              in Fortran, C, and C++.
+
+Open_Files_Limit           Brief presentation of the maximum number of
+                              simultaneously open files for a single process
+                              and for a user job.  Makefile, code, and a PBS
+                              script are included to enable verification.
+
+SO_Compile                 Simple example demonstrating how to create an SO
+                              (shared object, aka dynamic or dynamically loaded)
+                              library, link against it, and run code using it
+                              on Topaz.
+
+Timers_Fortran             Serial Timers using Fortran Intrinsics from 
+                              FORTRAN77 and Fortran 90/95.
+
+MPInside                   Example of using MPInside profiler for MPI calls.
+
+################################################################################
+# User_Environment
+#
+# Use of modules; customizing the login environment; use of common environment
+# variables to facilitate portability of work between systems
+################################################################################
+
+Environment_Variables       README file describing environment variables set
+                               on topaz by the Baseline Configuration Team
+                               intended to facilitate easier migration and
+                               maintenance of project software and supporting
+                               scripts
+
+Module_Swap_Example         Batch script demonstrating how to use various
+                               module commands to choose other versions.
+
+################################################################################
+# Workload_Management
+#
+# Basic batch scripting; use of the transfer queue; job arrays;
+# job dependencies; Secure Remote Desktop; job monitoring;
+# generating core/MPI process or core/MPI process-OpenMP thread associativity.
+################################################################################
+
+BatchScript_Example         Simple PBS batch script showing all required
+                               preamble statements and a few optional
+                               statements.  More advanced batch script showing
+                               more optional statements and a few ways to set
+                               up PBS jobs.  Description of the system
+                               hardware.  Job and process placement are
+                               described in two subdirectories.
+
+Core_Info_Example           Description and C language routine suitable for
+                               Fortran and C showing how to determine the node
+                               and core placement information for MPI, OpenMP,
+                               and hybrid MPI/OpenMP PBS jobs.
+
+Interactive_Example         C and Fortran code samples and scripts for running
+                               an interactive MPI job on Topaz.
+
+Job_Array_Example           Sample job script for using job arrays.
+
+Job_Dependencies_Example    Example code, scripts, and instructions
+                               demonstrating how to set up a job dependency
+                               for jobs depending on how one or more other jobs
+                               execute, or to perform some action that one or
+                               more other jobs require before execution.
+
+PE_Pinning_Example          Examples demonstrating how to place and/or pin
+                               job processing elements, either MPI processes
+                               or OpenMP threads, to cores or groups of cores
+                               to facilitate more efficient processing and
+                               prevent separation of an execution thread from
+                               its data and instructions.  All combinations of
+                               compiler (Intel or Gnu) and MPI (SGI MPT and
+                               Intel IMPI) are discussed.
+

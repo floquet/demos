@@ -1,0 +1,58 @@
+#!/bin/ksh
+# set -x
+
+#### Usage: mpscp.get filename_to_get  user@archive_host:directory/to_get_file/from_archive
+
+# Example:  "mpscp.get  data.x  mydata"
+###  file data.x will be retrieved from your $ARCHIVE_HOME/mydata" directory.
+###
+
+if [ $# -lt "2" ] ; then
+   echo ""
+   echo "Usage:"
+   echo ""
+   echo "  mpscp.get filename_to_get  existing_directory/to_get_file/from_archive"
+   echo ""
+   echo "where filename_to_get is the archived file, and"
+   echo "existing_directory/to_get_file/from_archive is the"
+   echo "directory on the archive system that has the file."
+   exit
+fi
+
+
+echo " "
+### get listing from archive first
+echo "  Remote File"
+ssh ${ARCHIVE_HOST} ls -l ${ARCHIVE_HOME}/${2}/${1}
+echo " "
+
+
+### get file and send the banner in a temp file.
+mpscp -w 4 ${USER}@${ARCHIVE_HOST}:${ARCHIVE_HOME}/${2}/${1}   ${1}   2> ${WORKDIR}/junk_${USER}
+echo " "
+
+
+###  get listing of the file you just received
+echo "  Local File"
+ls -l ${1}
+
+
+### CHECKSUM 
+echo " "
+echo "  Doing checksum, this may take awhile "
+set -A LOC `cksum ${1}`
+set -A DIS `ssh ${ARCHIVE_HOST} cksum ${ARCHIVE_HOME}/${2}/${1}  2> ${WORKDIR}/junk_${USER}`
+if [ ${LOC} == ${DIS} ]
+then echo " CheckSum Matches = ${DIS} "
+else echo " CheckSum Fails   ${LOC}  vs  ${DIS}"
+fi
+echo " "
+
+
+### remove the banner file
+rm ${WORKDIR}/junk_${USER}
+
+
+exit
+
+#  copy and edit this script to your own needs.

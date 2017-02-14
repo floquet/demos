@@ -1,0 +1,86 @@
+
+Simple MPI example.
+-------------------
+
+This document is for the Gnu compiler suite.
+The document README is for MPI using the Intel compiler.
+
+Copy these files to a subdirectory of your $WORKDIR.
+
+The C language program hello.c lists the node name for each MPI process.
+
+The utilization of two different MPI environments are shown,
+MPT (SGI MPI) and IMPI (Intel MPI).
+
+The default MPI of topaz is MPT.  The "module list" command should
+show some version of sgimpt, for example
+
+> module list
+Currently Loaded Modulefiles:
+  1) mpi/sgimpt/2.12-11218
+
+To use Intel MPI the module swap command would be
+
+module swap mpi/sgimpt mpi/intelmpi
+
+or choose a specific version of Intel MPI, for example,
+
+module swap mpi/sgimpt mpi/intelmpi/15.0.3
+
+In addition, the default compiler is Intel.
+The command
+
+> module avail compiler
+
+will show the available compilers.
+
+The Gnu compiler that are available are
+compiler/gcc/4.8.5 and compiler/gcc/4.9.3
+
+For these examples, swap the compiler, for example,
+
+module swap compiler/intel compiler/gcc/4.9.3
+
+You can check that the compiler wrappers are using the Gnu compiler suite
+by using the commands
+mpicc --version
+mpicxx --version
+mpif90 --version
+
+These commands can be used for either MPI implementation,
+SGI MPT or Intel MPI.  The wrappers are actually found
+in different directoriers, depending on the MPI implementation
+being used.
+
+Before submitting a job, the user needs to compile and link
+the program.  Just to keep the executable names separate,
+the following compile-and-link commands are suggested.
+
+mpicc -O3 -o mpt_gcc_hello.exe hello.c -lmpi  # SGI MPT
+
+or
+
+mpicc -O3 -o impi_gcc_hello.exe hello.c   # Intel MPI
+
+For SGI MPT, the commands mpicc, mpicxx and mpif90 will use the compiler
+specified by MPICC_CC, MPICXX_CXX and MPIF90_F90.
+For Intel MPI, the commands mpicc, mpicxx and mpif90 will use the
+compiler specified by I_MPI_CXX, I_MPI_CC, I_MPI_FC, I_MPI_F90 and
+I_MPI_F77.  These values are set when a compiler module is loaded,
+e.g. compiler/intel/15.0.3 or compiler/gcc/4.9.3.
+
+An executable compiled for SGI MPT can be submitted with the script
+mpt_gcc_hello.pbs.  Notice that the executable is launched with
+mpiexec_mpt.  For SGI MPT, do not use mpirun to launch the job.
+
+An executable compiled for Intel MPI can be submitted with the script
+impi_gcc_hello.pbs.  Notice that the executable is launched with mpirun.
+
+In the batch script, change the account number to the value assigned to
+your project.
+
+One point to be made to avoid confusion.  The Intel MPI implementation
+is in a subdirectory of the Intel compiler.  Nonetheless, the Gnu
+compiler suite can be used with the Intel MPI implementation.
+In other words, the choice of mpi/intelmpi/15.0.3 does not mean
+that you are choosing the Intel compiler.

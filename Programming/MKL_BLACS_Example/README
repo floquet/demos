@@ -1,0 +1,31 @@
+Example of compiling a BLACS example code using Intel's MKL
+-----------------------------------------------------------
+
+Intel's BLACS are included in their Math Kernel Library (MKL).
+
+N.B. The BLACS set up a process grid.  In blacs_example.f, it is as close to
+     square as possible.  Since 36 cores are available on one node, all 36 will
+     participate in the process grid to solve the numerical problem, 36 being a
+     perfect square.
+
+
+Instructions:
+Copy the directory and its contents to your work directory:
+
+  cp -R $SAMPLES_HOME/Programming/MKL_BLACS_Example $WORKDIR
+
+Enter that directory and compile the code:
+
+  cd $WORKDIR/MKL_BLACS_Example ; ./compile
+
+It assumes the default environment: SGI MPT and Intel compilers.
+
+After Topaz enters production, edit submit.pbs to place the allocation charge
+code for your PBS job after #PBS -A.
+
+Submit the job:
+
+  qsub submit.pbs
+
+Review the output when the job is done. 
+

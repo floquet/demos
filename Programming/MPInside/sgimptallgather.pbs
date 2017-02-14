@@ -1,0 +1,37 @@
+#! /bin/bash
+#PBS -l select=1:ncpus=36:mpiprocs=36
+#PBS -l walltime=0:05:00
+#PBS -A your_project_id
+#PBS -j oe
+#PBS -q debug
+#PBS -N allgath
+#PBS -l application=other
+
+cd $PBS_O_WORKDIR
+
+source $MODULESHOME/init/bash
+module load MPInside/3.6.7
+export MPINSIDE_LIB=MPT
+export MPINSIDE_OUTPUT_PREFIX=sgimpt
+
+# Save a call stack report detailing the top 3 function calls on the stack
+# during each MPI routine call.
+export MPINSIDE_CALLSTACK_DEPTH=3
+
+# For each such function call history, include information about its timing
+# relative to the corresponding operation on the other end (send/receive).
+export MPINSIDE_CROSS_REFERENCE=1
+
+# Save a rank-to-rank communication matrix including counts of the point to
+# point operations implied by collectives (the "EXA" option, only supported 
+# when running with MPT).
+export MPINSIDE_MATRICES=EXA
+
+# Include a table of transfer sizes used for each MPI routine in the 
+# basic stats output.  "T+" specifies to print a second table detailing the
+# total time taken for each size/routine combination; the trailing "12"
+# specifies that 12 bins of transfer sizes will be reported.
+export MPINSIDE_SIZE_DISTRI=T+12:0-1
+
+mpiexec_mpt -n 2 MPInside allgather_sgimpt.exe
+

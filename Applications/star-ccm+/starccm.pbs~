@@ -1,0 +1,24 @@
+#!/bin/csh
+#PBS -A your_project
+#PBS -l select=1:ncpus=36:mpiprocs=18
+#PBS -l walltime=00:30:00
+#PBS -q standard
+#PBS -l starccm=1
+#PBS -N starccm
+#PBS -l application=star-ccm+
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+
+source /app/modules/default/init/csh
+module load starccm
+
+# SIM_FILE is user's choice.
+set SIM_FILE=star.sim
+# In MACRO_FILE the number of steps is user's choice.
+set MACRO_FILE=run.java
+
+# -time is optional, but it provides elapsed time in stdout.
+# One can also get the elapsed time from the final .sim file.
+
+starccm+ -power -np 18 -mpidriver hp2:"-prot" -rsh /usr/bin/ssh -machinefile $PBS_NODEFILE -batch $MACRO_FILE $SIM_FILE

@@ -1,0 +1,145 @@
+############################################################################
+#
+#  Program:         ScaLAPACK
+#
+#  Module:          SLmake.inc
+#
+#  Purpose:         Top-level Definitions
+#
+#  Creation date:   March 20, 1995
+#
+#  Modified:
+#	May 9, 2003:	Reinstated all "factory original" compile flags
+#			  (-C and -g).  Doesn't seem to affect output.
+#	May 9, 2003:	For BLACSLIB, dropped -lblacssmp, retaining -lblacs
+#			  -lblacssmp doesn't seem to do anything for good or ill
+#       May 9, 2003:	For BLACSLIB, am adding "-lblacs -lblacssmp" to
+#                         the library in BLACSdir.  Kind of klugey, but it
+#                         picks up the two last unfound objects: .blacs_pinfo_
+#                         and .blacs_grindfo_  (note the trailing underscores
+#                         in the names)
+#  	May 8, 2003: 	Dropped -DAdd_ option from CDEFS
+#
+#  Send bug reports, comments or suggestions to scalapack@cs.utk.edu
+#
+############################################################################
+#
+SHELL         = /bin/sh
+#
+#  The complete path to the top level of ScaLAPACK directory, usually
+#  $(HOME)/SCALAPACK
+#
+home          = /site/lib/SCALAPACK
+#
+#  The platform identifier to suffix to the end of library names
+#
+PLAT          = PWR4
+#
+LAPACKdir     = $(HOME)/LAPACK
+#
+#  BLACS setup.  All version need the debug level (0 or 1),
+#  and the directory where the BLACS libraries are
+#
+BLACSDBGLVL   = 0
+#BLACSdir      = $(HOME)/BLACS/LIB
+BLACSdir      = /site/lib/BLACS
+#
+#  MPI setup; uncomment and tailor to your system if using MPIBLACS
+#  Will need to comment out the default native BLACS setup below below
+#
+USEMPI        = -DUsingMpiBlacs
+#SMPLIB        = -lmpi
+#SMPLIB        = $(HOME)/mpich/build/lib/IRIXN32/ch_shmem/libmpi.a
+SMPLIB        =
+BLACSFINIT    = $(BLACSdir)/blacsF77init_MPI-$(PLAT)-$(BLACSDBGLVL).a
+BLACSCINIT    = $(BLACSdir)/blacsCinit_MPI-$(PLAT)-$(BLACSDBGLVL).a
+#BLACSLIB      = $(BLACSdir)/blacs_MPI-$(PLAT)-$(BLACSDBGLVL).a -lblacs \
+#                 -lblacssmp
+#BLACSLIB      = -lblacs -lblacssmp
+BLACSLIB      = $(BLACSdir)/blacs_MPI-$(PLAT)-$(BLACSDBGLVL).a -lblacs
+TESTINGdir    = $(home)/TESTING
+
+#
+#  PVMBLACS setup, comment out next 6 lines if using MPI
+#
+#USEMPI        =
+#SMPLIB        = $(PVM_ROOT)/lib/$(PLAT)/libpvm3.a
+#BLACSFINIT    =
+#BLACSCINIT    =
+#BLACSLIB      = $(BLACSdir)/blacs_PVM-$(PLAT)-$(BLACSDBGLVL).a
+#TESTINGdir    = $(HOME)/pvm3/bin/$(PLAT)
+
+CBLACSLIB     = $(BLACSCINIT) $(BLACSLIB) $(BLACSCINIT)
+FBLACSLIB     = $(BLACSFINIT) $(BLACSLIB) $(BLACSFINIT)
+#FBLACSLIB     = -lmpiblacs64
+#CBLACSLIB      = -lblacs  -lblacssmp
+#FBLACSLIB      = $(CBLACSLIB)
+ 
+
+
+#BLASLIB       = $(LAPACKdir)/blas_$(PLAT).a
+#BLASLIB       = -lblas -lfpe
+BLASLIB       = -lblas
+#
+#  The directories to find the various pieces of ScaLapack
+#
+PBLASdir      = $(home)/PBLAS
+SRCdir        = $(home)/SRC
+TESTdir       = $(home)/TESTING
+PBLASTSTdir   = $(TESTINGdir)
+TOOLSdir      = $(home)/TOOLS
+REDISTdir     = $(home)/REDIST
+REDISTTSTdir  = $(TESTINGdir)
+#
+#  The fortran and C compilers, loaders, and their flags
+#
+F77           = mpxlf_r
+CC            = mpcc_r
+NOOPT         = 
+#F77FLAGS      = $(NOOPT)
+#F77FLAGS      = -C -g $(NOOPT)
+F77FLAGS      = -O3 $(NOOPT)
+CCFLAGS       = $(F77FLAGS)
+SRCFLAG       =
+F77LOADER     = $(F77)
+CCLOADER      = $(CC)
+#F77LOADFLAGS  = 
+F77LOADFLAGS  = 
+CCLOADFLAGS   = 
+#
+#  C preprocessor defs for compilation 
+#  (-DNoChange, -DAdd_, -DUpCase, or -Df77IsF2C)
+#
+#CDEFS         = -DAdd_ $(USEMPI)
+CDEFS         = $(USEMPI)
+#
+#  The archiver and the flag(s) to use when building archive (library)
+#  Also the ranlib routine.  If your system has no ranlib, set RANLIB = echo
+#
+ARCH          = ar
+ARCHFLAGS     = cr
+RANLIB        = echo
+#
+#  The name of the libraries to be created/linked to
+#
+#PBLASLIB      = /site/lib/SCALAPACK/libpblas-PWR4.a
+#SCALAPACKLIB  = /site/lib/SCALAPACK/libscalapack-PWR4.a
+#REDISTLIB = $(SCALAPACKLIB)
+#REDISTLIB      = /site/lib/SCALAPACK/libredist-PWR4.a
+#TOOLSLIB = $(SCALAPACKLIB)
+#TOOLSLIB       = /site/lib/SCALAPACK/libtools-PWR4.a
+
+OUTOFCORELIB = /scr/alterb/TI-04/app/oocore/lib/outofcore_$(PLAT).a
+PBLASLIB      = $(home)/libpblas-$(PLAT).a
+SCALAPACKLIB  = $(home)/libscalapack-$(PLAT).a
+REDISTLIB     = $(home)/libredist-$(PLAT).a
+TOOLSLIB      = $(home)/libtools-$(PLAT).a
+#
+PBLIBS        = $(PBLASLIB) $(TOOLSLIB) $(FBLACSLIB) $(BLASLIB) $(SMPLIB)
+#PBLIBS        = $(FBLACSLIB) $(BLASLIB) $(SMPLIB)
+PRLIBS        = $(REDISTLIB) $(TOOLSLIB) $(CBLACSLIB) $(SMPLIB)
+RLIBS         = $(PBLIBS) \
+		$(SCALAPACKLIB) $(PBLASLIB) $(REDISTLIB) $(TOOLSLIB) \
+                $(FBLACSLIB) $(CBLACSLIB) $(BLASLIB) $(SMPLIB)
+LIBS          = $(PBLIBS) \
+		$(SCALAPACKLIB) $(PBLIBS)

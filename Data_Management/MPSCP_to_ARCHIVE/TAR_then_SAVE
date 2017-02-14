@@ -1,0 +1,68 @@
+#!/bin/ksh
+##  set -x
+
+#  copy and edit this script to your own needs.
+
+if [ $# -lt 1 ] ; then
+  echo ""
+  echo "Usage:"
+  echo ""
+  echo "  ./TAR_then_SAVE files to save"
+  echo ""
+  echo "where 'files to save' are the files to be archived."
+  echo "The files will be archived in \"file.tar\" in"
+  echo "Archive_Example/ on the archive host $ARCHIVE_HOST."
+  echo ""
+  exit 1
+fi
+
+TarDIR=${WORKDIR}/SAVE_TO_STORAGE
+ARCH=${ARCHIVE_HOME}
+ArchDIR=${ARCH}/Archive_Example
+
+if [ ! -d  ${TarDIR} ] ; then
+   mkdir ${TarDIR}
+fi
+
+ssh ${ARCHIVE_HOST} mkdir -p ${ArchDIR}
+
+echo "  Tar files "
+tar cvf ${TarDIR}/${1}.tar  $*
+
+echo ""
+echo "  Transfer Files "
+echo "mpscp -w 4 ${TarDIR}/${1}.tar ${USER}@${ARCHIVE_HOST}:${ArchDIR}   2> banner_junk"
+mpscp -w 4 ${TarDIR}/${1}.tar ${USER}@${ARCHIVE_HOST}:${ArchDIR}   2> banner_junk
+
+echo ""
+echo "  Listing Files "
+echo "local:"
+ls -l ${TarDIR}/${1}.tar
+echo "$ARCHIVE_HOST:"
+ssh ${ARCHIVE_HOST} ls -l ${ArchDIR}/${1}.tar
+
+#  exit
+
+### DO cksum if wanted, else uncomment exit above 
+
+Local_ck=`cksum ${TarDIR}/${1}.tar  `       2> banner_junk
+Arch_ck=`ssh ${ARCHIVE_HOST} cksum ${ArchDIR}/${1}.tar `       2> banner_junk
+
+Local=`echo $Local_ck | cut -d" " -f1`
+Arc=`echo $Arch_ck | cut -d" " -f1`
+
+echo ""
+echo "  cksum of Files "
+echo " Local file  ->  $Local_ck "
+echo " Stored file ->  $Arch_ck "
+
+if [ $Local != $Arc ] ; then
+   echo "  "
+   echo "  FAILED cksum "
+else
+   rm ${TarDIR}/${1}.tar
+fi
+
+rm banner_junk
+
+exit

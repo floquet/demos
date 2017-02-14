@@ -1,0 +1,35 @@
+#!/bin/sh
+#PBS -l select=1:ncpus=1
+#PBS -l walltime=00:30:00
+#PBS -A <project-charge-no>
+#PBS -q transfer
+#PBS -N job_put
+#PBS -j oe
+#
+cd $PBS_O_WORKDIR
+#
+echo "Packing data for archiving:"
+tar cf - solution.out | gzip > out_files.tar.gz
+
+echo "Storing data from computation job:`date`"
+
+# Check to see if archive server is on-line.  If so, run archive task.
+# If not, say so, and indicate where the output data is stored for later
+# retrieval.
+TESTIT=`archive stat -retry 1 | grep 'on-line' | wc -l`
+if [ $TESTIT -ge 1 ] ; then
+  JOBID=`echo $PBS_JOBID | cut -d. -f 1`
+  archive mkdir oocore-out.o$JOBID
+  archive put -C oocore-out.o$JOBID out_files.tar.gz
+  archive ls oocore-out.o$JOBID
+else
+  echo "Archive system not on-line!!"
+  echo "Job data files cannot be stored."
+  echo "Retrieve them in `pwd` in out_files.tar"
+  echo "Exiting"
+  echo `date`
+  exit 2
+fi
+
+date
+exit

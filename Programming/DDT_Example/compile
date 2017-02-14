@@ -1,0 +1,5 @@
+#!/bin/sh
+set -x
+##  trap Floating Point Exceptions 
+mpif90 -fpe0 -traceback -g -o mpi_test.x   mpi_test.f90
+

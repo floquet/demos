@@ -1,0 +1,37 @@
+#!/bin/ksh
+#PBS -l select=2:ncpus=32:mpiprocs=32
+#PBS -l walltime=00:20:00
+#PBS -A account-id
+#PBS -q standard
+#PBS -N testjob
+#PBS -l application=other
+
+#PBS -j oe
+#### or ##########
+##    #PBS -o job.stdout                    (direct stdout to specific file)
+##    #PBS -e job.stderr                    (direct stderr to specific file)
+
+############  email yourself when job starts or ends or both
+##  #PBS -M my_email@yahoo.com              (send email to)
+##  #PBS -m be                              (at startup(b) and at end(e)
+
+##########   job dependency, do not start until until dependency met
+## PBS -W depend=afterany:#####            (#### JobID to depend on; afterany for any job status)
+#     or  depend=afterok:#####             (#### JobID to depend on; job terminated without errors)
+#     (other job dependencies are available, "man qsub" for complete list)
+
+
+cd $PBS_O_WORKDIR
+
+mpiexec_mpt -n 64    ./a.out                    # (all cores)
+
+exit
+
+####   one MPI process per node
+#PBS -l select=4:ncpus=36:mpiprocs=1            # (4 nodes, one MPI process requested on each)
+mpiexec_mpt -n 4 ./a.out                        # (single core per node indicated by node list in $PBS_NODEFILE)
+
+####   OpenMP, one node, 16 threads
+#PBS -l select=1:ncpus=36:mpiprocs=16           # (1 node, sixteen cores used)
+export OMP_NUM_THREADS=16
+omplace  -nt $OMP_NUM_THREADS -vv -c 0 ./a.out  # ("-n 1" master process, "-nt $OMP_NUM_THREADS" sixteen threads)

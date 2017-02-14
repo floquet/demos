@@ -1,0 +1,55 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=36:mpiprocs=1
+#PBS -l walltime=0:10:00
+#PBS -A your_project_id
+#PBS -q debug
+#PBS -N use_modules
+#PBS -j oe
+#PBS -l application=other
+
+##  Change Execution Environment
+
+##  Need to set up module environment in a batch job
+##
+##  Note: for ksh, sh, or bash shell
+##  . $MODULESHOME/init/<shell>
+##
+##  For csh, tcsh
+##  source $MODULESHOME/init/<shell>
+
+. $MODULESHOME/init/bash
+
+##  Alternatively, you could use /p/home/apps/modules_dest/Modules/3.2.10,
+##  which is specific to Topaz, but it is not portable!
+##    . /p/home/apps/modules_dest/Modules/3.2.10/init/<shell>
+##  or
+##    source /p/home/apps/modules_dest/Modules/3.2.10/init/<shell>
+
+echo
+echo "Before swap (use module list):  "
+module list
+
+echo
+echo "Listing of default Intel module (module show compiler/intel):"
+module show compiler/intel
+
+echo
+echo "Listing of all available modules (module avail):"
+module avail
+
+echo
+echo "Change default Intel compilers to a different Intel version"
+echo "(module swap compiler/intel compiler/intel/15.0.1)"
+echo "(module list):"
+module swap compiler/intel compiler/intel/15.0.1
+module list
+
+echo "Load Intel IMPI module (module swap mpi/sgimpt mpi/intelmpi):"
+module swap mpi/sgimpt mpi/intelmpi
+
+echo
+echo "After changes (module list):"
+module list
+
+exit
+

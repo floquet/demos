@@ -1,0 +1,25 @@
+Process Placement on Topaz
+---------------------------
+
+The PBS option
+
+#PBS -l select=1:ncpus=36:mpiprocs=36
+
+reserves 1 node of 36 cores.  If the cores of the nodes are not to be
+fully utilized, then the value of <num_cpus> = <num_nodes>*<36 cores/node>
+needs to be larger than the value of <procs>.  For example,
+
+#PBS -l select=4:ncpus=36:mpiprocs=32
+aprun -n 128  ./a.out
+
+will place 128 MPI processes on 4 nodes with 32 processes per node.
+
+The processes will be placed in order that they appear in $PBS_NODEFILE for
+the job.  So the first 32 processes will be placed on the first node, the
+second 32 on the second node, and so on.
+
+It is possible to change the way MPI processes are placed on the nodes.
+
+To do this, the order in which the node names appear in $PBS_NODEFILE must
+be changed.  Review the PBS script to get an idea of how this may be done.
+

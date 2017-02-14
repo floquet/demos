@@ -1,0 +1,35 @@
+Intel compiler, SGI MPT: (default environment on Topaz)
+  use compiler/intel mpi/sgimpt, any versions
+    Fortran:
+      mpif90 -o mpi_fort mpi_fort.f
+      mpif08 -o mpi_fort mpi_fort.f
+    C:
+      mpicc  -o mpi_cc   mpi_cc.c
+    C++:
+      mpicxx -o mpi_c++  mpi_c++.C
+
+Intel compiler, Intel IMPI:
+  use compiler/intel mpi/intelmpi, any versions
+    Fortan:
+      mpif90 -o mpi_fort mpi_fort.f
+      mpiifort -o mpi_fort mpi_fort.f
+      mpif77 -o mpi_fort mpi_fort.f
+      mpifc -o mpi_fort mpi_fort.f
+    C:
+      mpicc -o mpi_cc mpi_cc.c
+      mpiicc -o mpi_cc  mpi_cc.c   or
+      mpigcc -o mpi_cc mpi_cc.c
+    C++:
+      mpicxx -o mpi_c++ mpi_c++.C
+      mpicpc -o mpi_c++ mpi_c++.C
+      mpigxx -o mpi_c++ mpi_c++.C
+
+
+
+Executing an MPI code built with SGI MPT:
+    mpiexec_mpt -np <# of mpitask> ./my_mpi.exe
+
+Executing an MPI code built with Intel IMPI:
+    swap mpi/sgimpt with mpi/intelmpi       <--- mandatory
+    mpirun -np <# of mpitask> ./my_mpi.exe
+

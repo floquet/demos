@@ -1,0 +1,23 @@
+#! /bin/bash
+#PBS -l select=2:ncpus=36:mpiprocs=36
+#PBS -l walltime=0:05:00
+#PBS -A account-id
+#PBS -j oe
+#PBS -q debug
+#PBS -N arrays
+#PBS -l application=other
+
+cd $PBS_O_WORKDIR
+
+source ${MODULESHOME}/init/bash
+# module load unsupported/uspinit  (no longer needed)
+module load usp-adios/intel-15.0.3/sgimpt/1.8.0
+
+mpiexec_mpt -n 4 ./arrays_write
+mpiexec_mpt -n 4 ./arrays_read
+
+mpiexec_mpt -n 72 ./arrays_write
+mpiexec_mpt -n 72 ./arrays_read
+
+exit
+

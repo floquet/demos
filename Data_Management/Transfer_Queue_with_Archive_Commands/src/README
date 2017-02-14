@@ -1,0 +1,307 @@
+                         README File for OOCORE
+
+
+
+1.  Revision History
+
+    2007 May 17 -- Paul Bennett (ERDC MSRC)   -- Revised.
+    2007 Apr 09 -- Paul Bennett (ERDC MSRC)   -- Revised.
+    2007 Apr 09 -- Mahin Mahmoodi (ERDC MSRC) -- Revised.
+    2007 Apr 03 -- W.A. Ward, Jr. (ERDC MSRC) -- Revised for consistency.
+    2007 Mar 15 -- Mahin Mahmoodi (ERDC MSRC) -- Revised.
+    2006 May 08 -- Mahin Mahmoodi (ERDC MSRC) -- Revised.
+    2005 Apr 28 -- Sam Cable (ERDC MSRC)      -- Revised.
+    2004 Jul 01 -- Paul Bennett (ERDC MSRC)   -- Revised.
+    2004 Jun 01 -- Sam Cable (ERDC MSRC)      -- Revised.
+
+
+2.  Terms of Use
+
+The out-of-core solver in this  package  is  a  code  developed  by  the
+ScaLAPACK  project, a collaborative effort in producing high-performance
+linear algebra  routines  for  distributed-memory  message-passing  MIMD
+computers   and   networks   of  workstations.   This  project  involves
+researchers at The University  of  Tennessee  at  Knoxville,  Oak  Ridge
+National  Laboratory,  Rice  University,  The  University of California,
+Berkeley, The University of California, Los Angeles, and The  University
+of  Illinois,  Champaign-Urbana.   OOCORE  is  made available in the DoD
+HPCMPO ABTP at no cost for benchmark purposes only.
+
+
+3.  Code Description
+
+The out-of-core solver  (OOCORE)  is  included  in  the  ABTP  to  model
+applications  that  use  this  and  other dense linear system solvers as
+their computational cores.
+
+OOCORE uses the ScaLAPACK, BLACS, and BLAS libraries to  solve  Ax=b  by
+factoring  the  coefficient  matrix  A  and  back solving for x.  If the
+matrix A fits in available memory, the solver defaults  to  typical  in-
+core  behavior.   If  A  does  not  fit,  the  solver uses efficient I/O
+routines to read and write needed portions of A to disk.
+
+OOCORE has routines to perform LU, QR, and LL^T factorization for single
+precision, double precision, complex, and double complex data.  The test
+cases here exercise only the LU factorization of  double  complex  data.
+The  matrix  A  is populated using a random number generator; Use of the
+same seed results in repeatable runs.  The solution vector x is  set  to
+all  1s,  and  b  is  the  matrix-vector  product Ax.  Thus the computed
+solution will have the convenient property  that  the  maximum  absolute
+error equals the maximum relative error.
+
+
+4.  Directory Structure
+
+README          This file
+
+oocore_list     a    listing    of    the    contents    of   the   file
+                oocore_package.tar.gz once it has been unpacked
+
+bin/            will contain the executables once compiled
+
+src.tar         source code and Makefile directory
+
+
+5.  Creating the Executable
+
+a.  The Makefile and source code are located in the src/ directory once 
+    src.tar  is  untarred.  The  Makefile  includes  two  other  files, 
+    SLmake.inc  and  common.inc.  All  editing  needed  to  adjust  the 
+    Makefile  to  a  particular  system will be done   in   SLmake.inc.
+    SLmake.inc   contains   its  own  editing instructions.
+
+b.  Make sure your system has available the SCALAPACK, BLACS,  and  BLAS
+    libraries,  and  that  you know the exact pathnames of these various
+    libraries.  If any of these libraries are not currently available on
+    your  system,  they can be downloaded from www.netlib.org/scalapack.
+    If you have to download these libraries, a  pre-built  BLAS  library
+    can be obtained for a variety of systems.  You will probably have to
+    build and install SCALAPACK and BLACS yourself.
+
+c.  Untar app/oocore/src.tar.
+
+d.  cd to the src/ directory.
+
+e.  Once you have the library names in hand, edit the SLmake.inc file in
+    the   src/directory,   supplying   its  macros  with  the  necessary
+    information as requested in the SLmake.inc's comment lines.
+
+    SLmake.inc is divided into two parts.  In the first part,  you  will
+    supply  macro  values  for  your  FORTRAN  and C compilers of choice
+    (macros F77 and CC), the FORTRAN loader (F77LOADER, usually the same
+    as  F77,  but  you are free to use whatever you have available), and
+    flags for the compiling and loading commands (F77FLAGS, CCFLAGS, and
+    F77LOADFLAGS).
+
+    In  the  second part, you will supply macro values for the libraries
+    needed to compile the out-of-core solver.  You will need  the  names
+    of your MPI library (macro SMPLIB, usually either blank or "-lmpi"),
+    your BLACS FORTRAN  initializing  library  (BLACSFINIT),  your  main
+    BLACS library (BLACSLIB), and your SCALAPACK library (SCALAPACKLIB).
+    If you have supplied  all  macros  correctly  in  SLmake.inc,  there
+    should be no need to edit Makefile.
+
+    The ABTP timers included in the Application Test Code Suite are also
+    required.  The timers  should  be  compiled  and  installed  in  the
+    directory  ABTP/app/ABTP_timers,  and they should  be linked in your
+    SLmake.inc file.
+
+f.  The out-of-core solver will write some fairly large temporary  files
+    to  disk.   You will need to give the code the name of the directory
+    where you want the files to be written.   You  do  this  by  editing
+    three lines in the file laopen.c.  In laopen.c, find the three lines
+    where the string  "#define  FILE_PREFIX"  appears.   In  each  line,
+    supply  the name of the directory where you want the temporary files
+    to be created.  The code will write about 114GB during execution  of
+    the standard test case and about 200GB during execution of the large
+    test case.  If you are content to have  the  files  written  to  the
+    directory  where  the executable is running, just set FILE_PREFIX to
+    an empty  string  (i.e.,  two  quotation  marks  with  no  space  in
+    between).
+
+g.  In  testzdriver-std.f,  customize the parameter TOTMEM (line 120) to
+    be 80% of your system's main memory per CPU in double complex words.
+    (e.g.,  divide the 80% main memory per CPU in bytes by 16).  If this
+    number is too big and your  compilation  fails,  then  you  need  to
+    reduce the number until your compilation succeeds.
+
+h.  In  testzdriver-lrg.f,  customize the 'freemem' parameter (line 168)
+    to be 75% of your system's available main memory per CPU  in  double
+    complex  words.   (e.g., divide the 75% main memory per CPU in bytes
+    by 16).
+
+i.  Type "make clean".
+
+j.  Type "make testzdriver-std"  to  generate  the  executable  for  the
+    standard   test   case.   "make  testzdriver-lrg"  to  generate  the
+    executable for the large test case.
+
+The generated executables will solve a matrix equation of double complex
+elements.
+
+
+6.  Running the Code
+
+Samples  batch scripts are available in ded/oocore/<CASE>/ref/<NP>.  The
+accuracy check command should be executed after the walltime calculation
+and before the exit command in the batch submission script.  A report of
+the test will be printed into the batch output  file.   Systems  without
+the  date and hostname command on the compute nodes will need to execute
+pseudodate instead of mpirun to capture the ABTP timers.  Samples of the
+scripts are available in ded/lammps/<CASE>/ref/<NP>. Further information
+on the accuracy check may be found below in the  section  "Checking  for
+Correctness."
+
+
+7.  Input Files
+
+The out-of-core solver test executable reads input from a  single  file,
+"testdriver.in".   Examples  of  testdriver.in  for  various  numbers of
+processors are available in  directories  ded/oocore/<CASE>/inp.   These
+files  must  be  used  as  given, unless otherwise instructed below.  In
+particular, swapping or modifying the last two lines (values of P and Q)
+is  not  allowed; they should be used as specified in testdriver.in-<NP>
+files.  Instructions for handling the input files for the  standard  and
+large test cases are different.  Please read them carefully.
+
+a.  Standard  test case and input file: This case is designed to run in-
+    core on large CPU counts and possibly on the lower CPU  counts.   To
+    run  in-core, the value of ASIZE in testdriver must be set to 0.92 *
+    TOTMEM.  TOTMEM is 80% of the total  memory  per  core  measured  in
+    double  complex  words  (16 bytes).  For example, if your system has
+    2GB per core = 2 * 2**30 bytes, then TOTMEM = 0.80 * (2 *  2**30)  /
+    16  =  0.8  *  2**27  double complex words, and ASIZE = 0.92 * 0.8 *
+    2**27.   Your  system's  TOTMEM   can   be   found   in   the   file
+    src/testzdriver-std.f (line 120).  ASIZE is the only input parameter
+    that should be modified in the standard test case.
+
+b.  Large test case and input file: This case is designed to run out-of-
+    core  on  all the CPU counts.  Benchmark teams must not  modify  any
+    parameters in the input files in ded/oocore/large/inp/.
+
+However, in both  test  cases,  new  input  files  may  be  created  for
+additional runs on extra processor counts.  Benchmark teams  wishing  to
+make such runs must contact the Government  to  obtain  new  input  data
+files  at  the desired processor counts.  New input date files  will  be
+posted on the web site for all benchmark teams to use.
+
+One note on memory usage: It was directed that  the  'large  test'  case
+should  "exercise"  the  out-of-core  capabilities of the code and would
+take certain pre-established run times  on  pre-established  numbers  of
+PEs.   On  the machines on which the testing has been done, the only way
+to construct tests that would force out-of-core solving and would behave
+within  the  established  parameters  was  to  artificially limit memory
+usage.  This has been done by judiciously choosing the  input  parameter
+"ASIZE".   ASIZE, seen in the input file testdriver.in, is the number of
+matrix entries allowed in memory per processor.  We had to set ASIZE  to
+a  number large enough for the code to run but small enough for it to be
+forced to solve it out-of-core.  This may seem an  artificial  solution,
+but  it  was  the  only  means available for producing a large test case
+within  the  required  parameters.   Despite  the   somewhat   arbitrary
+selection  of  ASIZE, its value, along with all other input values, must
+not be changed.  All platforms must use the same value of ASIZE  in  the
+'large test' if accurate comparisons are to be obtained.
+
+
+8.  Output Files
+
+A  single  output  file will be created in the directory where the batch
+job submission took  place.   This  file  should  be  relatively  short,
+containing  information  on  batch  queuing  and  execution of the code,
+information on timing various parts of the  code,  and  some  diagnostic
+information   to   determine  how  accurately  the  code  performed  its
+calculations.  Output from the ABTP timers should  also  appear  in  the
+batch  run  output.   Example output files can be found in the directory
+app/oocore/<CASE>/ref/<NP>.
+
+
+9.  Checking Correctness
+
+You will  check  the  accuracy  of  the  calculation  by  including  the
+following line in your batch script before submitting your job:
+
+    perl check_oocore_output.pl your-batch-output-file
+
+Example:
+
+    perl check_oocore_output.pl oocore_large_0768.o537
+
+The    check_oocore_output.pl    utility    file    is    provided    in
+ded/oocore/<CASE>/ref.  The check_oocore_output.pl  should  be  executed
+after  the walltime calculation and before the exit command in the batch
+submission script.  A report of the test will be printed  to  the  batch
+output file indicating whether your output passed the accuracy test.  In
+a correct standard case run, the message have the following format:
+
+    Checking the output accuracy...
+
+    Skip test:      passed.
+    Size test:      passed. Size is 62000.
+    Re[Sum] test:   passed.
+    Im[Sum] test:   passed.
+    Overall Test:   passed.
+
+What the script does:
+
+In the output from the OOCORE code, which will be located  somewhere  in
+the  middle  of  the  batch  output  file,  you will see lines that look
+something like:
+
+    TIME   M       N    MB  NB  NRHS    P    Q Fact/Solve Time      Error  Residual
+    ---- ------ ------ --- --- ----- ----- --------------- ----------- --------
+    WALL  62000  62000  32  32     1    4    8  6706.66   833.60 4.51E+15 7.24E+10
+
+     DEPS =    1.1102230246251565E-016
+     sum(xsol_i) =   (61999.99999993307,0.000000000000000)
+     sum |xsol_i - x_i| =   (2.8818835735714693E-005,0.000000000000000)
+     sum |xsol_i - x_i|/M =   (4.6481993122120473E-010,0.000000000000000)
+     sum |xsol_i - x_i|/(M*eps) =   (4186725.738084395,0.000000000000000)
+        0 tests skipped because of illegal input values.
+
+a.  The last line indicates how  many  tests  were  skipped  because  of
+    illegal  input.   The Perl script will check to see that this number
+    was zero.
+
+b.  In the line reading "WALL 62000 62000 ...", the first number is  the
+    number of rows in the matrix, and the second number is the number of
+    columns.  The script will  check  to  see  that  these  numbers  are
+    correct.  Since they are integers, they should be exact.
+
+c.  The  line  reading  "sum(xsol_i)  =  ...."  gives the sum of all the
+    elements in the solution vector XSOL.  Since the original  vector  X
+    was  made  up  entirely of "1"s (see section "Description of Code"),
+    and XSOL should be very close to X, the real part of this sum should
+    be very close to the number of elements in the vector.  In the above
+    example, the real part of sum(xsol_i) was supposed to be very  close
+    to  62000,  which  it  was.  The imaginary part of the sum should be
+    identically zero.  Specifically, the Perl script will check  to  see
+    that  Re[sum(xsol_i)]  differs from the number of vector elements by
+    no more than 2x10**(-6), and  that  Im[sum(xsol_i)]  is  identically
+    zero.
+
+
+10.  Deliverables
+
+a.  "oocore...sub" file that submitted the job to the batch scheduler
+
+b.  "oocore...qdate" file that was created by the ".sub" file
+
+c.  "oocore...bat" file that the batch scheduler executed
+
+d.  "testdriver.in" file that was used as input
+
+e.  Batch output from the run
+
+f.  Any  OOCORE  redirected  stdio  output.  This normally goes into the
+    batch output unless the overridden by batch script directives.   The
+    output should include all data from the ABTP timers.
+
+g.  All  oocore  modified source files which were modified following the
+    instructions in this README file
+
+h.  Additionally, please provide the following  information  about  your
+    runs  and  system  for the standard and large test cases: high-water
+    memory value per CPU, on each run, the amount of memory used in swap
+    on each run, physical memory and virtual memory configuration in the
+    OOCORE runs, and the amount of memory was used  for  disk  cache  in
+    each run, if any.

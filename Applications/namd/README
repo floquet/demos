@@ -1,0 +1,44 @@
+
+Example of running namd in parallel.
+
+Copy this directory to a subdirectory of your $WORKDIR.
+
+Edit the file
+namd-intel-sgimpt.pbs, namd-gcc49-sgimpt.pbs or namd-intel-intelmpi.pbs
+for your project, and submit job "qsub namd-<version>.pbs"
+where <version> is either intel-sgimpt, gcc49-sgimpt or intel-intelmpi.
+
+Two gzip'ed tar files of input data are in this directory in case
+the user wants to start clean after doing experiments, they are,
+apoa1.tar.gz and f1atpase.tar.gz .
+
+The input data files are
+apoa1.namd  apoa1.psf  par_all22_prot_lipid.xplor
+apoa1.pdb  par_all22_popc.xplor
+
+Edit apoa1.namd , specifically, change the outputname.
+The original text is
+outputname           /usr/tmp/apoa1-out
+If your $WORKDIR is /p/work2/research and you copied these
+files to /p/work2/research/namd, for example,
+then change the line to
+outputname           /p/work2/research/namd/tmp/apoa1-out
+
+Create the directory specified by outputname, for example,
+mkdir $WORKDIR/namd/tmp
+
+Three versions of namd have been built.
+While all three versions ran well for the test cases,
+the user can try different versions to see which runs best
+for his or her particular dataset.
+
+/p/home/apps/unsupported/namd/6.6.1-intel-sgimpt
+   SGI MPT and Intel compiler
+
+/p/home/apps/unsupported/namd/6.6.1-gcc49-sgimpt
+   SGI MPT and Gcc compiler
+
+/p/home/apps/unsupported/namd/6.6.1-intel-intelmpi
+   Intel MPI and Intel compiler
+
+

@@ -1,0 +1,48 @@
+Running multiple serial processes on one compute node using Korn shell scripts:
+
+PBS uses the compute nodes to run PBS jobs on Topaz, not batch or mom nodes
+  like on Garnet.  For this reason, it is possible to run numerically intensive
+  serial tasks in PBS jobs without crashing the batch nodes and bringing down
+  the entire system.  To facilitate such use of Topaz, a single script can be
+  executed which in turn executes multiple serial tasks simultaneously.  To
+  ensure functionality on Topaz, the serial compiler needs to be the Intel
+  compiler.
+
+In this example, the script "serial_jobs.sh" runs on one compute node, using
+  a subset of its cores for 8 serial processes.
+
+Topaz nodes have 36 cores per node, so you could run 36 serial jobs at the
+  same time on one node.
+
+In serial_jobs.sh, note the syntax of using ksh and ( )& to put each serial
+  process into the background.  You are not limited to what you put between
+  the parentheses.
+
+For example, just one serial process could be:
+
+( cd /some/where/else
+  mkdir some_new_dir
+  cd some_new_dir
+  cp /from/another/place/your/executable .
+  cp /from/another/place/your/inputfile .
+  ./executable  < inputfile  > my_best_stuff
+  cp my_best_stuff $WORKDIR
+  rm *
+) &
+
+Copy this sample to your workspace:
+
+    cp -R $SAMPLES_HOME/Workload_Management/Serial_Processing_2 $WORKDIR
+
+Enter that directory and edit the PBS script "submit.pbs" to place your
+  project ID string after #PBS -A.
+
+    cd $WORKDIR/Serial_Processing_2 ; vi submit.pbs
+
+Submit the job to Topaz:
+
+    qsub submit.pbs
+
+Review the results, the script "serial_jobs.sh", and the PBS script
+  "submit.pbs" after the job completes.
+

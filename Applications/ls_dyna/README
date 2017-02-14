@@ -1,0 +1,41 @@
+Description:
+LS-Dyna is a multi-physics structure code. 
+
+This directory contains a small test case for LS-Dyna. 
+
+Copy this directory to your $WORKDIR, edit the file "lsdyna.pbs" for your
+project, and submit job "qsub lsdyna.pbs".
+
+You can use a version of "lsprepost...." in the directory
+  "/app/ls-dyna/lsprepost" to view your output d3plot files.
+
+
+LS-Dyna is a restricted access application.  Contact the ERDC DSRC for access.
+
+
+LS-Dyna requires licenses to execute.  There are currently 500 license tokens
+available for processing.  Of these, 200 are allowed for use with Advance
+Reservation Service Jobs (ARS).  If you are having trouble finding a time
+for your ARS reservations with LS-DYNA tokens, the following commands may
+provide additional information:
+
+SLB_disp_ARS_resv.pl
+  This command shows all of the license reservations made by ARS.  LS-DYNA
+  is listed near the bottom.
+
+SLB_query_resv.pl -app lsdyna -nlic XX --st=MM/DD_HH:mm --dur YYY
+  This command queries the reservation system to determine the next available
+  time that an LS-DYNA job requiring XX tokens lasting YYY hours will be
+  available at or after MM/DD_HH:mm, where
+    MM is a two-digit entry for the month 
+    DD is a two-digit entry for the day
+    HH is the time in hours (0-23)
+    mm is the time in minutes (0-59)
+  The flag --help instructs SLB_query_resv.pl to provide information on usage,
+  which includes default settings and values.
+
+SLB_query_avail_t.pl --app lsdyna --tok=mppdyna -st=MM/DD_HH:mm
+  This command computes the number of token available at time MM/DD_HH:mm.
+  Meanings of MM, DD, HH, mm are as above.  Similarly to the above, --help
+  instructs SLB_query_avail_t.pl to provide information on usage.
+

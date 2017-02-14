@@ -1,0 +1,167 @@
+
+Introduction
+------------
+
+MPInside is a MPI profiling tool that helps developers
+figure out where the MPI Send/Receive pairs are not
+executed synchronously.  This directory contains an
+example of using this tool.  Running the example is
+described in the section "Test Program."  This file also
+briefly describes the software.  More details can be
+found in the Reference Guide in this directory.
+
+Overview
+--------
+
+The versions available on Topaz can be seen by using
+the command "module avail MPInside".  In order to use
+MPInside, load a version of the module, for example
+module load MPInside/3.6.7
+After loading the module, the command "man MPInside"
+describes the use of MPInside and related environment
+variables.  The environment variables are also described
+by "man MPInside-exp".
+
+A reference manual can be found on Topaz at
+/p/home/apps/sgi/MPInside/3.6.7/doc/packages/MPInside-3.6.7/
+mpinside_ref_manual.pdf
+In addition, a manual can be found in this directory.
+
+In the "man pages" (man command) and in the reference manual,
+SGI MPT is shown as being launched by the command "mpirun".
+This is not correct for Topaz.  Use mpiexec_mpt, which
+recognizes the list of nodes provided by PBS.
+
+The tool MPInside does not require any change in the
+application.  Neither re-compiling nor re-linking is necessary.
+However, it will provide more information if the application
+was compiled with the “–g “ flag.
+
+At least environment variable needs to be set before launching
+a parallel job.  (Though MPINSIDE_LIB=MPT is the default if no
+value is set.)
+With SGI MPT
+export MPINSIDE_LIB=MPT  # sh, ksh or bash
+setenv MPINSIDE_LIB MPT  # csh or tcsh
+mpiexec_mpt –np <nprocs> MPInside <your_prog> [your_args]
+With Intel MPI
+export MPINSIDE_LIB=IMPI  # sh, ksh or bash
+setenv MPINSIDE_LIB IMPI  # csh or tcsh
+mpirun –np <nprocs> MPInside <your_prog> [your_args]
+
+With MPInside, it is possible to model what the performance
+of a program would be if the latency was zero and bandwidth
+infinite.  Such "what-if" modelling identifies performance
+limitations due to the algorithm implementation.  Certain
+modelling features such as what-if regarding the performance
+of collective operations are only available with SGI MPT.
+
+With regard to programs that utilize asynchronous MPI,
+the times spent in MPI_Wait or MPI_Waitall are attributed
+to the corresponding MPI_Isend or MPI_Irecv functions.
+
+Running your parallel program results in the generation
+of one or more mpinside_stats files, which can then
+be post-processed with the command MPInside_post.
+
+Some Environment Variables
+--------------------------
+
+Some useful environment variables are the following.
+(The reference manual describes other variables, as well,
+and gives more details.)  The syntax shown is valid for
+sh, ksh and bash.  The syntax for csh and tcsh is
+setenv <var name> <value>  .
+
+export MPINSIDE_OUTPUT_PREFIX=<text>
+   Prefix for file names to distinguish different runs.
+
+export MPINSIDE_PRINT_ALL_COLUMNS=1
+   Print all columns even if values are zero, thereby allowing
+   easier comparison between user program versions.
+
+export MPINSIDE_CALLSTACK_DEPTH=<integer_number>
+   MPI calls can originate from different branches of a program.
+   Setting the environment variable will cause files
+   mpinside_clstk.xxx to be generated, one file for each rank.
+   These files can be post-processed with "MPInside_post -l" to
+   get routine names and source line numbers.
+
+export MPINSIDE_EVAL_COLLECTIVE_WAIT=1
+   Checks whether a slow collective operation is caused by some
+   ranks reaching the rendezvous point much later than others.
+
+export MPINSIDE_EVAL_SLT=1
+   Checks whether a slow point-to-point communication is caused by
+   late senders.
+
+export MPINSIDE_LITE=1
+   Use this when many MPI calls would result in high MPInside
+   overhead.  This may be the case when there are many calls
+   to MPI_Test or MPI_Probe.
+
+export MPINSIDE_SIZE_DISTRI=T+12:0-31
+   Controls format of histogram of message sizes.
+   See the reference manual for a description of the syntax.
+
+export MPINSIDE_SHOW_READ_WRITE=1
+   Show calls to libc file I/O.
+
+export MPINSIDE_CUT_OFF=<percent of total communication time>
+   Do not print branches with communication time below this
+   percent of the total.  For complete information, set
+export MPINSIDE_CUT_OFF=0.0
+
+export MPINSIDE_PRINT_DIRTY=1
+   Recommended if importing information into a spread sheet.
+
+export MPINSIDE_PRINT_SIZ_IN_K=1
+   Print message size in KB units instead of MB
+
+export MPINSIDE_VERBOSE=1
+   This option is mentioned in the reference manual
+   but not described.  SGI staff has recommended its use.
+
+Test program
+------------
+
+A simple Allgather program from the Ohio State University
+Micro-Benchmarks is used as an example.  The first step
+in using this example is to create a subdirectory inside
+your $WORKDIR and copy these files to that subdirectory.
+
+To test with SGI MPT (default MPI on Topaz),
+compile as shown below.
+
+mpicc -g -o allgather_sgimpt.exe osu_allgather.c
+
+To test with Intel MPI, compile as shown below.
+
+module swap mpi/sgimpt/2.12-11218 mpi/intelmpi/15.0.3
+mpiicc -g -o allgather_intelmpi.exe osu_allgather.c
+
+There are two example PBS batch scripts,
+sgimptallgather.pbs and intelmpiallgather.pbs
+which can be submitted using the command lines
+qsub sgimptallgather.pbs
+qsub intelmpiallgather.pbs
+Before submitting the scripts, change the project account.
+
+While not necessary for compiling and linking,
+you can load the module
+module load MPInside/3.6.7
+in order to add the "man pages" to MANPATH.
+
+To extract statistics from the files generated by
+the run, you will need to load the MPInside module.
+module load MPInside/3.6.7
+
+Four files will be generated.
+sgimpt_stats
+sgimpt_clstk.0
+sgimpt_clstk.1
+sgimpt_stats.0-1
+
+No branches will be listed because the MPI routines are all
+called from the main program.
+

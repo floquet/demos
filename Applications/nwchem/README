@@ -1,0 +1,14 @@
+Description:
+NWChem is an ab initio computational chemistry software package; it includes quantum chemical and molecular dynamics.
+
+This directory contains a small test cases for NWChem. 
+
+Must create .nwchemrc first:
+For 6.5-gcc49
+ln -s /p/home/apps/unsupported/nwchem/6.5-gcc49/data/default.nwchemrc  $HOME/.nwchemrc
+
+For 6.5-intel
+ln -s /p/home/apps/unsupported/nwchem/6.5-intel/data/default.nwchemrc  $HOME/.nwchemrc
+
+Copy this directory to your $WORKDIR, edit the nwchem.pbs file for your project,
+ and submit job "qsub nwchem.pbs".

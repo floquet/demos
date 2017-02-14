@@ -1,0 +1,23 @@
+Maximum Number of Concurrently Open Files:
+=========================================
+
+   The number of open files for one process is limited to 16384 by default.
+   This is the number reported by the bash shell "ulimit" command, and it
+   is both the hard limit and the soft limit, ie, the values returned by
+   "ulimit -S -a" and "ulimit -H -a".  It includes files descriptors used
+   for Unix pipes, as well as normal files.  However, for a user program
+   the default limit is around 16380.
+
+   The number of open files can be changed by using the command
+   "ulimit -n <new max>" in a bash PBS batch script or in an interactive
+   PBS session, before calling mpiexec_mpt, or mpirun if using Intel MPI.
+   After the limit is changed, it can only be lowered in the same job.
+
+   For csh or tcsh shell, the command is
+
+     limit descriptiors <new max>
+
+   The number of open files should be as few as possible because of the
+   load on the Lustre filesystem metadata server.  Use of thousands of
+   open files, as shown in this example, is NOT recommended.
+

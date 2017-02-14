@@ -1,0 +1,65 @@
+Pinning Processing Elements for Gnu code with Intel IMPI:
+
+Code that uses Intel's IMPI may be pinned using settings of several environment
+variables.
+
+Documentation about the possible variables for MPI code is available in section
+3.2 "Process Pinning" of the document "Intel MPI Library for Linux* OS",
+available in /p/home/apps/intel/parallel_studio_2015_u2/impi/5.0.3.048/doc/,
+"Reference Manual", either html or pdf. 
+
+For MPI codes, I_MPI_PIN must be set to "enable" or "1" or "on" or "yes" to
+enable pinning.  Default setting places the MPI processes across the
+NUMA nodes, of which there are 4 per compute node, in the job; the processes
+are allowed to wander among groups of cores assigned to them, including the
+hyperthreading cores, belonging to the NUMA node.  Review ../compute-cpu_arch
+for a description of the compute nodes including listings of the NUMA nodes by
+cores.  Placement is not guaranteed to be even.  For example, if there are 16
+processes per node, so that there are 2 processes per NUMA node, then 1 process
+will be placed on cores 0-4 and 36-39, the next on cores 5-8 and 40-44, the
+next on cores 9-13 and 45-48, the next on cores 14-17 and 49-53, and so on.
+
+Placement of MPI processes can be directed to specific cores by setting
+I_MPI_PIN_PROCESSOR_LIST to those cores on which the MPI processes are
+to be pinned, in order.  Vlues for I_MPI_PIN_PROCESSOR_LISSt can be core
+id numbers, separated by commas, eg 0-4,5,9-12,13, or specific keywords, eg
+I_MPI_PROCESSOR_LIST=[<procset>][:[grain=<grain>][,shift=<shift>][,preoffset=<preoffset>][,postoffest=<postoffset]].
+
+The PBS script pin_mpi.pbs shows the placement of 24 MPI processes on 2 nodes
+using only I_MPI_PIN.  Uncomment I_MPI_PIN_PROCESSOR_LIST to see how to pin
+the processes to specific cores.  Two equivalent definitions of the processor
+list definition are presented, to demonstrate an apparent way to define the
+list and a more compact notation to define it.  Two additional examples showing
+usage of keywords to set I_MPI_PIN_PROCESSOR_LIST are commented out as well.
+
+For hybrid MPI/OpenMP code compiled using the Gnu compilers and Intel IMPI,
+I_MPI_PIN, I_MPI_PIN_DOMAIN, and I_MPI_PIN_PROCESSOR_LIST can be set similarly
+as for code
+compiled using the Intel compilers and Intel IMPI.  Doing so will likely allow
+all contexts to be available, including hyperthreading contexts, for the OpenMP
+threads.  The restrict placement of OpenMP threads to physical contexts, the
+variables OMP_PLACES and OMP_PROC_BIND can be set.
+
+Documentation about OMP_PLACES and OMP_PROC_BIND is available in section 5.2
+"OMP_Places and OMP_Proc_Bind" of the document "Oracle (R) Solaris Studio 12.4:
+OpenMP API User's Guide", available at the URL
+https://docs.oracle.com/cd/E37069_01/html/E37081/goztg.html#scrolltoc .
+
+OMP_PLACES takes the values "threads", "cores", or "sockets", or a list of
+specific cores, separated by commas, or ranges of cores with notation to
+provide b threads starting at core a, viz {a:b}, bracketed expressions
+separated by commas.
+
+OMP_PROC_BIND takes the values "master", "close", or "spread", saying to place
+all the threads on the same place in OMP_PLACES as the master, or close to it,
+or spread out as far as possible so as to minimize contention for resources.
+
+The PBS script pin_openmp.pbs demonstrates how to use the environment variables
+to place 4 MPI processes on the NUMA nodes of each compute node in the job
+and then place the OpenMP threads of each process within that process' NUMA
+node, including the HT contexts.  Settings for OMP_PLACES and OMP_PROC_BIND,
+both commented out, show how to restrict contexts to the physical resources,
+that is, restrict against the hyperthreaded contexts.  Two options are given
+for OMP_PROC_BIND, depending on whether close or spread out placement is
+preferred.
+

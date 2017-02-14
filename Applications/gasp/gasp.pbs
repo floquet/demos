@@ -1,0 +1,21 @@
+#!/bin/csh
+#PBS -A myproject
+#PBS -q standard
+#PBS -N rocket
+#PBS -l gasp=1
+#PBS -l walltime=00:15:00
+#PBS -l select=1:ncpus=36:mpiprocs=8
+#PBS -l application=gasp
+#PBS -j oe
+
+###   Load the Gasp module for its path
+###   "module avail" will show the Gasp versions available
+
+cd $PBS_O_WORKDIR
+
+source ${MODULESHOME}/init/csh
+module load gasp/5.2.1
+
+mpiexec_mpt -n 8 gasp --mpi --run 3 -i rocket.gsp
+
+exit

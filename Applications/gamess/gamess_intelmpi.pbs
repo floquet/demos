@@ -1,0 +1,28 @@
+#! /bin/bash
+#PBS -A <your account>
+#PBS -l select=2:ncpus=36:mpiprocs=36
+#PBS -l walltime=00:30:00
+#PBS -N gamess_example
+#PBS -q debug
+#PBS -l application=gamess
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+
+source $MODULESHOME/init/bash
+module unload mpi/sgimpt
+module load mpi/intelmpi/15.0.3
+
+# Please set these 2 environment variables, the scratch dir and binary dir.
+export GAMESSRUN=`pwd`
+export GAMESSBIN=/apps/unsupported/gamess/05Dec2014R1-impi
+# (Version in /apps/unsupported/gamess/05Dec2014R1-intel compiled for
+#  SGI MPT runs on only one node.)
+
+# Execution is performed by calling the rungms script, which
+# sets up the GAMESS job, and feeds 2 arguments to it, in order:
+# The name of the GAMESS input data file, number of compute
+# processes to run.  The number of compute processes should be
+# select*mpiprocs.
+${GAMESSBIN}/rungms gms_job.inp 72 > gms_job.out 2>&1
+

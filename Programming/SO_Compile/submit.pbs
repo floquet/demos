@@ -1,0 +1,43 @@
+#!/bin/ksh
+#PBS -l select=1:ncpus=36:mpiprocs=36
+#PBS -l walltime=00:05:00
+#PBS -N test_dso
+#PBS -l application=other
+#PBS -q debug
+#PBS -A my_subproject
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+
+JID="`echo $PBS_JOBID | cut -d. -f1`"
+JOBDIR=so_lib_o$JID
+mkdir $WORKDIR/$JOBDIR
+
+##  If compiled with Intel IMPI, the dynamic executable
+##  in this exercise requires the Intel MPI module.
+##  If it is not already loaded, uncomment the next 2 lines
+#   . $MODULESHOME/init/ksh
+#   module swap mpi/sgimpt mpi/intelmpi
+
+## Define the Shared Objects Library path
+SO_LIB="`pwd`/LIB_SRC"
+
+## Extend your LD_LIBRARY_PATH with the new Shared Objects Library path:
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${SO_LIB}
+
+## Copy binary up to job execution directory and go to it
+cp main_routine.x $WORKDIR/$JOBDIR
+cd $WORKDIR/$JOBDIR
+
+## Execute the code
+mpiexec_mpt  -n 36 ./main_routine.x
+
+## Use the following if running Intel's IMPI
+#  host="`head -n 1 $PBS_NODEFILE`"
+#  mpirun -hosts $host -n 36 ./main_routine.x
+
+## Clean up and exit
+/bin/rm main_routine.x
+
+exit
+

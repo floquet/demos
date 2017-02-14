@@ -1,0 +1,28 @@
+Amount of Memory that a Process uses:
+=====================================
+
+This is an example of determining the amount of memory being used by a
+process.  The code in the files measure_memory.c and measure_memory.h
+show two methods of finding the memory usage that will work on many
+Linux operating systems.
+
+In the sample applications, each of 72 MPI processes allocates a different
+amount of memory, and the amount of memory usage before and after malloc
+is printed for a quarter of the processes.
+
+Instructions: Copy this example to a directory you own:
+   cp -R $SAMPLES_HOME/Programming/Memory_Usage /path/to/destination/directory
+
+Build the executables by executing the script "compile.sh".
+   ./compile.sh
+
+Submitting a job is done with submit.pbs.  Until topaz enters production,
+use
+   qsub submit.pbs
+
+After topaz enters production, use
+
+   qsub -A your-project-code submit.pbs
+
+Your project code can be found by entering "show_usage" at the command prompt.
+

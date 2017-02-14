@@ -1,0 +1,16 @@
+#mcfd.bc file create by ICEM CFD - CFD++ translator
+seq# type modi info
+#INFLOW
+   1    0    0    0
+#FARFIELD
+   2    0    0    0
+#OUTFLOW
+   3    0    0    0
+#WALLS
+   4    0    0    0
+#NOZZLE2
+   5    0    0    0
+#NOZZLE1
+   6    0    0    0
+#SYMMETRY
+   7    0    0    0

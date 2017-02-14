@@ -1,0 +1,63 @@
+
+ At present there are 50 TotalView Tokens available, and they are shared at all
+ Centers.  Use the command "SLB_check_license.pl totalview" to look for
+ TotalView_TeamPlus to see how many are currently free.
+
+ To start TotalView on a PBS job, you need to run an interactive batch job.
+
+ To do this:
+ Check to see how many cores are free using "qview".
+
+ You should have "ssh -Y topaz.erdc.hpc.mil" to get an SSH tunnel to Topaz
+ from your machine, or if you are using Windows, start a X-Server such as Xming
+ or Cygwin and then in PuTTy set the X11 forwarding in PuTTy's SSH - X11
+ Category table.
+
+ Once on Topaz' login node, test the SSH tunnel with an "xclock".
+
+ To get your X DISPLAY sent from your batch job to your desktop, add the PBS
+ option "-X" to the interactive job request as in the line below:
+
+ To get an interactive batch session with allocated compute nodes,
+ ## number of cores needs to be as many or fewer than the number of
+ ## available TotalView TeamPlus licenses.
+ ## Here, for example, if there are 16 or more available licenses, try
+ > qsub -X -A myproject -l walltime=01:00:00 -q debug -l select=1:ncpus=36:mpiprocs=16 -I
+
+ NOTE: You no longer need to use qtunnel or get another Kerberos ticket.
+
+ Once the interactive batch session starts...
+ > cd /p/work1/---/where_work_is
+
+ Alternatively,
+ > cd $WORKDIR/.../where_work_is
+
+ Now test if your X11 display works from the PBS mom node:
+ > xclock
+
+ Load your TotalView module:
+ > module load totalview
+
+ Now you can run TotalView on your executable, in this example, mpi_test.x
+
+ > mpiexec_mpt -tv -np 16 ./mpi_test.x
+
+ A graphic window should come up, with a row of buttons across the top and
+a few display panes.  Hit the "go" button (green arrow pointing to the right).
+Other interactive windows may come up asking if you wish to execute.  Answer in
+the affirmative and let the code execute.  Output of the code will appear in
+your desktop login window on Topaz unless redirected to file or /dev/null .
+TotalView should halt on iteration 191 on line 24 and state the values of all
+the variables in the upper right-hand panel (Stack Frame).  In particular,
+note the value of xi, which generates an attempted floating-point division
+by zero.  In the upper left-hand window (Stack Trace) should be a trace down
+to the routine at which progress is stopped, here, "mpitest".  The central
+panel should display a copy of the code with a highlighted line, 24, and arrow
+located in the column of numbers pointing to it.  Beneath the row of buttons,
+you should see two text bars, stating that mpirun<mpi_test.x> has an Error
+and the particular rank which hit it first, and that Thread 1 found a Floating
+Point Exception.
+
+To end execution, hit the "Kill" button, which is the red square near the
+"Go" button.
+

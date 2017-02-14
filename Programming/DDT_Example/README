@@ -1,0 +1,9 @@
+Description:
+Example to start a DDT debug session on a batch job.
+
+Copy the small test case, consisting of "compile", "how_to_run", and
+"mpi_test.f90", to your $WORKDIR and run there.
+
+You may also copy and execute the command issued in "compile" directly on
+the command line.
+

@@ -1,0 +1,34 @@
+#!/bin/bash
+#PBS -A <your project>
+#PBS -l select=2:ncpus=36:mpiprocs=36
+#PBS -l walltime=0:05:00
+#PBS -q debug
+#PBS -j oe
+#PBS -N namd
+
+cd $PBS_O_WORKDIR
+JID=`echo $PBS_JOBID | cut -d "." -f 1`
+
+NAMD_BINDIR=/p/home/apps/unsupported/namd/6.6.1-intel-sgimpt/NAMD_2.10_Source/Linux-x86_64-icc
+
+export PATH=${NAMD_BINDIR}:$PATH
+
+echo "using `which namd2`"
+
+# Dynamic libraries used by namd2.
+export LD_LIBRARY_PATH=/p/home/apps/unsupported/COST/tcltk/8.6/intel/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/p/home/apps/unsupported/fftw-serial/2.1.5-intel/lib:$LD_LIBRARY_PATH
+
+# setting MPI_DSM_VERBOSE is optional
+export MPI_DSM_VERBOSE=1
+# setting MPI_MEMMAP_OFF is necessary for SGI MPT
+export MPI_MEMMAP_OFF=true
+
+# It is assumed that apoa1.namd has been edited and the directory
+# part of outputname option in that file does exist.
+# See README
+
+# It is assumed that SGI MPT is the default environment.
+
+mpiexec_mpt -n 64 ${NAMD_BINDIR}/namd2 apoa1.namd  > run64.${JID}log 2>&1 
+

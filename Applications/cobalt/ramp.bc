@@ -1,0 +1,26 @@
+##################################################
+   Boundary Condition Specification File for:
+   Ramp 
+##################################################
+ 40
+Walls
+Solid Wall
+Adiabatic No Slip
+No Trips
+Yes
+##################################################
+ 30
+Inlet
+Source
+Riemann Invariants
+ P-Stat   T-Stat     K    Omega   Mach    Axis End Points     Swirl (A,B,C)
+ 101325.  288.15    -1.    -1.     1.9   0. 0. 0.  1. 0. 0.     0. 0. 0.
+Yes
+##################################################
+ 20
+Outlet
+Farfield
+Modified Riemann
+ P-Stat   T-Stat     K    Omega   Mach    Axis End Points     Swirl (A,B,C)
+ -1.      288.15    -1.    -1.     1.9   0. 0. 0.  1. 0. 0.     0. 0. 0.
+##################################################
